@@ -1,0 +1,15 @@
+            // 14. D2_Point4_PresetsTooltip: Кнопка «Применить рекомендуемые» и подсказка соответствуют наличию пресетов
+            bool hasAnyPresets = false;
+            for (int i = 0; i < tweaks.Count; i++)
+            {
+                if (tweaks[i].presets != null && tweaks[i].presets.Count > 0)
+                {
+                    hasAnyPresets = true;
+                    break;
+                }
+            }
+            bool canApplyRecommended = hasAnyPresets;
+            string applyRecommendedToolTip = canApplyRecommended ? "Применить все рекомендуемые твики" : "Пресеты пока не заданы";
+            Assert(canApplyRecommended && applyRecommendedToolTip == "Применить все рекомендуемые твики",
+                "D2_Point4_PresetsTooltip: При наличии пресетов кнопка активна и подсказка 'Применить все рекомендуемые твики'",
+                string.Format("canApply={0}, toolTip='{1}'", canApplyRecommended, applyRecommendedToolTip));

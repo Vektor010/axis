@@ -1,0 +1,281 @@
+﻿using System;
+using System.IO;
+using System.Runtime.InteropServices;
+using System.Text;
+
+namespace WinTweaker.Engine
+{
+    public struct GpuTemperatureResult
+    {
+        public bool IsAvailable;
+        public uint TemperatureC;
+        public string ErrorMessage;
+
+        public static GpuTemperatureResult Success(uint temp)
+        {
+            return new GpuTemperatureResult
+            {
+                IsAvailable = true,
+                TemperatureC = temp,
+                ErrorMessage = ""
+            };
+        }
+
+        public static GpuTemperatureResult Fail(string error)
+        {
+            return new GpuTemperatureResult
+            {
+                IsAvailable = false,
+                TemperatureC = 0,
+                ErrorMessage = error
+            };
+        }
+    }
+
+    public interface ITemperatureSource : IDisposable
+    {
+        bool Initialize();
+        GpuTemperatureResult GetGpuTemperature();
+        void Shutdown();
+        string FoundLibraryPath { get; }
+    }
+
+    public class NvmlTemperatureSource : ITemperatureSource
+    {
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern IntPtr LoadLibrary(string lpFileName);
+
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern uint GetModuleFileName(IntPtr hModule, StringBuilder lpFilename, int nSize);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern IntPtr GetProcAddress(IntPtr hModule, string lpProcName);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool FreeLibrary(IntPtr hModule);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private delegate int NvmlInitDelegate();
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private delegate int NvmlDeviceGetHandleDelegate(uint index, out IntPtr device);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private delegate int NvmlGetTempDelegate(IntPtr device, int sensorType, out uint temp);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private delegate int NvmlShutdownDelegate();
+
+        private IntPtr _hMod = IntPtr.Zero;
+        private IntPtr _device = IntPtr.Zero;
+        private bool _isInitialized = false;
+        private string _initError = "";
+        private string _foundPath = "";
+
+        private NvmlInitDelegate _initFunc;
+        private NvmlDeviceGetHandleDelegate _getHandleFunc;
+        private NvmlGetTempDelegate _getTempFunc;
+        private NvmlShutdownDelegate _shutdownFunc;
+
+        public string FoundLibraryPath
+        {
+            get { return this._foundPath; }
+        }
+
+        public bool Initialize()
+        {
+            if (this._isInitialized)
+            {
+                return true;
+            }
+
+            if (!string.IsNullOrEmpty(this._initError))
+            {
+                return false;
+            }
+
+            try
+            {
+                // 1. Попытка загрузить "nvml.dll" из стандартных путей Windows
+                string req = "nvml.dll";
+                this._hMod = LoadLibrary(req);
+                if (this._hMod == IntPtr.Zero)
+                {
+                    // 2. Попытка загрузить по прямому пути NVSMI
+                    req = @"C:\Program Files\NVIDIA Corporation\NVSMI\nvml.dll";
+                    this._hMod = LoadLibrary(req);
+                }
+
+                if (this._hMod == IntPtr.Zero)
+                {
+                    int err = Marshal.GetLastWin32Error();
+                    this._initError = string.Format("Библиотека nvml.dll не найдена (код {0})", err);
+                    return false;
+                }
+
+                StringBuilder sb = new StringBuilder(1024);
+                GetModuleFileName(this._hMod, sb, sb.Capacity);
+                this._foundPath = sb.ToString();
+
+                IntPtr pInit = GetProcAddress(this._hMod, "nvmlInit_v2");
+                IntPtr pHandle = GetProcAddress(this._hMod, "nvmlDeviceGetHandleByIndex_v2");
+                IntPtr pTemp = GetProcAddress(this._hMod, "nvmlDeviceGetTemperature");
+                IntPtr pShutdown = GetProcAddress(this._hMod, "nvmlShutdown");
+
+                if (pInit == IntPtr.Zero || pHandle == IntPtr.Zero || pTemp == IntPtr.Zero || pShutdown == IntPtr.Zero)
+                {
+                    this._initError = "Функции NVML отсутствуют в библиотеке";
+                    this.CleanupLibrary();
+                    return false;
+                }
+
+                this._initFunc = (NvmlInitDelegate)Marshal.GetDelegateForFunctionPointer(pInit, typeof(NvmlInitDelegate));
+                this._getHandleFunc = (NvmlDeviceGetHandleDelegate)Marshal.GetDelegateForFunctionPointer(pHandle, typeof(NvmlDeviceGetHandleDelegate));
+                this._getTempFunc = (NvmlGetTempDelegate)Marshal.GetDelegateForFunctionPointer(pTemp, typeof(NvmlGetTempDelegate));
+                this._shutdownFunc = (NvmlShutdownDelegate)Marshal.GetDelegateForFunctionPointer(pShutdown, typeof(NvmlShutdownDelegate));
+
+                int res = this._initFunc();
+                if (res != 0)
+                {
+                    this._initError = string.Format("Ошибка инициализации NVML (код {0})", res);
+                    this.CleanupLibrary();
+                    return false;
+                }
+
+                res = this._getHandleFunc(0, out this._device);
+                if (res != 0)
+                {
+                    this._initError = string.Format("Видеокарта NVIDIA не обнаружена (код {0})", res);
+                    if (this._shutdownFunc != null)
+                    {
+                        try { this._shutdownFunc(); } catch { }
+                    }
+                    this.CleanupLibrary();
+                    return false;
+                }
+
+                this._isInitialized = true;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                this._initError = string.Format("Исключение при инициализации NVML: {0}", ex.Message);
+                this.CleanupLibrary();
+                return false;
+            }
+        }
+
+        public GpuTemperatureResult GetGpuTemperature()
+        {
+            if (!this._isInitialized)
+            {
+                if (!this.Initialize())
+                {
+                    return GpuTemperatureResult.Fail(this._initError);
+                }
+            }
+
+            try
+            {
+                uint temp = 0;
+                int res = this._getTempFunc(this._device, 0, out temp); // 0 = NVML_TEMPERATURE_GPU
+                if (res != 0)
+                {
+                    return GpuTemperatureResult.Fail(string.Format("Ошибка чтения температуры (код {0})", res));
+                }
+
+                return GpuTemperatureResult.Success(temp);
+            }
+            catch (Exception ex)
+            {
+                return GpuTemperatureResult.Fail(string.Format("Сбой при вызове nvmlDeviceGetTemperature: {0}", ex.Message));
+            }
+        }
+
+        public void Shutdown()
+        {
+            if (this._isInitialized)
+            {
+                try
+                {
+                    if (this._shutdownFunc != null)
+                    {
+                        this._shutdownFunc();
+                    }
+                }
+                catch { }
+                finally
+                {
+                    this._isInitialized = false;
+                    this._device = IntPtr.Zero;
+                }
+            }
+
+            this.CleanupLibrary();
+        }
+
+        private void CleanupLibrary()
+        {
+            if (this._hMod != IntPtr.Zero)
+            {
+                try
+                {
+                    FreeLibrary(this._hMod);
+                }
+                catch { }
+                finally
+                {
+                    this._hMod = IntPtr.Zero;
+                }
+            }
+        }
+
+        public void Dispose()
+        {
+            this.Shutdown();
+        }
+    }
+
+    public class MockTemperatureSource : ITemperatureSource
+    {
+        private readonly bool _available;
+        private readonly uint _temperatureC;
+        private readonly string _errorMessage;
+        private readonly string _mockPath;
+
+        public MockTemperatureSource(bool available, uint temperatureC = 0, string errorMessage = "Библиотека nvml.dll не найдена", string mockPath = "")
+        {
+            this._available = available;
+            this._temperatureC = temperatureC;
+            this._errorMessage = errorMessage;
+            this._mockPath = mockPath;
+        }
+
+        public string FoundLibraryPath
+        {
+            get { return this._mockPath; }
+        }
+
+        public bool Initialize()
+        {
+            return this._available;
+        }
+
+        public GpuTemperatureResult GetGpuTemperature()
+        {
+            if (this._available)
+            {
+                return GpuTemperatureResult.Success(this._temperatureC);
+            }
+            return GpuTemperatureResult.Fail(this._errorMessage);
+        }
+
+        public void Shutdown()
+        {
+        }
+
+        public void Dispose()
+        {
+        }
+    }
+}

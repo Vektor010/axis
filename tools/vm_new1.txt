@@ -1,0 +1,7 @@
+                    this.OnPropertyChanged("SelectedCategory");
+                    this.OnPropertyChanged("CurrentSectionTitle");
+                    this.OnPropertyChanged("CurrentSectionGlyph");
+                    this.OnPropertyChanged("CurrentSectionStatsText");
+                    this.ApplyFilter();
+                    this.UpdateSummary();
+                    this.UpdateCategoryBatchCounts();

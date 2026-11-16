@@ -1,0 +1,20 @@
+                                <!-- Mode 4: All Mode ('Все') batch buttons -->
+                                <StackPanel Orientation="Horizontal"
+                                            VerticalAlignment="Center"
+                                            Visibility="{Binding ShowAllModeBatchButtons, Converter={StaticResource BoolToVis}}">
+                                    <Button Style="{StaticResource AccentButtonStyle}"
+                                            Command="{Binding ApplyAllRecommendedCommand}"
+                                            Content="{Binding ApplyRecommendedText}"
+                                            IsEnabled="{Binding CanApplyRecommended}"
+                                            ToolTip="{Binding ApplyRecommendedToolTip}"
+                                            Margin="0,0,8,0" />
+                                    <Button Style="{StaticResource DangerButtonStyle}"
+                                            Command="{Binding RevertAllCommand}"
+                                            Content="Откатить все твики" />
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+                    </Border>
+
+                    <!-- Grouped & Virtualized Tweak Cards List -->
+                    <ScrollViewer Grid.Row="2"

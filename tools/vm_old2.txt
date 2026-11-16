@@ -1,0 +1,24 @@
+        public bool CanApplyRecommended
+        {
+            get
+            {
+                if (this._allTweaks == null || this._allTweaks.Count == 0) return false;
+                for (int i = 0; i < this._allTweaks.Count; i++)
+                {
+                    var m = this._allTweaks[i].Model;
+                    if (m != null && m.presets != null && m.presets.Count > 0)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+
+        public string ApplyRecommendedToolTip
+        {
+            get
+            {
+                return this.CanApplyRecommended ? "Применить все рекомендуемые твики" : "Пресеты пока не заданы";
+            }
+        }

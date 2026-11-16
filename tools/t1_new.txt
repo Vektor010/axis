@@ -1,0 +1,20 @@
+                string blockContent = rangeText.ToString();
+
+                // Проверка типа источника: Тип А (комментарии // Enabled) или Тип Б/В (таблицы политик и скрипты)
+                if (subBlocks.Count == 0)
+                {
+                    for (int a = 0; a < tweak.registry.Count; a++)
+                    {
+                        RegistryActionItem action = tweak.registry[a];
+                        Assert(blockContent.IndexOf(action.name, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                               blockContent.IndexOf(action.path, StringComparison.OrdinalIgnoreCase) >= 0,
+                            string.Format("{0}[{1}]: Наличие параметра в источнике", tweakId, action.name),
+                            action.name);
+                    }
+                    continue;
+                }
+
+                // Тест (б): в диапазоне ровно одна пара (путь, имя)
+                Assert(pairsInRange.Count == 1,
+                    tweakId + ": В диапазоне ровно одна пара (путь, имя)",
+                    string.Format("пар={0}", pairsInRange.Count));

@@ -1,0 +1,15 @@
+            // 14. D2_Point4_PresetsDisabledTooltip: Кнопка «Применить рекомендуемые» при пустых пресетах недоступна
+            bool hasAnyPresets = false;
+            for (int i = 0; i < tweaks.Count; i++)
+            {
+                if (tweaks[i].presets != null && tweaks[i].presets.Count > 0)
+                {
+                    hasAnyPresets = true;
+                    break;
+                }
+            }
+            bool canApplyRecommended = hasAnyPresets;
+            string applyRecommendedToolTip = canApplyRecommended ? "Применить все рекомендуемые твики" : "Пресеты пока не заданы";
+            Assert(!canApplyRecommended && applyRecommendedToolTip == "Пресеты пока не заданы",
+                "D2_Point4_PresetsDisabledTooltip: При пустых пресетах подсказка 'Пресеты пока не заданы'",
+                string.Format("canApply={0}, toolTip='{1}'", canApplyRecommended, applyRecommendedToolTip));

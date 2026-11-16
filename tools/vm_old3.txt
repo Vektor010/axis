@@ -1,0 +1,5 @@
+                    if (string.Equals(kv.Key, "visibility", StringComparison.OrdinalIgnoreCase))
+                    {
+                        displayName = "\u041F\u0440\u043E\u0432\u043E\u0434\u043D\u0438\u043A";
+                        glyph = "\uE8B7";
+                    }

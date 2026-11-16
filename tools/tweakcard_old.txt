@@ -1,0 +1,11 @@
+        public string RegistryName
+        {
+            get
+            {
+                if (this._model != null && this._model.registry != null && this._model.registry.Count > 0)
+                {
+                    return this._model.registry[0].name;
+                }
+                return "Нет данных";
+            }
+        }

@@ -1,0 +1,5 @@
+                    if (string.Equals(kv.Key, "visibility", StringComparison.OrdinalIgnoreCase))
+                    {
+                        displayName = "Внешний вид и анимации";
+                        glyph = "\uE790";
+                    }

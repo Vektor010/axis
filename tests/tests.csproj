@@ -1,0 +1,68 @@
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
+    <ProjectGuid>{A1B2C3D4-E5F6-4A5B-8C9D-0E1F2A3B4C5D}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>WinTweaker.Tests</RootNamespace>
+    <AssemblyName>Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FrameworkPathOverride>C:\Windows\Microsoft.NET\Framework64\v4.0.30319</FrameworkPathOverride>
+    <OutputPath>..\dist\</OutputPath>
+    <PlatformTarget>x64</PlatformTarget>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' or '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\dist\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' or '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\dist\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="..\src\Models\TweakDefinition.cs" />
+    <Compile Include="..\src\Models\TweakStatus.cs" />
+    <Compile Include="..\src\Common\NativeMethods.cs" />
+    <Compile Include="..\src\Common\RegistryWatcher.cs" />
+    <Compile Include="..\src\Engine\IRegistryStore.cs" />
+    <Compile Include="..\src\Engine\StateManager.cs" />
+    <Compile Include="..\src\Engine\JournalManager.cs" />
+    <Compile Include="..\src\Engine\SettingsManager.cs" />
+    <Compile Include="..\src\Engine\RestorePointManager.cs" />
+    <Compile Include="..\src\Engine\SystemInfoService.cs" />
+    <Compile Include="..\src\Engine\TweakEngine.cs" />
+    <Compile Include="..\src\Engine\GameModeWnfService.cs" />
+    <Compile Include="..\src\Engine\GpuHwschService.cs" />
+    <Compile Include="..\src\Engine\MmcssTaskService.cs" />
+    <Compile Include="..\src\Engine\SteamConfigHelper.cs" />
+    <Compile Include="..\src\Engine\TemperatureSource.cs" />
+  </ItemGroup>
+
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

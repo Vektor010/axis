@@ -1,0 +1,37 @@
+        public string RegistryName
+        {
+            get
+            {
+                if (this._model != null && this._model.registry != null && this._model.registry.Count > 0)
+                {
+                    return this._model.registry[0].name;
+                }
+                return "Нет данных";
+            }
+        }
+
+        public bool HasRegistryName
+        {
+            get
+            {
+                return !string.IsNullOrEmpty(this.RegistryName) && this.RegistryName != "Нет данных";
+            }
+        }
+
+        public bool IsRecommended
+        {
+            get
+            {
+                if (this._model != null && this._model.presets != null)
+                {
+                    for (int i = 0; i < this._model.presets.Count; i++)
+                    {
+                        if (string.Equals(this._model.presets[i], "recommended", StringComparison.OrdinalIgnoreCase))
+                        {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+        }

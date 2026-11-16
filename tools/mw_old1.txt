@@ -1,0 +1,16 @@
+                <Grid Visibility="{Binding IsTweaksSelected, Converter={StaticResource BoolToVis}}">
+                    <Grid.RowDefinitions>
+                        <!-- Screen Toolbar (Segments, Summary, Batch Buttons) -->
+                        <RowDefinition Height="Auto" />
+                        <!-- Grouped & Virtualized List -->
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <!-- Tweaks Toolbar -->
+                    <Border Grid.Row="0"
+                            Background="{DynamicResource CardBg}"
+                            BorderBrush="{DynamicResource CardBorder}"
+                            BorderThickness="1"
+                            CornerRadius="10"
+                            Padding="12,8"
+                            Margin="0,0,0,10">

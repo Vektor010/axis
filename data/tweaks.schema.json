@@ -1,0 +1,159 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "WinTweaker Database Schema (v1)",
+  "description": "Спецификация схемы базы данных твиков WinTweaker в строгом соответствии с требованиями проекта.",
+  "type": "array",
+  "items": {
+    "$ref": "#/definitions/TweakItem"
+  },
+  "definitions": {
+    "TweakItem": {
+      "type": "object",
+      "required": [
+        "id",
+        "name_ru",
+        "description_ru",
+        "category",
+        "type",
+        "risk",
+        "presets",
+        "registry",
+        "source",
+        "needs_review"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+        },
+        "name_ru": {
+          "type": "string"
+        },
+        "description_ru": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "system",
+            "visibility",
+            "network",
+            "peripheral",
+            "privacy",
+            "security",
+            "power",
+            "cleanup",
+            "misc",
+            "policies",
+            "nvidia",
+            "affinities",
+            "steam"
+          ]
+        },
+        "type": {
+          "type": "string",
+          "enum": ["toggle", "action", "parameter"]
+        },
+        "risk": {
+          "type": "string",
+          "enum": ["low", "medium", "high"]
+        },
+        "presets": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "min_build": {
+          "type": ["integer", "null"]
+        },
+        "needs_review": {
+          "type": "boolean"
+        },
+        "source": {
+          "$ref": "#/definitions/SourceReference"
+        },
+        "registry": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RegistryActionItem"
+          }
+        }
+      }
+    },
+    "SourceReference": {
+      "type": "object",
+      "required": ["file", "line_from", "line_to"],
+      "properties": {
+        "file": {
+          "type": "string"
+        },
+        "line_from": {
+          "type": "integer"
+        },
+        "line_to": {
+          "type": "integer"
+        }
+      }
+    },
+    "RegistryActionItem": {
+      "type": "object",
+      "required": [
+        "hive",
+        "path",
+        "name",
+        "type",
+        "apply",
+        "apply_block",
+        "revert"
+      ],
+      "properties": {
+        "hive": {
+          "type": "string",
+          "enum": ["HKLM", "HKCU", "HKCR", "HKU"]
+        },
+        "path": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "REG_SZ",
+            "REG_DWORD",
+            "REG_QWORD",
+            "REG_BINARY",
+            "REG_MULTI_SZ",
+            "REG_EXPAND_SZ"
+          ]
+        },
+        "apply": {
+          "type": ["string", "integer", "boolean"]
+        },
+        "apply_block": {
+          "type": "string",
+          "enum": ["Enabled", "Disabled"]
+        },
+        "revert": {
+          "$ref": "#/definitions/RevertSpec"
+        }
+      }
+    },
+    "RevertSpec": {
+      "type": "object",
+      "required": ["mode"],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": ["set", "snapshot", "delete", "absent", "none"]
+        },
+        "value": {
+          "type": ["string", "integer", "null"]
+        }
+      }
+    }
+  }
+}

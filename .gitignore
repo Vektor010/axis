@@ -1,0 +1,26 @@
+# ==============================================================================
+# WinTweaker - .gitignore
+# ==============================================================================
+
+# Build artifacts & temporary directories
+bin/
+obj/
+dist/
+tmp/
+*.tmp
+*.suo
+*.user
+.vs/
+
+# Backup files
+*.bak
+*.bak*
+
+# Scratch & temporary scripts
+scratch/
+scratch_*.ps1
+test_neg_*.ps1
+
+# Large upstream media from raw source (wallpapers, videos not used in app/tests)
+data/source/**/images/
+data/source/**/videos/

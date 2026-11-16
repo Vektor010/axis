@@ -1,0 +1,8 @@
+        public string CurrentSectionGlyph
+        {
+            get
+            {
+                if (this._selectedCategory != null) return this._selectedCategory.Glyph;
+                return "\uE74C";
+            }
+        }

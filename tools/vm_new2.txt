@@ -1,0 +1,81 @@
+        public string CurrentSectionTitle
+        {
+            get
+            {
+                if (this._selectedCategory != null) return this._selectedCategory.Name;
+                return "Все разделы";
+            }
+        }
+
+        public string CurrentSectionGlyph
+        {
+            get
+            {
+                if (this._selectedCategory != null) return this._selectedCategory.Glyph;
+                return "\uE74C";
+            }
+        }
+
+        public string CurrentSectionStatsText
+        {
+            get
+            {
+                int total = this._filteredTweaks != null ? this._filteredTweaks.Count : 0;
+                int recCount = 0;
+                if (this._filteredTweaks != null)
+                {
+                    for (int i = 0; i < this._filteredTweaks.Count; i++)
+                    {
+                        if (this._filteredTweaks[i].IsRecommended) recCount++;
+                    }
+                }
+                if (recCount > 0)
+                {
+                    return string.Format("{0} твиков • {1} рекомендуемых", total, recCount);
+                }
+                return string.Format("{0} твиков", total);
+            }
+        }
+
+        public bool CanApplyRecommended
+        {
+            get
+            {
+                if (this._allTweaks == null || this._allTweaks.Count == 0) return false;
+                for (int i = 0; i < this._allTweaks.Count; i++)
+                {
+                    if (this._allTweaks[i].IsRecommended && this._allTweaks[i].Status != TweakStatus.Enabled)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+
+        public string ApplyRecommendedText
+        {
+            get
+            {
+                int count = 0;
+                if (this._allTweaks != null)
+                {
+                    for (int i = 0; i < this._allTweaks.Count; i++)
+                    {
+                        if (this._allTweaks[i].IsRecommended && this._allTweaks[i].Status != TweakStatus.Enabled)
+                        {
+                            count++;
+                        }
+                    }
+                }
+                return count > 0 ? string.Format("Применить рекомендуемые ({0})", count) : "Применить рекомендуемые";
+            }
+        }
+
+        public string ApplyRecommendedToolTip
+        {
+            get
+            {
+                return this.CanApplyRecommended ? "Применить безопасные рекомендуемые твики" : "Все рекомендуемые твики уже применены или не заданы";
+            }
+        }

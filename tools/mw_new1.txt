@@ -1,0 +1,55 @@
+                <Grid Visibility="{Binding IsTweaksSelected, Converter={StaticResource BoolToVis}}">
+                    <Grid.RowDefinitions>
+                        <!-- Active Section Header Banner -->
+                        <RowDefinition Height="Auto" />
+                        <!-- Screen Toolbar (Segments, Summary, Batch Buttons) -->
+                        <RowDefinition Height="Auto" />
+                        <!-- Grouped & Virtualized List -->
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <!-- Active Section Header Banner -->
+                    <Border Grid.Row="0"
+                            Background="{DynamicResource CardBg}"
+                            BorderBrush="{DynamicResource CardBorder}"
+                            BorderThickness="1"
+                            CornerRadius="10"
+                            Padding="14,10"
+                            Margin="0,0,0,8">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                <Border Width="32" Height="32" CornerRadius="8" Background="{DynamicResource BadgeBg}" Margin="0,0,12,0" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding CurrentSectionGlyph}"
+                                               FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                               FontSize="15"
+                                               Foreground="{DynamicResource AccentBrush}"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center" />
+                                </Border>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding CurrentSectionTitle}"
+                                               FontSize="15"
+                                               FontWeight="Bold"
+                                               Foreground="{DynamicResource TextPrimary}" />
+                                    <TextBlock Text="{Binding CurrentSectionStatsText}"
+                                               FontSize="11.5"
+                                               Foreground="{DynamicResource TextMutedBrush}"
+                                               Margin="0,2,0,0" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- Tweaks Toolbar -->
+                    <Border Grid.Row="1"
+                            Background="{DynamicResource CardBg}"
+                            BorderBrush="{DynamicResource CardBorder}"
+                            BorderThickness="1"
+                            CornerRadius="10"
+                            Padding="12,8"
+                            Margin="0,0,0,10">

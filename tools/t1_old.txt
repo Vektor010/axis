@@ -1,0 +1,6 @@
+                string blockContent = rangeText.ToString();
+
+                // Тест (б): в диапазоне ровно одна пара (путь, имя)
+                Assert(pairsInRange.Count == 1,
+                    tweakId + ": В диапазоне ровно одна пара (путь, имя)",
+                    string.Format("пар={0}", pairsInRange.Count));

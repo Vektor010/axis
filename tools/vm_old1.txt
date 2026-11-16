@@ -1,0 +1,4 @@
+                    this.OnPropertyChanged("SelectedCategory");
+                    this.ApplyFilter();
+                    this.UpdateSummary();
+                    this.UpdateCategoryBatchCounts();
