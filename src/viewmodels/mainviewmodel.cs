@@ -589,7 +589,7 @@ namespace WinTweaker.ViewModels
 
         public string ModePillText
         {
-            get { return this._isRealMode ? "Реальный режим" : "Тестовый режим"; }
+            get { return this._isRealMode ? "Активный режим" : "Тестовый режим"; }
         }
 
         public string AdminPillText
@@ -599,7 +599,7 @@ namespace WinTweaker.ViewModels
 
         public string BannerText
         {
-            get { return "ТЕСТОВЫЙ РЕЖИМ: реестр не меняется. Для применения запустите с --real"; }
+            get { return ""; }
         }
 
         public bool IsDarkTheme
@@ -779,7 +779,7 @@ namespace WinTweaker.ViewModels
 
         public string EngineModeDisplay
         {
-            get { return this._isRealMode ? "Реальный режим" : "Тестовый режим"; }
+            get { return this._isRealMode ? "Активен" : "Тестовый режим"; }
         }
 
         public string JournalCountDisplay
@@ -884,7 +884,7 @@ namespace WinTweaker.ViewModels
 
         public event Action<bool> ThemeChanged;
 
-        public MainViewModel(bool isRealMode = false, bool isDarkTheme = true)
+        public MainViewModel(bool isRealMode = true, bool isDarkTheme = true)
         {
             this._isRealMode = isRealMode;
             this._isDarkTheme = isDarkTheme;

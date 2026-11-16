@@ -290,7 +290,7 @@
                                 Margin="0,0,0,6"
                                 HorizontalAlignment="Stretch">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <Ellipse Width="7" Height="7" Fill="{DynamicResource WarningBrush}" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                <Ellipse Width="7" Height="7" Fill="{DynamicResource SuccessBrush}" VerticalAlignment="Center" Margin="0,0,6,0" />
                                 <TextBlock Text="{Binding ModePillText}"
                                            FontSize="11"
                                            FontWeight="SemiBold"
@@ -329,9 +329,7 @@
             <Grid.RowDefinitions>
                 <!-- 0. Top Rounded Header Bar -->
                 <RowDefinition Height="Auto" />
-                <!-- 1. Test Mode Warning Strip (28px full width) -->
-                <RowDefinition Height="Auto" />
-                <!-- 2. Screen Content Area -->
+                <!-- 1. Screen Content Area -->
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
@@ -475,36 +473,8 @@
                 </Grid>
             </Border>
 
-            <!-- 1. Test-Mode Warning Strip (Thin 28px banner across full width) -->
-            <Border Grid.Row="1"
-                    Height="28"
-                    Background="{DynamicResource TestModeBadgeBg}"
-                    BorderBrush="{DynamicResource TestModeBadgeBorder}"
-                    BorderThickness="1"
-                    CornerRadius="6"
-                    Padding="12,0"
-                    Margin="0,0,0,10"
-                    VerticalAlignment="Center"
-                    Visibility="{Binding IsTestMode, Converter={StaticResource BoolToVis}}">
-                <Grid VerticalAlignment="Center">
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock Text="&#xE7BA;"
-                                   FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
-                                   FontSize="12"
-                                   Foreground="{DynamicResource WarningBrush}"
-                                   VerticalAlignment="Center"
-                                   Margin="0,0,8,0" />
-                        <TextBlock Text="ТЕСТОВЫЙ РЕЖИМ: реестр не меняется. Для применения запустите с --real"
-                                   FontSize="11.5"
-                                   FontWeight="Medium"
-                                   Foreground="{DynamicResource WarningBrush}"
-                                   VerticalAlignment="Center" />
-                    </StackPanel>
-                </Grid>
-            </Border>
-
-            <!-- 2. Screens -->
-            <Grid Grid.Row="2">
+            <!-- 1. Screens -->
+            <Grid Grid.Row="1">
                 <!-- ==================================================== -->
                 <!-- SCREEN: ОБЗОР (OVERVIEW)                             -->
                 <!-- ==================================================== -->
@@ -676,7 +646,7 @@
                                 <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                                     <TextBlock Text="Режим:" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" Margin="0,0,6,0" />
                                     <Border CornerRadius="8" Background="{DynamicResource BadgeBg}" Padding="6,2">
-                                        <TextBlock Text="{Binding EngineModeDisplay}" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource WarningBrush}" />
+                                        <TextBlock Text="{Binding EngineModeDisplay}" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource SuccessBrush}" />
                                     </Border>
                                 </StackPanel>
 
@@ -1406,7 +1376,7 @@
                         <Border Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="12" Padding="16" Margin="0,0,0,12">
                             <StackPanel>
                                 <TextBlock Text="РЕЖИМ РАБОТЫ ДВИЖКА" Style="{StaticResource CardHeaderStyle}" />
-                                <TextBlock Text="Приложение запущено в безопасном тестовом режиме с оверлеем в оперативной памяти. Изменения реестра не затрагивают физическую операционную систему." FontSize="11.5" Foreground="{DynamicResource TextSecondary}" TextWrapping="Wrap" Margin="0,6,0,0" />
+                                <TextBlock Text="Прямой рабочий режим: все выбранные оптимизации применяются непосредственно к конфигурации системы и реестру Windows с возможностью мгновенного отката." FontSize="11.5" Foreground="{DynamicResource TextSecondary}" TextWrapping="Wrap" Margin="0,6,0,0" />
                             </StackPanel>
                         </Border>
                     </StackPanel>

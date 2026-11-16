@@ -19,7 +19,7 @@ namespace WinTweaker
         public DateTime WindowCreatedUtc = DateTime.UtcNow;
         public DateTime ContentRenderedUtc;
 
-        public MainWindow() : this(false, true)
+        public MainWindow() : this(true, true)
         {
         }
 

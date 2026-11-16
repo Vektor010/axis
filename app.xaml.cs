@@ -84,7 +84,7 @@ namespace WinTweaker
             base.OnStartup(e);
 
             bool isDark = true;
-            bool isReal = false;
+            bool isReal = true;
             string screenshotPath = null;
 
             if (e.Args != null)
@@ -95,32 +95,14 @@ namespace WinTweaker
                     {
                         isDark = false;
                     }
-                    else if (e.Args[i] == "--real" || e.Args[i] == "-real")
+                    else if (e.Args[i] == "--mock" || e.Args[i] == "--test" || e.Args[i] == "-test")
                     {
-                        isReal = true;
+                        isReal = false;
                     }
                     else if (e.Args[i] == "--screenshot" && i + 1 < e.Args.Length)
                     {
                         screenshotPath = e.Args[i + 1];
                     }
-                }
-            }
-
-            // Защитный диалог подтверждения при реальном режиме
-            if (isReal && string.IsNullOrEmpty(screenshotPath))
-            {
-                MessageBoxResult result = MessageBox.Show(
-                    "ВНИМАНИЕ: Вы запускаете WinTweaker в РЕАЛЬНОМ РЕЖИМЕ (--real).\n\n" +
-                    "Все изменения реестра будут применяться непосредственно к вашей системе Windows.\n\n" +
-                    "Вы действительно хотите продолжить запуск в реальном режиме?",
-                    "WinTweaker — Подтверждение реального режима",
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Warning);
-
-                if (result != MessageBoxResult.Yes)
-                {
-                    this.Shutdown(0);
-                    return;
                 }
             }
 
@@ -143,7 +125,7 @@ namespace WinTweaker
         {
             try
             {
-                MainWindow window = new MainWindow(false, isDark);
+                MainWindow window = new MainWindow(true, isDark);
                 window.Width = 1100;
                 window.Height = 740;
 
