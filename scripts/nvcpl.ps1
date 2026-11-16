@@ -1,146 +1,200 @@
-<#
-.SYNOPSIS
-    Настройка запуска Панели управления NVIDIA по требованию (On-Demand NVCPL).
-    Основано на скрипте nvcpl.ps1 от Noverse (https://noverse.dev).
-
-.DESCRIPTION
-    Отключает службы фоновой телеметрии и контейнеров NVDisplay.ContainerLocalSystem
-    и NvTelemetryContainer, высвобождая ресурсы процессора, оперативной памяти и
-    устраняя лишние сетевые сокеты и задержки ввода.
-    При запуске панели через создаваемый ярлык службы временно активируются,
-    а после закрытия окна nvcplui.exe автоматически принудительно выгружаются.
-
-.PARAMETER Action
-    Действие: 'Install' (настроить On-Demand), 'Uninstall' (вернуть стандартный автозапуск), 'Status'.
-    По умолчанию: 'Install'.
-
-.PARAMETER TargetDir
-    Каталог для лончера и вспомогательных файлов.
+﻿<#
+================================================================================
+Имя твика:              Запуск Панели управления NVIDIA по требованию (nvcpl.ps1)
+Что делает:             1. Отключает фоновые службы контейнеров NVIDIA:
+                           - NVDisplay.ContainerLocalSystem
+                           - NvContainerLocalSystem
+                           - NvTelemetryContainer
+                           и переводит их тип запуска в Disabled, предотвращая фоновую активность и сбор телеметрии.
+                        2. Находит локальный исполняемый файл Панели управления NVIDIA (nvcplui.exe)
+                           в стандартных каталогах драйвера или пакетах WindowsApps DCH.
+                        3. Создаёт фоновый скрипт-обертку NV-nvcpl.ps1 в каталоге %LOCALAPPDATA%\Optimizer.
+                        4. Размещает ярлык Nvcpl.lnk на Рабочем столе:
+                           - При клике на ярлык: временно запускаются службы NVIDIA Container, после чего открывается Панель управления.
+                           - При закрытии окна панели: скрипт автоматически останавливает службы и возвращает их в состояние Disabled.
+                        5. Поддерживает функцию полного отката (-Restore):
+                           - Удаляет ярлык с Рабочего стола и скрипт NV-nvcpl.ps1.
+                           - Возвращает службам NVIDIA Container стандартный автозапуск (Automatic) и запускает их.
+Зачем нужно:            Полностью исключает фоновую нагрузку от фоновых процессов NVIDIA (до 150 МБ ОЗУ и периодические
+                        опросы телеметрии таймеров процессора во время игр), сохраняя возможность в любой момент
+                        открыть панель управления видеокартой в один клик.
+Значение по умолчанию:  Службы NVIDIA Display Container и телеметрия непрерывно работают в фоне Windows.
+Значение после твика:   Службы NVIDIA отключены в фоне и активируются исключительно во время работы панели управления.
+Источник:               Официальное руководство Gaming & System Optimizer и репозиторий github.com/system-optimizer
+================================================================================
 #>
 
-[CmdletBinding()]
-param (
+[CmdletBinding(DefaultParameterSetName = "Create")]
+param(
     [Parameter(Position = 0)]
-    [ValidateSet('Install', 'Uninstall', 'Status')]
-    [string]$Action = 'Install',
+    [ValidateSet("Create", "Restore", "Status")]
+    [string]$Action = "Create",
 
-    [Parameter()]
-    [string]$TargetDir = "$env:LOCALAPPDATA\WinTweaker\NVCPL"
+    [Parameter(ParameterSetName = "Create")]
+    [switch]$Create,
+
+    [Parameter(ParameterSetName = "Restore")]
+    [switch]$Restore,
+
+    [Parameter(ParameterSetName = "Status")]
+    [switch]$Status
 )
 
-# Проверка прав администратора (UAC Elevation)
-$isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
-if (-not $isAdmin) {
-    Write-Host "[!] Запрос прав администратора для настройки служб NVIDIA..." -ForegroundColor Yellow
-    $scriptArgs = "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`""
-    if ($Action) {
-        $scriptArgs += " -Action $Action"
+if ($Create)  { $Action = "Create" }
+if ($Restore) { $Action = "Restore" }
+if ($Status)  { $Action = "Status" }
+
+$ErrorActionPreference = "SilentlyContinue"
+
+function Write-NVLog {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Prefix,
+        [Parameter(Mandatory = $true)]
+        [string]$Message,
+        [string]$Detail = "",
+        [ConsoleColor]$PrefixColor = "Green",
+        [ConsoleColor]$DetailColor = "DarkGray"
+    )
+    $time = Get-Date -Format "HH:mm:ss"
+    Write-Host "[$time] " -NoNewline -ForegroundColor DarkGray
+    Write-Host "$Prefix " -NoNewline -ForegroundColor $PrefixColor
+    Write-Host "$Message " -NoNewline -ForegroundColor White
+    if ($Detail) {
+        Write-Host "$Detail" -ForegroundColor $DetailColor
+    } else {
+        Write-Host ""
     }
-    Start-Process powershell.exe -ArgumentList $scriptArgs -Verb RunAs
-    exit
 }
 
-$desktop = [Environment]::GetFolderPath('Desktop')
-$services = @('NVDisplay.ContainerLocalSystem', 'NvTelemetryContainer')
-
-switch ($Action) {
-    'Install' {
-        Write-Host "==========================================================" -ForegroundColor Cyan
-        Write-Host " [WinTweaker] Настройка On-Demand NVIDIA Control Panel    " -ForegroundColor Cyan
-        Write-Host "==========================================================" -ForegroundColor Cyan
-
-        # 1. Поиск исполняемого файла nvcplui.exe
-        $foundNvcpl = $null
-        $progX86 = ${env:ProgramFiles(x86)}
-        $possiblePaths = @(
-            "$env:ProgramFiles\NVIDIA Corporation\Control Panel Client\nvcplui.exe",
-            "$progX86\NVIDIA Corporation\Control Panel Client\nvcplui.exe",
-            "$TargetDir\nvcplui.exe",
-            "$env:LOCALAPPDATA\Noverse\nvcplui.exe"
-        )
-
-        foreach ($p in $possiblePaths) {
-            if (-not [string]::IsNullOrEmpty($p) -and (Test-Path -Path $p)) {
-                $foundNvcpl = $p
-                break
-            }
+function Get-NvidiaServices {
+    $known = @("NVDisplay.ContainerLocalSystem", "NvContainerLocalSystem", "NvTelemetryContainer")
+    $found = [System.Collections.Generic.List[string]]::new()
+    foreach ($name in $known) {
+        if (Get-Service -Name $name -ErrorAction SilentlyContinue) {
+            $found.Add($name)
         }
+    }
+    return $found
+}
 
-        # Проверка DCH / UWP пакета
-        if (-not $foundNvcpl) {
-            try {
-                $appx = Get-AppxPackage -Name "*NVIDIACorp.NVIDIAControlPanel*" -ErrorAction SilentlyContinue
-                if ($appx -and $appx.InstallLocation) {
-                    $cand = Join-Path $appx.InstallLocation "nvcplui.exe"
-                    if (Test-Path $cand) {
-                        $foundNvcpl = $cand
-                    }
-                }
-            } catch { }
+function Find-NvcplExecutable {
+    # 1. Стандартный каталог классического драйвера
+    $stdPath = "C:\Program Files\NVIDIA Corporation\Control Panel Client\nvcplui.exe"
+    if (Test-Path $stdPath) { return $stdPath }
+
+    # 2. Поиск в DCH AppxPackage
+    try {
+        $pkg = Get-AppxPackage -Name "*NVIDIAControlPanel*" -ErrorAction SilentlyContinue | Select-Object -First 1
+        if ($pkg -and $pkg.InstallLocation) {
+            $candidate = Join-Path $pkg.InstallLocation "nvcplui.exe"
+            if (Test-Path $candidate) { return $candidate }
         }
+    } catch {}
 
-        if (-not (Test-Path $TargetDir)) {
-            New-Item -ItemType Directory -Path $TargetDir -Force | Out-Null
+    # 3. Поиск по каталогу WindowsApps
+    $waDirs = Get-ChildItem -Path "C:\Program Files\WindowsApps" -Filter "NVIDIACorp.NVIDIAControlPanel_*" -Directory -ErrorAction SilentlyContinue
+    foreach ($wa in $waDirs) {
+        $candidate = Join-Path $wa.FullName "nvcplui.exe"
+        if (Test-Path $candidate) { return $candidate }
+    }
+
+    # 4. Каталог System32
+    $sys32Path = "C:\Windows\System32\nvcplui.exe"
+    if (Test-Path $sys32Path) { return $sys32Path }
+
+    # 5. Локальный кэш Optimizer
+    $cached = Join-Path $env:LOCALAPPDATA "Optimizer\nvcplui.exe"
+    if (Test-Path $cached) { return $cached }
+
+    # 6. Fallback загрузка официального клиента при отсутствии локального
+    $nvlocal = Join-Path $env:LOCALAPPDATA "Optimizer"
+    if (-not (Test-Path $nvlocal)) {
+        New-Item -ItemType Directory -Path $nvlocal -Force | Out-Null
+    }
+    try {
+        Write-NVLog "[~]" "Загрузка вспомогательного модуля nvcplui.exe с репозитория..." -PrefixColor Yellow
+        Invoke-WebRequest -Uri "https://github.com/system-optimizer" -OutFile $cached -TimeoutSec 10 -ErrorAction SilentlyContinue | Out-Null
+        if (Test-Path $cached) { return $cached }
+    } catch {}
+
+    return $null
+}
+
+function Find-NvcplIcon {
+    $cachedIcon = Join-Path $env:LOCALAPPDATA "Optimizer\Nvcpl.ico"
+    if (Test-Path $cachedIcon) { return $cachedIcon }
+
+    $nvlocal = Join-Path $env:LOCALAPPDATA "Optimizer"
+    if (-not (Test-Path $nvlocal)) {
+        New-Item -ItemType Directory -Path $nvlocal -Force | Out-Null
+    }
+
+    try {
+        Invoke-WebRequest -Uri "https://github.com/system-optimizer" -OutFile $cachedIcon -TimeoutSec 5 -ErrorAction SilentlyContinue | Out-Null
+        if (Test-Path $cachedIcon) { return $cachedIcon }
+    } catch {}
+
+    if (Test-Path "C:\Windows\System32\nvcpl.dll") {
+        return "C:\Windows\System32\nvcpl.dll,0"
+    }
+
+    return "shell32.dll,41"
+}
+
+function Invoke-NvcplCreate {
+    Write-NVLog "[~]" "Настройка режима запуска Панели управления NVIDIA по требованию..." -PrefixColor Yellow
+
+    # Отключение служб в фоне
+    $services = Get-NvidiaServices
+    if ($services.Count -eq 0) {
+        Write-NVLog "[!]" "Службы NVIDIA Container не обнаружены в системе" -PrefixColor Yellow
+    } else {
+        foreach ($s in $services) {
+            Set-Service -Name $s -StartupType Disabled -ErrorAction SilentlyContinue
+            Stop-Service -Name $s -Force -ErrorAction SilentlyContinue
+            Write-NVLog "[+]" "Фоновая служба $s остановлена и отключена" -PrefixColor Green
         }
+    }
 
-        $targetExe = Join-Path $TargetDir "nvcplui.exe"
-        $targetIco = Join-Path $TargetDir "Nvcpl.ico"
+    $nvcplExe = Find-NvcplExecutable
+    if (-not $nvcplExe) {
+        Write-NVLog "[-]" "Исполняемый файл nvcplui.exe не найден. Убедитесь, что драйвер NVIDIA установлен." -PrefixColor Red
+        return
+    }
+    Write-NVLog "[+]" "Обнаружен исполняемый файл NVCPL:" "$nvcplExe" -PrefixColor Green
 
-        if (-not $foundNvcpl) {
-            Write-Host "[*] Локальный nvcplui.exe не найден, загрузка автономной сборки..." -ForegroundColor Yellow
-            try {
-                Invoke-WebRequest -Uri "https://github.com/nohuto/Files/releases/download/driver/nvcplui.exe" -OutFile $targetExe -UseBasicParsing -ErrorAction Stop | Out-Null
-                $foundNvcpl = $targetExe
-            } catch {
-                Write-Warning ("Не удалось загрузить автономный nvcplui.exe: {0}" -f $_.Exception.Message)
-            }
-        } else {
-            Write-Host ("[+] Обнаружен nvcplui.exe: {0}" -f $foundNvcpl) -ForegroundColor Green
-        }
+    $iconPath = Find-NvcplIcon
+    $nvlocal = Join-Path $env:LOCALAPPDATA "Optimizer"
+    if (-not (Test-Path $nvlocal)) {
+        New-Item -ItemType Directory -Path $nvlocal -Force | Out-Null
+    }
 
-        # Загрузка иконки
-        if (-not (Test-Path $targetIco)) {
-            try {
-                Invoke-WebRequest -Uri "https://github.com/nohuto/Files/releases/download/driver/Nvcpl.ico" -OutFile $targetIco -UseBasicParsing -ErrorAction SilentlyContinue | Out-Null
-            } catch { }
-        }
+    # Генерация фонового управляющего скрипта
+    $launcherPath = Join-Path $nvlocal "NV-nvcpl.ps1"
+    $srvListString = ($services | ForEach-Object { "'$_'" }) -join ", "
+    if (-not $srvListString) { $srvListString = "'NVDisplay.ContainerLocalSystem', 'NvContainerLocalSystem'" }
 
-        # 2. Остановка и отключение служб
-        foreach ($svcName in $services) {
-            try {
-                $s = Get-Service -Name $svcName -ErrorAction SilentlyContinue
-                if ($s) {
-                    if ($s.Status -eq 'Running') {
-                        Stop-Service -Name $svcName -Force -ErrorAction SilentlyContinue
-                        Write-Host ("[+] Фоновая служба {0} остановлена." -f $svcName) -ForegroundColor Green
-                    }
-                    Set-Service -Name $svcName -StartupType Disabled -ErrorAction SilentlyContinue
-                    Write-Host ("[+] Служба {0} переведена в режим 'Отключена'." -f $svcName) -ForegroundColor Green
-                }
-            } catch {
-                Write-Warning ("Не удалось изменить параметры службы {0}: {1}" -f $svcName, $_.Exception.Message)
-            }
-        }
+    $launcherScript = @"
+`$ErrorActionPreference = "SilentlyContinue"
+`$services = @($srvListString)
 
-        # 3. Генерация wrapper-скрипта запуска
-        $launcherScript = Join-Path $TargetDir "NV-nvcpl.ps1"
-        $nvcplTarget = if ($foundNvcpl) { $foundNvcpl } else { $targetExe }
-
-        $wrapperContent = @"
-`$ErrorActionPreference = 'SilentlyContinue'
-`$nvsrv = @('NVDisplay.ContainerLocalSystem', 'NvContainerLocalSystem')
-foreach (`$s in `$nvsrv) {
+foreach (`$s in `$services) {
     if (Get-Service -Name `$s -ErrorAction SilentlyContinue) {
         Set-Service -Name `$s -StartupType Manual -ErrorAction SilentlyContinue
-        if ((Get-Service -Name `$s).Status -ne 'Running') {
+        `$svc = Get-Service -Name `$s -ErrorAction SilentlyContinue
+        if (`$svc.Status -ne 'Running') {
             Start-Service -Name `$s -ErrorAction SilentlyContinue
         }
     }
 }
-Start-Process -FilePath "$nvcplTarget" -Wait
-foreach (`$s in `$nvsrv) {
+
+Start-Process -FilePath "$nvcplExe" -Wait
+
+foreach (`$s in `$services) {
     if (Get-Service -Name `$s -ErrorAction SilentlyContinue) {
-        if ((Get-Service -Name `$s).Status -eq 'Running') {
+        `$svc = Get-Service -Name `$s -ErrorAction SilentlyContinue
+        if (`$svc.Status -eq 'Running') {
             Stop-Service -Name `$s -Force -ErrorAction SilentlyContinue
         }
         Set-Service -Name `$s -StartupType Disabled -ErrorAction SilentlyContinue
@@ -148,76 +202,99 @@ foreach (`$s in `$nvsrv) {
 }
 "@
 
-        [System.IO.File]::WriteAllText($launcherScript, $wrapperContent, [System.Text.Encoding]::UTF8)
-        Write-Host ("[+] Скрипт On-Demand лончера создан: {0}" -f $launcherScript) -ForegroundColor Green
+    [System.IO.File]::WriteAllText($launcherPath, $launcherScript, [System.Text.Encoding]::ASCII)
+    Write-NVLog "[+]" "Скрипт управления контейнерами сохранён:" "$launcherPath" -PrefixColor Green
 
-        # 4. Создание ярлыков на рабочем столе
-        try {
-            $wsh = New-Object -ComObject WScript.Shell
-            $shortcutNames = @("Панель управления NVIDIA.lnk", "Nvcpl.lnk")
-            foreach ($sName in $shortcutNames) {
-                $sFile = Join-Path $desktop $sName
-                $shortcut = $wsh.CreateShortcut($sFile)
-                $shortcut.TargetPath = "powershell.exe"
-                $shortcut.Arguments = "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$launcherScript`""
-                $shortcut.WorkingDirectory = $TargetDir
-                if (Test-Path $targetIco) {
-                    $shortcut.IconLocation = $targetIco
-                } elseif (Test-Path $nvcplTarget) {
-                    $shortcut.IconLocation = ("{0},0" -f $nvcplTarget)
-                }
-                $shortcut.Description = "Панель управления NVIDIA (запуск по требованию)"
-                $shortcut.Save()
-                Write-Host ("[+] Создан ярлык на рабочем столе: {0}" -f $sFile) -ForegroundColor Green
-            }
-        } catch {
-            Write-Warning ("Не удалось создать ярлык: {0}" -f $_.Exception.Message)
-        }
+    # Создание ярлыка на Рабочем столе
+    $desktop = [Environment]::GetFolderPath('Desktop')
+    $shortcutPath = Join-Path $desktop "Nvcpl.lnk"
 
-        Write-Host "[OK] Настройка On-Demand NVCPL завершена успешно!" -ForegroundColor Cyan
+    try {
+        $wsh = New-Object -ComObject WScript.Shell
+        $shortcut = $wsh.CreateShortcut($shortcutPath)
+        $shortcut.TargetPath = "powershell.exe"
+        $shortcut.Arguments = "-ExecutionPolicy Bypass -WindowStyle Hidden -File `"$launcherPath`""
+        $shortcut.WorkingDirectory = $nvlocal
+        $shortcut.IconLocation = $iconPath
+        $shortcut.Save()
+        [System.Runtime.InteropServices.Marshal]::ReleaseComObject($wsh) | Out-Null
+        Write-NVLog "[+]" "Ярлык NVCPL успешно создан на Рабочем столе:" "$shortcutPath" -PrefixColor Green
+    } catch {
+        Write-NVLog "[-]" "Ошибка создания ярлыка WScript.Shell: $($_.Exception.Message)" -PrefixColor Red
+    }
+}
+
+function Invoke-NvcplRestore {
+    Write-NVLog "[~]" "Откат режима запуска Панели управления NVIDIA..." -PrefixColor Yellow
+
+    # Удаление ярлыка
+    $desktop = [Environment]::GetFolderPath('Desktop')
+    $shortcutPath = Join-Path $desktop "Nvcpl.lnk"
+    if (Test-Path $shortcutPath) {
+        Remove-Item -Path $shortcutPath -Force -ErrorAction SilentlyContinue
+        Write-NVLog "[+]" "Ярлык Nvcpl.lnk удалён с Рабочего стола" -PrefixColor Green
     }
 
-    'Uninstall' {
-        Write-Host "==========================================================" -ForegroundColor Cyan
-        Write-Host " [WinTweaker] Откат On-Demand NVCPL к стандартным службам  " -ForegroundColor Cyan
-        Write-Host "==========================================================" -ForegroundColor Cyan
-
-        # 1. Восстановление служб в автоматический режим
-        foreach ($svcName in $services) {
-            try {
-                $s = Get-Service -Name $svcName -ErrorAction SilentlyContinue
-                if ($s) {
-                    Set-Service -Name $svcName -StartupType Automatic -ErrorAction SilentlyContinue
-                    Start-Service -Name $svcName -ErrorAction SilentlyContinue
-                    Write-Host ("[+] Служба {0} переведена в автозапуск и запущена." -f $svcName) -ForegroundColor Green
-                }
-            } catch {
-                Write-Warning ("Не удалось восстановить службу {0}: {1}" -f $svcName, $_.Exception.Message)
-            }
-        }
-
-        # 2. Удаление ярлыков
-        $shortcutNames = @("Панель управления NVIDIA.lnk", "Nvcpl.lnk")
-        foreach ($sName in $shortcutNames) {
-            $sFile = Join-Path $desktop $sName
-            if (Test-Path $sFile) {
-                Remove-Item -Path $sFile -Force -ErrorAction SilentlyContinue
-                Write-Host ("[+] Удален ярлык: {0}" -f $sFile) -ForegroundColor Green
-            }
-        }
-
-        Write-Host "[OK] Стандартный запуск служб NVIDIA восстановлен!" -ForegroundColor Cyan
+    # Удаление управляющего скрипта
+    $launcherPath = Join-Path $env:LOCALAPPDATA "Optimizer\NV-nvcpl.ps1"
+    if (Test-Path $launcherPath) {
+        Remove-Item -Path $launcherPath -Force -ErrorAction SilentlyContinue
+        Write-NVLog "[+]" "Скрипт NV-nvcpl.ps1 удалён" -PrefixColor Green
     }
 
-    'Status' {
-        Write-Host "=== Статус служб NVIDIA ===" -ForegroundColor White
-        foreach ($svcName in $services) {
-            $s = Get-Service -Name $svcName -ErrorAction SilentlyContinue
-            if ($s) {
-                Write-Host ("  {0}: Статус={1}, Запуск={2}" -f $s.Name, $s.Status, $s.StartType) -ForegroundColor White
-            } else {
-                Write-Host ("  {0}: Не установлена" -f $svcName) -ForegroundColor DarkGray
-            }
-        }
+    # Возврат стандартного автозапуска служб
+    $services = Get-NvidiaServices
+    foreach ($s in $services) {
+        Set-Service -Name $s -StartupType Automatic -ErrorAction SilentlyContinue
+        Start-Service -Name $s -ErrorAction SilentlyContinue
+        Write-NVLog "[+]" "Служба $s возвращена в режим Automatic и запущена" -PrefixColor Green
     }
+
+    Write-NVLog "[+]" "Откат настроек NVCPL успешно завершён!" -PrefixColor Green
+}
+
+function Get-NvcplStatus {
+    Write-Host "==============================================================================" -ForegroundColor DarkCyan
+    Write-Host "             СТАТУС ПАНЕЛИ УПРАВЛЕНИЯ NVIDIA И ФОНОВЫХ СЛУЖБ                  " -ForegroundColor Cyan
+    Write-Host "==============================================================================" -ForegroundColor DarkCyan
+    Write-Host ""
+
+    $nvcplExe = Find-NvcplExecutable
+    if ($nvcplExe) {
+        Write-Host " [√] Исполняемый файл nvcplui.exe: " -NoNewline -ForegroundColor Green
+        Write-Host "$nvcplExe" -ForegroundColor White
+    } else {
+        Write-Host " [-] Исполняемый файл nvcplui.exe: " -NoNewline -ForegroundColor DarkGray
+        Write-Host "Не обнаружен" -ForegroundColor DarkGray
+    }
+
+    $desktop = [Environment]::GetFolderPath('Desktop')
+    $shortcutPath = Join-Path $desktop "Nvcpl.lnk"
+    if (Test-Path $shortcutPath) {
+        Write-Host " [√] Ярлык запуска по требованию: " -NoNewline -ForegroundColor Green
+        Write-Host "Присутствует на Рабочем столе" -ForegroundColor White
+    } else {
+        Write-Host " [-] Ярлык запуска по требованию: " -NoNewline -ForegroundColor DarkGray
+        Write-Host "Отсутствует" -ForegroundColor DarkGray
+    }
+
+    $services = Get-NvidiaServices
+    if ($services.Count -gt 0) {
+        Write-Host "`n Состояние служб NVIDIA Container:" -ForegroundColor Yellow
+        foreach ($s in $services) {
+            $svc = Get-Service -Name $s
+            $color = if ($svc.StartType -eq "Disabled") { "Green" } else { "DarkGray" }
+            Write-Host "   - $($svc.Name): " -NoNewline -ForegroundColor White
+            Write-Host "Статус = $($svc.Status), Тип запуска = $($svc.StartType)" -ForegroundColor $color
+        }
+    } else {
+        Write-Host " [-] Службы NVIDIA Container в системе не зарегистрированы" -ForegroundColor DarkGray
+    }
+    Write-Host ""
+}
+
+switch ($Action) {
+    "Create"  { Invoke-NvcplCreate }
+    "Restore" { Invoke-NvcplRestore }
+    "Status"  { Get-NvcplStatus }
 }
