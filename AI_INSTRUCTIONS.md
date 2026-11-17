@@ -24,7 +24,7 @@ win-tweaker/
 ├── tweaker.csproj                  # Проект MSBuild для Tweaker.exe
 ├── build.ps1 / build.cmd           # Автономная сборка через .NET Framework MSBuild
 ├── data/
-│   ├── tweaks.json                 # База из 850 твиков системы
+│   ├── tweaks.json                 # База из 851 твика системы
 │   ├── tweaks.schema.json          # JSON-схема валидации твиков
 │   └── source/win-config/          # Первоисточники desc.md (верификация диапазонов строк)
 ├── src/
@@ -32,7 +32,7 @@ win-tweaker/
 │   ├── engine/                     # TweakEngine, SystemInfoService, JournalManager, MockRegistryStore
 │   └── common/                     # NativeMethods (DWM / Win32 API), Converters, Placement
 ├── scripts/                        # 50 готовых автономных PowerShell (.ps1) скриптов
-└── tests/                          # 12 тест-сьюитов, 7660 тестов (dist/Tests.exe)
+└── tests/                          # 12 тест-сьюитов, 7675 тестов (dist/Tests.exe)
 ```
 
 ---
@@ -84,9 +84,9 @@ win-tweaker/
 
 - **Обязательная проверка при каждой сборке**: `.\build.ps1` автоматически вызывает `.\verify-all.ps1`:
   1. PowerShell AST-валидация всех 52 `.ps1` скриптов (PS 5.1 `ParseFile` + UTF-8 `ParseInput`).
-  2. Глубокий аудит всех 850 твиков (`data/tweaks.json`): уникальность ID, чистота путей реестра без `\r\n`/`\\`, валидность типов, чистота русских текстов.
+  2. Глубокий аудит всех 851 твика (`data/tweaks.json`): уникальность ID, чистота путей реестра без `\r\n`/`\\`, валидность типов, чистота русских текстов.
   3. Побайтовая SHA-256 сверка встроенного ресурса `tweaks.json` в `dist/Tweaker.exe` с `data/tweaks.json` + проверка лимита `< 5.0 МБ`.
-  4. Прогон `dist/Tests.exe` — **13 тест-сьюитов, 7667 PASS / 0 FAIL**:
+  4. Прогон `dist/Tests.exe` — **13 тест-сьюитов, 7675 PASS / 0 FAIL**:
      - 0. Валидация JSON-схемы `tweaks.schema.json`.
      - 1. Сверка каждого твика с первоисточниками `desc.md` (диапазоны строк, полярность, маркер `(default)`).
      - 2–6. Проверка UI-моделей, `RegistryStore`, `TweakEngine`, изоляции, `RegistryWatcher`, `RestorePointManager`.
@@ -94,10 +94,10 @@ win-tweaker/
      - 8. Game Mode и WNF подсистема (`gm_effects`).
      - 9. Планирование GPU и WDDM Hardware Flip Queue.
      - 10. MMCSS Task Service (`SystemResponsiveness`, `NetworkThrottlingIndex`).
-     - 11. Тотальное сквозное тестирование 850 твиков на `MockRegistryStore` (Apply → Enabled → Revert).
+     - 11. Тотальное сквозное тестирование 851 твика на `MockRegistryStore` (Apply → Enabled → Revert).
      - 12. Глубокий аудит целостности кода каждого твика и скриптов `scripts/`.
 - **CI/CD шаблон**: `docs/ci-verify.yml.template` (при желании скопировать в `.github/workflows/ci-verify.yml` для автозапуска `.\build.ps1` на Windows-раннере).
-- ⚠️ **Критическое правило**: Любые изменения кода, реестра, структур или ViewModels обязаны проходить `.\build.ps1` со статусом **7667 PASS / 0 FAIL** и 0 AST-ошибок.
+- ⚠️ **Критическое правило**: Любые изменения кода, реестра, структур или ViewModels обязаны проходить `.\build.ps1` со статусом **7675 PASS / 0 FAIL** и 0 AST-ошибок.
 
 ---
 

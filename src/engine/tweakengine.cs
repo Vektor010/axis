@@ -650,6 +650,11 @@ namespace WinTweaker.Engine
                                     k = RegistryValueKind.DWord;
                                     this._store.SetValue(action.hive, action.path, action.name, unchecked((int)Convert.ToInt64(valSnap.Value)), k);
                                 }
+                                else if (action.type == "REG_SZ")
+                                {
+                                    k = RegistryValueKind.String;
+                                    this._store.SetValue(action.hive, action.path, action.name, valSnap.Value != null ? valSnap.Value.ToString() : "", k);
+                                }
                                 else
                                 {
                                     this._store.SetValue(action.hive, action.path, action.name, valSnap.Value, k);
@@ -670,6 +675,11 @@ namespace WinTweaker.Engine
                         {
                             k = RegistryValueKind.DWord;
                             this._store.SetValue(action.hive, action.path, action.name, unchecked((int)Convert.ToInt64(val)), k);
+                        }
+                        else if (action.type == "REG_SZ")
+                        {
+                            k = RegistryValueKind.String;
+                            this._store.SetValue(action.hive, action.path, action.name, val != null ? val.ToString() : "", k);
                         }
                         else
                         {

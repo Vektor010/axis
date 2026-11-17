@@ -445,3 +445,11 @@ Remove-Item -LiteralPath "HKCU:\Software\Classes\hashGen.ContextMenu" -Recurse -
 #Remove-Item -LiteralPath "HKCU:\Software\Classes\Directory\shell\NV-Hash" -Recurse -Force  # old entry
 Remove-Item -Path "$env:LOCALAPPDATA\Noverse\HashGen.ps1" -Force
 ```
+
+## RTSS (RivaTuner Statistics Server) - Disable Auto-Launch with MSI Afterburner
+
+MSI Afterburner and HWiNFO locate and auto-launch `RTSS.exe` via `HKLM\SOFTWARE\WOW6432Node\Unwinder\RTSS\InstallPath`. Clearing `InstallPath` stops RTSS from launching alongside MSI Afterburner while keeping manual RTSS launch intact.
+
+| Key Path | Value Name | Type | Apply | Default |
+| --- | --- | --- | --- | --- |
+| `HKLM\SOFTWARE\WOW6432Node\Unwinder\RTSS` | `InstallPath` | `REG_SZ` | `""` | `C:\Program Files (x86)\RivaTuner Statistics Server\RTSS.exe` |

@@ -1,9 +1,9 @@
 ﻿# WinTweaker Continuous Code & Tweak Verification Suite
 # Validates:
 #   1) PowerShell AST syntax of all scripts/ + build/verify/sync scripts (PS 5.1 + UTF-8)
-#   2) Deep audit of all 850 tweaks in data/tweaks.json
+#   2) Deep audit of all tweaks in data/tweaks.json
 #   3) Embedded tweaks.json byte-for-byte parity inside dist/Tweaker.exe + binary size < 5 MB
-#   4) Full execution of dist/Tests.exe (all 13 suites, 7660+ assertions)
+#   4) Full execution of dist/Tests.exe (all 13 suites, 7670+ assertions)
 $ErrorActionPreference = "Stop"
 
 $repoRoot = $PSScriptRoot
@@ -164,6 +164,6 @@ if ($failed -gt 0) {
     Write-Host "[FAIL] Verification failed with $failed error(s)!" -ForegroundColor Red
     exit 1
 } else {
-    Write-Host "[PASS] ALL CODE, SCRIPTS, BINARIES & 850 TWEAKS VERIFIED 100%!" -ForegroundColor Green
+    Write-Host "[PASS] ALL CODE, SCRIPTS, BINARIES & $($tweaks.Count) TWEAKS VERIFIED 100%!" -ForegroundColor Green
     exit 0
 }
