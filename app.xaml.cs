@@ -271,129 +271,145 @@ namespace WinTweaker
             }
         }
 
+        private static SolidColorBrush CreateFrozenBrush(string hex)
+        {
+            SolidColorBrush brush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(hex));
+            brush.Freeze();
+            return brush;
+        }
+
+        private static LinearGradientBrush CreateFrozenGradient(string hexStart, string hexEnd)
+        {
+            LinearGradientBrush brush = new LinearGradientBrush(
+                (Color)ColorConverter.ConvertFromString(hexStart),
+                (Color)ColorConverter.ConvertFromString(hexEnd),
+                new Point(0, 0), new Point(1, 1));
+            brush.Freeze();
+            return brush;
+        }
+
+        private static System.Collections.Generic.Dictionary<string, Brush> BuildDarkPalette()
+        {
+            var d = new System.Collections.Generic.Dictionary<string, Brush>(35);
+            d["WindowBg"] = CreateFrozenBrush("#0B0B12");
+            d["SidebarBg"] = CreateFrozenBrush("#0F0F17");
+            d["SidebarBorder"] = CreateFrozenBrush("#242434");
+            d["CardBg"] = CreateFrozenBrush("#12121B");
+            d["CardBgHover"] = CreateFrozenBrush("#181826");
+            d["CardBorder"] = CreateFrozenBrush("#242434");
+            d["CardBorderHover"] = CreateFrozenBrush("#363650");
+
+            d["TextPrimary"] = CreateFrozenBrush("#E8E8F2");
+            d["TextSecondary"] = CreateFrozenBrush("#8B8BA3");
+
+            d["AccentBrush"] = CreateFrozenBrush("#8B7CF6");
+            d["AccentFill"] = CreateFrozenBrush("#268B7CF6");
+            d["AccentBorder"] = CreateFrozenBrush("#8B7CF6");
+
+            d["CyanAccentBrush"] = CreateFrozenBrush("#22D3EE");
+            d["CyanFill"] = CreateFrozenBrush("#2222D3EE");
+            d["AccentGradient"] = CreateFrozenGradient("#7C3AED", "#6366F1");
+            d["HeroCardBg"] = CreateFrozenGradient("#17142B", "#11111C");
+
+            d["SuccessBrush"] = CreateFrozenBrush("#22C55E");
+            d["SuccessFill"] = CreateFrozenBrush("#2622C55E");
+            d["SuccessBorder"] = CreateFrozenBrush("#22C55E");
+
+            d["DangerBrush"] = CreateFrozenBrush("#EF4444");
+            d["DangerFill"] = CreateFrozenBrush("#26EF4444");
+            d["DangerBorder"] = CreateFrozenBrush("#EF4444");
+
+            d["WarningBrush"] = CreateFrozenBrush("#F59E0B");
+            d["WarningFill"] = CreateFrozenBrush("#26F59E0B");
+            d["WarningBorder"] = CreateFrozenBrush("#F59E0B");
+
+            d["ToggleBgOff"] = CreateFrozenBrush("#242434");
+            d["ToggleThumbOff"] = CreateFrozenBrush("#8B8BA3");
+            d["ToggleBorder"] = CreateFrozenBrush("#35354D");
+            d["ToggleBgHover"] = CreateFrozenBrush("#2E2E42");
+            d["ToggleBorderHover"] = CreateFrozenBrush("#4B4B69");
+
+            d["ButtonBg"] = CreateFrozenBrush("#181824");
+            d["ButtonBgHover"] = CreateFrozenBrush("#222233");
+            d["ButtonBgPressed"] = CreateFrozenBrush("#14141F");
+            d["ButtonBorder"] = CreateFrozenBrush("#2E2E42");
+
+            d["NavHoverBg"] = CreateFrozenBrush("#1A1A26");
+            d["NavSelectedBg"] = CreateFrozenBrush("#232334");
+            d["SearchBg"] = CreateFrozenBrush("#141420");
+            d["SearchBorder"] = CreateFrozenBrush("#28283C");
+            d["ScrollThumbBg"] = CreateFrozenBrush("#3B3B52");
+            d["BadgeBg"] = CreateFrozenBrush("#1A1A28");
+            d["HeaderBg"] = CreateFrozenBrush("#101018");
+            return d;
+        }
+
+        private static System.Collections.Generic.Dictionary<string, Brush> BuildLightPalette()
+        {
+            var d = new System.Collections.Generic.Dictionary<string, Brush>(35);
+            d["WindowBg"] = CreateFrozenBrush("#F3F3F8");
+            d["SidebarBg"] = CreateFrozenBrush("#EAEAF2");
+            d["SidebarBorder"] = CreateFrozenBrush("#E1E1EC");
+            d["CardBg"] = CreateFrozenBrush("#FFFFFF");
+            d["CardBgHover"] = CreateFrozenBrush("#F6F6FC");
+            d["CardBorder"] = CreateFrozenBrush("#E1E1EC");
+            d["CardBorderHover"] = CreateFrozenBrush("#CECEDD");
+
+            d["TextPrimary"] = CreateFrozenBrush("#1B1B28");
+            d["TextSecondary"] = CreateFrozenBrush("#6B6B80");
+
+            d["AccentBrush"] = CreateFrozenBrush("#7C3AED");
+            d["AccentFill"] = CreateFrozenBrush("#207C3AED");
+            d["AccentBorder"] = CreateFrozenBrush("#7C3AED");
+
+            d["CyanAccentBrush"] = CreateFrozenBrush("#0891B2");
+            d["CyanFill"] = CreateFrozenBrush("#200891B2");
+            d["AccentGradient"] = CreateFrozenGradient("#7C3AED", "#4F46E5");
+            d["HeroCardBg"] = CreateFrozenGradient("#F5F3FF", "#FFFFFF");
+
+            d["SuccessBrush"] = CreateFrozenBrush("#22C55E");
+            d["SuccessFill"] = CreateFrozenBrush("#2622C55E");
+            d["SuccessBorder"] = CreateFrozenBrush("#22C55E");
+
+            d["DangerBrush"] = CreateFrozenBrush("#EF4444");
+            d["DangerFill"] = CreateFrozenBrush("#26EF4444");
+            d["DangerBorder"] = CreateFrozenBrush("#EF4444");
+
+            d["WarningBrush"] = CreateFrozenBrush("#F59E0B");
+            d["WarningFill"] = CreateFrozenBrush("#26F59E0B");
+            d["WarningBorder"] = CreateFrozenBrush("#F59E0B");
+
+            d["ToggleBgOff"] = CreateFrozenBrush("#E2E2ED");
+            d["ToggleThumbOff"] = CreateFrozenBrush("#6B6B80");
+            d["ToggleBorder"] = CreateFrozenBrush("#D0D0DE");
+            d["ToggleBgHover"] = CreateFrozenBrush("#D8D8E5");
+            d["ToggleBorderHover"] = CreateFrozenBrush("#B8B8CC");
+
+            d["ButtonBg"] = CreateFrozenBrush("#FFFFFF");
+            d["ButtonBgHover"] = CreateFrozenBrush("#F0F0F7");
+            d["ButtonBgPressed"] = CreateFrozenBrush("#E4E4EE");
+            d["ButtonBorder"] = CreateFrozenBrush("#D5D5E2");
+
+            d["NavHoverBg"] = CreateFrozenBrush("#DFDFEC");
+            d["NavSelectedBg"] = CreateFrozenBrush("#D4D4E4");
+            d["SearchBg"] = CreateFrozenBrush("#FFFFFF");
+            d["SearchBorder"] = CreateFrozenBrush("#D2D2E0");
+            d["ScrollThumbBg"] = CreateFrozenBrush("#C4C4D4");
+            d["BadgeBg"] = CreateFrozenBrush("#E8E8F2");
+            d["HeaderBg"] = CreateFrozenBrush("#F8F8FC");
+            return d;
+        }
+
+        private static readonly System.Collections.Generic.Dictionary<string, Brush> _darkPalette = BuildDarkPalette();
+        private static readonly System.Collections.Generic.Dictionary<string, Brush> _lightPalette = BuildLightPalette();
+
         public void ApplyTheme(bool isDark)
         {
             ResourceDictionary res = this.Resources;
-
-            if (isDark)
+            var palette = isDark ? _darkPalette : _lightPalette;
+            foreach (System.Collections.Generic.KeyValuePair<string, Brush> kvp in palette)
             {
-                // Dark Theme Palette (Tachyon: Deep violet-tinted dark)
-                res["WindowBg"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0B0B12"));
-                res["SidebarBg"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0F0F17"));
-                res["SidebarBorder"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#242434"));
-                res["CardBg"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#12121B"));
-                res["CardBgHover"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#181826"));
-                res["CardBorder"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#242434"));
-                res["CardBorderHover"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#363650"));
-
-                res["TextPrimary"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E8E8F2"));
-                res["TextSecondary"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#8B8BA3"));
-
-                res["AccentBrush"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#8B7CF6"));
-                res["AccentFill"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#268B7CF6"));
-                res["AccentBorder"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#8B7CF6"));
-
-                res["CyanAccentBrush"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22D3EE"));
-                res["CyanFill"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2222D3EE"));
-                res["AccentGradient"] = new LinearGradientBrush(
-                    (Color)ColorConverter.ConvertFromString("#7C3AED"),
-                    (Color)ColorConverter.ConvertFromString("#6366F1"),
-                    new Point(0, 0), new Point(1, 1));
-                res["HeroCardBg"] = new LinearGradientBrush(
-                    (Color)ColorConverter.ConvertFromString("#17142B"),
-                    (Color)ColorConverter.ConvertFromString("#11111C"),
-                    new Point(0, 0), new Point(1, 1));
-
-                res["SuccessBrush"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22C55E"));
-                res["SuccessFill"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2622C55E"));
-                res["SuccessBorder"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22C55E"));
-
-                res["DangerBrush"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#EF4444"));
-                res["DangerFill"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#26EF4444"));
-                res["DangerBorder"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#EF4444"));
-
-                res["WarningBrush"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F59E0B"));
-                res["WarningFill"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#26F59E0B"));
-                res["WarningBorder"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F59E0B"));
-
-                res["ToggleBgOff"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#242434"));
-                res["ToggleThumbOff"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#8B8BA3"));
-                res["ToggleBorder"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#35354D"));
-                res["ToggleBgHover"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2E2E42"));
-                res["ToggleBorderHover"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#4B4B69"));
-
-                res["ButtonBg"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#181824"));
-                res["ButtonBgHover"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#222233"));
-                res["ButtonBgPressed"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#14141F"));
-                res["ButtonBorder"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2E2E42"));
-
-                res["NavHoverBg"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1A1A26"));
-                res["NavSelectedBg"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#232334"));
-                res["SearchBg"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#141420"));
-                res["SearchBorder"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#28283C"));
-                res["ScrollThumbBg"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#3B3B52"));
-                res["BadgeBg"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1A1A28"));
-                res["HeaderBg"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#101018"));
-            }
-            else
-            {
-                // Light Theme Palette (Tachyon: Clean airy light)
-                res["WindowBg"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F3F3F8"));
-                res["SidebarBg"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#EAEAF2"));
-                res["SidebarBorder"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E1E1EC"));
-                res["CardBg"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFFFF"));
-                res["CardBgHover"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F6F6FC"));
-                res["CardBorder"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E1E1EC"));
-                res["CardBorderHover"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#CECEDD"));
-
-                res["TextPrimary"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1B1B28"));
-                res["TextSecondary"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#6B6B80"));
-
-                res["AccentBrush"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#7C3AED"));
-                res["AccentFill"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#207C3AED"));
-                res["AccentBorder"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#7C3AED"));
-
-                res["CyanAccentBrush"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0891B2"));
-                res["CyanFill"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#200891B2"));
-                res["AccentGradient"] = new LinearGradientBrush(
-                    (Color)ColorConverter.ConvertFromString("#7C3AED"),
-                    (Color)ColorConverter.ConvertFromString("#4F46E5"),
-                    new Point(0, 0), new Point(1, 1));
-                res["HeroCardBg"] = new LinearGradientBrush(
-                    (Color)ColorConverter.ConvertFromString("#F5F3FF"),
-                    (Color)ColorConverter.ConvertFromString("#FFFFFF"),
-                    new Point(0, 0), new Point(1, 1));
-
-                res["SuccessBrush"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22C55E"));
-                res["SuccessFill"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2622C55E"));
-                res["SuccessBorder"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22C55E"));
-
-                res["DangerBrush"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#EF4444"));
-                res["DangerFill"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#26EF4444"));
-                res["DangerBorder"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#EF4444"));
-
-                res["WarningBrush"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F59E0B"));
-                res["WarningFill"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#26F59E0B"));
-                res["WarningBorder"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F59E0B"));
-
-                res["ToggleBgOff"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E2E2ED"));
-                res["ToggleThumbOff"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#6B6B80"));
-                res["ToggleBorder"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D0D0DE"));
-                res["ToggleBgHover"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D8D8E5"));
-                res["ToggleBorderHover"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#B8B8CC"));
-
-                res["ButtonBg"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFFFF"));
-                res["ButtonBgHover"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F0F0F7"));
-                res["ButtonBgPressed"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E4E4EE"));
-                res["ButtonBorder"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D5D5E2"));
-
-                res["NavHoverBg"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#DFDFEC"));
-                res["NavSelectedBg"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D4D4E4"));
-                res["SearchBg"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFFFF"));
-                res["SearchBorder"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D2D2E0"));
-                res["ScrollThumbBg"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#C4C4D4"));
-                res["BadgeBg"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E8E8F2"));
-                res["HeaderBg"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F8F8FC"));
+                res[kvp.Key] = kvp.Value;
             }
         }
     }

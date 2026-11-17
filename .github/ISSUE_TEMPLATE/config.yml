@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: "Discussions & Q&A"
+    url: "https://github.com/Vektor010/axis/discussions"
+    about: "Ask questions, discuss hardware optimizations, and share profiles"
+  - name: "Security Vulnerability Reporting"
+    url: "https://github.com/Vektor010/axis/security/policy"
+    about: "Report security vulnerabilities confidentially"

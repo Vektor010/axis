@@ -1,4 +1,6 @@
-# ⚡ AXIS — Zero-Latency Windows 10/11 Optimizer (2026 Edition)
+# ⚡ AXIS — Modern Windows 10/11 Kernel, Network & Esports Tuning Engine
+
+[English](README.md) | [Русский](README.ru.md)
 
 [![Release: v2.0.0](https://img.shields.io/badge/Release-v2.0.0-8b5cf6.svg)](https://github.com/Vektor010/axis/releases)
 [![Tests: 7760 PASS](https://img.shields.io/badge/Tests-7760%20PASS-22c55e.svg)](tests/)
@@ -6,125 +8,110 @@
 [![Binary: Clean 1.2 MB](https://img.shields.io/badge/Binary-1.2%20MB-purple.svg)](dist/Axis.exe)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-> **AXIS** — современный, автономный соревновательный оптимизатор ядра, видеоподсистемы (WDDM/NVML), сетевого стека (TCP BBR2) и приватности Windows 10/11.
-> Создан для достижения **минимального input-lag**, стабильного фреймтайма и нулевых системных задержек DPC с гарантированным **100% безопасным откатом** по снимкам состояния системы.
+> **AXIS** is a high-performance, standalone Windows 10/11 optimization suite designed for competitive esports players, system engineers, and enthusiasts.
+> It targets minimal input latency, deterministic frame pacing, and reduced kernel DPC delays—backed by **isolated snapshots (`state.json`) for safe, single-click rollbacks**.
 
 ---
 
-## 🎯 Быстрый старт для новичков (в 2 клика)
+## 🏆 Competitive Advantage
 
-Вам не нужно разбираться в коде или реестре — программа автономна и готова к работе сразу после загрузки:
-
-1. **Скачайте программу**:
-   Перейдите в раздел **[Релизы (Releases)](https://github.com/Vektor010/axis/releases/latest)** и скачайте один компактный файл **`Axis.exe`** (~1.2 МБ).
-2. **Запустите `Axis.exe`**:
-   - Программа запускается напрямую с правами администратора.
-   - Никаких скрытых установок, зависимостей или фонового мусора — чистый C# / WPF с аппаратным ускорением DWM.
-3. **Оптимизируйте систему в 1 клик**:
-   - Нажмите **`[Применить рекомендуемые]`** — программа безопасно применит пакет из 233 проверенных киберспортивных твиков, сохранив точные снимки исходных значений реестра.
-   - Любое изменение можно мгновенно **вернуть назад в 1 клик** кнопкой **`[↺ Откатить всё]`** или переключением конкретного твика.
-
----
-
-## 📸 Скриншоты интерфейса
-
-### 1. Мониторинг системы и аппаратная телеметрия
-*Прямой опрос системных датчиков в реальном времени: нагрузка ЦП и ОЗУ за 60 секунд, температура видеокарты через нативный драйвер NVML, сетевой пинг и тайминги.*
-![Обзор](docs/images/overview.png)
-
-### 2. Каталог из 856 твиков системы
-*Компактный список твиков высокой плотности: клик в любом месте строки для подробностей, индикация рисков и моментальные подсказки.*
-![Твики](docs/images/tweaks.png)
-
-### 3. Мгновенный поиск без сдвига интерфейса (Ctrl+K)
-*Быстрая фильтрация по названию, описанию, ключу реестра или целевой службе.*
-![Поиск](docs/images/search.png)
-
-### 4. Экран «О программе» (Bento 2026)
-*Полная верификация целостности базы, статус 7760 автотестов, проверка первоисточников и нативные модули WDDM/MMCSS.*
-![О программе](docs/images/about.png)
+| Capability | AXIS v2.0 | Traditional PowerShell Scripts | Generic Tweakers |
+| :--- | :---: | :---: | :---: |
+| **Standalone Native Binary** | **Yes (1.2 MB, Zero Dependencies)** | No (Requires CLI / Scripts) | No (Heavy installers / electron) |
+| **Live Windows Registry Reading** | **Yes (Direct WinAPI hardware query)** | No | No (Static UI state) |
+| **Snapshot-Based Rollback** | **Yes (Isolated `state.json` capture)** | No (Destructive overwrite) | Partial |
+| **Windows VSS Restore Point Integration**| **Yes (Native `Checkpoint-Computer`)** | Manual | Often absent |
+| **Kernel Subsystem Telemetry** | **WDDM 3.0, Flip Queue, WNF, MMCSS** | None | None |
+| **Esports Zero-Overhead Mode** | **Yes ("Pause" mode = 0% CPU polling)** | N/A | No (Constant polling) |
+| **Automated Test Coverage** | **7,760 Tests (100% PASS)** | Untested | Untested |
 
 ---
 
-## 🧭 Каталог оптимизаций AXIS (856 параметров в 12 категориях)
+## 📸 Interface Walkthrough
 
-| Категория | Количество | Что оптимизирует |
+### 1. Real-Time Hardware Telemetry & Kernel Subsystems (Overview)
+*Hardware-accelerated dashboard monitoring CPU/RAM workloads over a 60-second window, direct NVIDIA NVML GPU temperatures, WDDM 3.0 Hardware Flip Queue status, and multimedia scheduler (MMCSS) parameters.*
+![Overview](docs/images/overview.png)
+
+### 2. Deep Tweak Inspector (Real System Value vs Target)
+*Every tweak includes an inspector panel revealing the live registry value currently active in Windows, target value, OS build requirements, and explicit Apply / Revert controls.*
+![Tweaks with Inspector](docs/images/tweaks_expanded.png)
+
+### 3. System Protection, Snapshots & Telemetry Center (Settings)
+*Complete system safety hub: Windows System Restore point creation, local configuration snapshot backup export, esports polling frequency toggle, and ping diagnostics.*
+![Settings Hub](docs/images/settings.png)
+
+### 4. Technical Architecture & Database Verification (About)
+*Real-time verification of embedded tweak parity, AST script status, and native WinAPI module bindings.*
+![About](docs/images/about.png)
+
+---
+
+## 🧭 Tweak Catalog (856 Parameters Across 12 Categories)
+
+| Category | Count | Focus Area |
 | :--- | :---: | :--- |
-| ⚙️ **Система** | 193 | Приоритезация игровых задач (MMCSS), разгрузка шедулера, снижение лагов ядра Windows. |
-| 🔒 **Конфиденциальность** | 199 | Отключение фоновой телеметрии, диагностических отчётов, маяков и скрытого сбора данных. |
-| 🛡️ **Безопасность** | 140 | Изоляция системных процессов, динамическая блокировка, тонкая настройка Защитника Windows. |
-| 📁 **Проводник** | 83 | Компактный вид папок, удаление ненужных пунктов контекстного меню, быстрый поиск. |
-| 🌐 **Сеть и Интернет** | 79 | Алгоритмы TCP BBR2/CUBIC, отключение задержки Nagle, мгновенный сброс кэша DNS, RSS/RSC. |
-| 🖱️ **Периферия и ввод** | 61 | Нулевой инпут-лаг, прямое считывание 1:1 для мыши и клавиатуры, оптимизация Logitech G HUB. |
-| ⚡ **Электропитание** | 46 | Отключение скрытой парковки ядер, схема Ultimate Performance, прецизионные таймеры. |
-| 🗑️ **Очистка системы** | 16 | Экспресс-очистка временных файлов, кэша шейдеров DirectX, корзины и истории сети. |
-| 🎮 **Графика NVIDIA** | 14 | Управление D3D/DXGI Flip Queue, запуск панели NVIDIA строго по требованию. |
-| 🕹️ **Клиент Steam** | 8 | Отключение встроенного веб-хелпера CEF, фонового аппаратного H.264 и автозапуска overlay. |
-| 🧠 **Аффинити ядер ЦП** | 5 | Изоляция Core 0 для системных прерываний, устранение микрофризов и просадок 1% Low FPS. |
-| 🛠️ **Разное (Misc/RTSS)** | 12 | Отключение фонового автозапуска RivaTuner Statistics Server (RTSS), системные твики. |
+| ⚙️ **System** | 193 | Multimedia Class Scheduler (MMCSS), scheduler quantum tuning, DPC latency. |
+| 🔒 **Privacy** | 199 | Diagnostic telemetry, feedback hub, activity history, and background beacons. |
+| 🛡️ **Security** | 140 | Process isolation, dynamic lock, and Windows Defender tuning. |
+| 📁 **File Explorer** | 83 | Responsive shell layout, context menu simplification, folder view optimizations. |
+| 🌐 **Network & Internet** | 79 | TCP BBR2/CUBIC congestion providers, Nagle algorithm disabling, DNS cache flush, RSS/RSC. |
+| 🖱️ **Peripherals & Input** | 61 | 1:1 raw mouse input, pointer precision curve normalization, HID input latency. |
+| ⚡ **Power Management** | 46 | Core unparking, Ultimate Performance overlay, precision timer resolution. |
+| 🗑️ **System Cleanup** | 16 | Temporary caches, DirectX shader cache, crash dump purging. |
+| 🎮 **NVIDIA Graphics** | 14 | Low latency mode, DXGI flip queue sizing, on-demand NVCPL daemon control. |
+| 🕹️ **Steam Platform** | 8 | Disabling Chromium Embedded Framework (CEF) bloat, shader background processing. |
+| 🧠 **CPU Affinities** | 5 | Dedicated core allocation, interrupt redirection away from Core 0. |
+| 🛠️ **Miscellaneous** | 12 | Background service autostart management (including RivaTuner Statistics Server). |
 
 ---
 
-## 📜 52 готовых PowerShell-скрипта (scripts/)
+## 🚀 Quick Start
 
-Для продвинутых пользователей и скриптовой автоматизации в папке **[`scripts/`](scripts/)** доступны 52 автономных скрипта:
-- Все 52 скрипта протестированы на корректность синтаксиса через PowerShell AST-парсер (0 ошибок).
-- Игровые профили для **CS2**, **Valorant**, **Fortnite**, **Overwatch**, **Marvel Rivals**.
-- Готовые утилиты для очистки кэша, бэкапа и восстановления системы.
-- Полное руководство по каждому скрипту: **[scripts/README.md](scripts/README.md)**.
-
----
-
-## ❓ Частые вопросы (FAQ)
-
-<details>
-<summary><b>1. Безопасно ли применять твики в AXIS?</b></summary>
-<br>
-Да, на 100%. При нажатии «Применить рекомендуемые» или включении любого отдельного параметра программа автоматически сохраняет точный снимок исходного состояния ключа реестра в локальный защищённый журнал. В любой момент можно вернуть всё назад в 1 клик.
-</details>
-
-<details>
-<summary><b>2. Как откатить изменения, если захочу вернуть настройки системы назад?</b></summary>
-<br>
-В правом верхнем углу нажмите кнопку <b>[↺ Откатить всё]</b>, либо выключите любой конкретный твик. Все ключи реестра мгновенно вернутся к исходным системным значениям, зафиксированным до оптимизации.
-</details>
-
-<details>
-<summary><b>3. Нужно ли устанавливать программу?</b></summary>
-<br>
-Нет. AXIS поставляется в виде одного переносимого (portable) EXE-файла <b>`Axis.exe`</b> размером всего ~1.2 МБ. Никаких инсталляторов — запускайте откуда угодно.
-</details>
-
-<details>
-<summary><b>4. Требуется ли перезагрузка компьютера?</b></summary>
-<br>
-Большинство твиков Проводника, сети, Steam и периферии применяются сразу. Для параметров сетевого стека TCP BBR2 и планировщика ядра рекомендуется перезагрузить компьютер один раз после применения твиков.
-</details>
+1. **Download**: Grab `Axis.exe` (~1.2 MB) from the **[Latest Release](https://github.com/Vektor010/axis/releases/latest)**.
+2. **Run**: Launch `Axis.exe` directly. No installer, runtime download, or administrative setup script is required.
+3. **Optimize**: Click **`[Apply Recommended]`** to apply vetted, low-risk optimizations with an automatic system restore point and registry snapshot.
+4. **Revert Anytime**: Revert individual settings in the inspector or click **`[↺ Revert All]`** to return Windows to its exact prior state.
 
 ---
 
-## 🛠️ Разработчикам и ИИ-агентам
+## 💻 CLI Arguments
 
-- **Сборка проекта (MSBuild)**:
-  ```powershell
-  powershell -ExecutionPolicy Bypass -File .\build.ps1
-  ```
-  *Генерирует флагманский бинарник `dist\Axis.exe` и `dist\Tweaker.exe`.*
+AXIS supports headless and scripted execution flags:
 
-- **Автоматизированное тестирование (7760 тестов, 13 сьюитов)**:
-  ```cmd
-  dist\Tests.exe
-  ```
-
-- **Комплексная верификация (AST, база 856 твиков, SHA-256 embed parity)**:
-  ```powershell
-  powershell -ExecutionPolicy Bypass -File .\verify-all.ps1
-  ```
+| Flag | Description |
+| :--- | :--- |
+| `--real` | Direct read/write access to live Windows registry. |
+| `--mock` / `--test` | Safe in-memory simulation mode (registry is never altered). |
+| `--light` | Launch with the light theme enabled. |
+| `--tab <name>` | Open directly to a tab (`overview`, `tweaks`, `journal`, `history`, `settings`, `about`). |
+| `--category <id>` | Pre-select a specific tweak category. |
+| `--search <query>` | Filter tweaks by search term on startup. |
+| `--screenshot <path>` | Render offscreen window snapshot for headless QA verification. |
 
 ---
 
-## 📄 Лицензия и первоисточники
+## 🛠️ Building & Verification
 
-- Автор сборки и архитектуры: **Vektor010**
-- База знаний и первоисточники: **[Noverse (nohuto/win-config)](https://noverse.dev/docs/win-config/)**
-- Лицензия: **[MIT](LICENSE)**
+### Prerequisites
+- Windows 10/11 x64
+- Microsoft .NET Framework 4.6.2 Developer Pack or Windows SDK (native MSBuild)
+
+### Build Command
+```powershell
+powershell -ExecutionPolicy Bypass -File .\build.ps1
+```
+
+The build pipeline performs:
+1. Native compilation of `dist/Axis.exe` and test runner `dist/Tests.exe`.
+2. AST syntax check across all 52 production scripts (`verify-all.ps1`).
+3. SHA-256 byte-for-byte verification of embedded `tweaks.json`.
+4. Execution of all **7,760 unit and integration tests** (13 test suites).
+
+---
+
+## 📄 License & Attribution
+
+- **Author**: Vektor010
+- **Knowledge Base & References**: [Noverse (nohuto/win-config)](https://noverse.dev/docs/win-config/)
+- **License**: [MIT](LICENSE)

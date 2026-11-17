@@ -62,12 +62,11 @@ if ($p2.ExitCode -ne 0) {
 }
 
 $axisExe = Join-Path $distDir "Axis.exe"
-$tweakerExe = Join-Path $distDir "Tweaker.exe"
 $testsExe = Join-Path $distDir "Tests.exe"
 
-# Сохраняем и Axis.exe (флагман), и Tweaker.exe (обратная совместимость)
-if (Test-Path $axisExe) {
-    Copy-Item $axisExe $tweakerExe -Force
+$legacyTweaker = Join-Path $distDir "Tweaker.exe"
+if (Test-Path $legacyTweaker) {
+    Remove-Item $legacyTweaker -Force -ErrorAction SilentlyContinue
 }
 
 if ((Test-Path $axisExe) -and (Test-Path $testsExe)) {

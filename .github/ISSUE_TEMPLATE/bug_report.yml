@@ -1,0 +1,51 @@
+name: "🐛 Bug Report"
+description: "Report a reproducible defect, crash, or regression in AXIS"
+title: "[BUG]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting an issue! Please ensure you are running the latest version of AXIS.
+  - type: input
+    id: version
+    attributes:
+      label: "AXIS Version"
+      description: "Example: v2.0.0 (see 'About' tab)"
+      placeholder: "v2.0.0"
+    validations:
+      required: true
+  - type: input
+    id: os_build
+    attributes:
+      label: "Windows Version & Build"
+      description: "Example: Windows 11 Pro 24H2 (Build 26100.2454)"
+      placeholder: "Windows 11 Pro 24H2 (Build 26100)"
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: "Describe the Bug"
+      description: "Clear and concise explanation of what happened."
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: "Steps to Reproduce"
+      description: "Step-by-step instructions to reproduce the issue."
+      value: |
+        1. Launch Axis.exe
+        2. Go to tab '...'
+        3. Toggle tweak '...'
+        4. See error '...'
+    validations:
+      required: true
+  - type: textarea
+    id: journal
+    attributes:
+      label: "Journal / Diagnostic Log"
+      description: "Copy relevant lines from journal.jsonl or the 'Settings -> Diagnostic Report' button."
+    validations:
+      required: false

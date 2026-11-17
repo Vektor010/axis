@@ -1,4 +1,4 @@
-name: Build & Verify All Tweaks
+name: AXIS CI & Verification Suite
 
 on:
   push:
@@ -9,12 +9,26 @@ on:
 
 jobs:
   build-and-verify:
+    name: Build Axis.exe & Verify All (7760 Tests)
     runs-on: windows-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
 
-      - name: Build Tweaker.exe, Tests.exe and run verify-all.ps1
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Compile Flagship Binary & Execute Verification Suite
         shell: powershell
         run: |
           .\build.ps1
+
+      - name: Upload Flagship Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Axis-v2.0.0-win-x64
+          path: dist/Axis.exe
+          if-no-files-found: error

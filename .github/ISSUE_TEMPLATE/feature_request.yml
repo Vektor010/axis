@@ -1,0 +1,24 @@
+name: "💡 Feature Request"
+description: "Suggest a new core feature, UI improvement, or architectural enhancement"
+title: "[FEATURE]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: "Problem or Opportunity"
+      description: "Is your feature request related to a specific workflow or limitation?"
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: "Proposed Solution"
+      description: "Describe what you would like AXIS to do and how it should look or behave."
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: "Alternatives Considered"
+      description: "Any alternative approaches or workarounds you have considered."

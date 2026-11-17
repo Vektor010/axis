@@ -94,15 +94,14 @@ if (-not (Test-Path $tweaksPath)) {
 }
 
 # [3/4] Verify Binary Size & Embedded Resource Parity
-Write-Host "`n[3/4] Checking dist/Axis.exe & dist/Tweaker.exe size and embedded tweaks.json parity..." -ForegroundColor Yellow
+Write-Host "`n[3/4] Checking dist/Axis.exe size and embedded tweaks.json parity..." -ForegroundColor Yellow
 $axisExe = Join-Path $repoRoot "dist\Axis.exe"
-$tweakerExe = Join-Path $repoRoot "dist\Tweaker.exe"
 $testsExe = Join-Path $repoRoot "dist\Tests.exe"
 
-$targetExe = if (Test-Path $axisExe) { $axisExe } else { $tweakerExe }
+$targetExe = $axisExe
 
 if (-not (Test-Path $targetExe)) {
-    Fail-Check "Missing dist/Axis.exe (or dist/Tweaker.exe)"
+    Fail-Check "Missing dist/Axis.exe"
 } else {
     $sizeBytes = (Get-Item $targetExe).Length
     $sizeMB = [math]::Round($sizeBytes / 1MB, 2)
@@ -118,7 +117,7 @@ if (-not (Test-Path $targetExe)) {
         $asm = [System.Reflection.Assembly]::Load($asmBytes)
         $resName = $asm.GetManifestResourceNames() | Where-Object { $_ -like "*tweaks.json" } | Select-Object -First 1
         if (-not $resName) {
-            Fail-Check "Embedded tweaks.json resource not found inside Tweaker.exe"
+            Fail-Check "Embedded tweaks.json resource not found inside Axis.exe"
         } else {
             $stream = $asm.GetManifestResourceStream($resName)
             $ms = New-Object System.IO.MemoryStream
@@ -134,13 +133,13 @@ if (-not (Test-Path $targetExe)) {
             $sha.Dispose()
 
             if ($h1 -ne $h2) {
-                Fail-Check "Embedded tweaks.json in Tweaker.exe is OUT OF SYNC with data/tweaks.json! Rebuild required."
+                Fail-Check "Embedded tweaks.json in Axis.exe is OUT OF SYNC with data/tweaks.json! Rebuild required."
             } else {
-                Pass-Check "Embedded tweaks.json in Tweaker.exe matches data/tweaks.json byte-for-byte (SHA256 verified)"
+                Pass-Check "Embedded tweaks.json in Axis.exe matches data/tweaks.json byte-for-byte (SHA256 verified)"
             }
         }
     } catch {
-        Fail-Check "Failed to inspect embedded resource in Tweaker.exe: $($_.Exception.Message)"
+        Fail-Check "Failed to inspect embedded resource in Axis.exe: $($_.Exception.Message)"
     }
 }
 

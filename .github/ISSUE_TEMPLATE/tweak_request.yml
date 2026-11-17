@@ -1,0 +1,67 @@
+name: "⚡ Tweak Proposal / Audit"
+description: "Propose a new Windows tweak or request an audit of an existing parameter"
+title: "[TWEAK]: "
+labels: ["tweak", "enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        AXIS enforces strict standards: every tweak must have verifiable technical documentation, exact registry keys, and an isolated rollback definition.
+  - type: input
+    id: tweak_name
+    attributes:
+      label: "Tweak Name"
+      description: "Human-readable name in English and Russian"
+      placeholder: "Disable Dynamic P-State Switching"
+    validations:
+      required: true
+  - type: dropdown
+    id: category
+    attributes:
+      label: "Category"
+      options:
+        - "system"
+        - "gaming"
+        - "network"
+        - "privacy"
+        - "security"
+        - "visibility"
+        - "peripheral"
+        - "power"
+        - "cleanup"
+        - "nvidia"
+        - "steam"
+        - "misc"
+    validations:
+      required: true
+  - type: textarea
+    id: registry_spec
+    attributes:
+      label: "Registry Specification"
+      description: "Specify Hive, Key Path, Value Name, Value Type (REG_DWORD, REG_SZ, etc.), Apply Value, and Revert Value."
+      placeholder: |
+        Hive: HKLM
+        Path: SYSTEM\CurrentControlSet\Control\...
+        Name: ExampleKey
+        Type: REG_DWORD
+        Apply: 0
+        Revert Mode: set (value: 1) / delete
+    validations:
+      required: true
+  - type: textarea
+    id: technical_rationale
+    attributes:
+      label: "Technical Rationale & Verification"
+      description: "Link to official Microsoft Docs, kernel documentation, or performance trace proving latency reduction or resource benefit."
+    validations:
+      required: true
+  - type: dropdown
+    id: risk
+    attributes:
+      label: "Risk Assessment"
+      options:
+        - "low (100% safe, no side effects)"
+        - "medium (advanced user setting)"
+        - "high (may break dependent subsystems)"
+    validations:
+      required: true
