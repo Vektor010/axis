@@ -1868,3 +1868,19 @@ Depends on how much light there is in your room. If there's a lot of light, you'
 
 ### Contrast - `~60`  
 It shouldn't be set too high, otherwise you will [not be able to see any details](https://www.testufo.com/whitelevels) and not too low, or it will be too dark. You'll have to test it yourself and find the best value.
+
+## Logitech G HUB - Disable Background Updater Service (LGHUBUpdaterService)
+
+Disables the background LGHUBUpdaterService to reduce CPU context switches and background network/disk activity during gaming.
+
+| Key Path | Value Name | Type | Apply | Default |
+| --- | --- | --- | --- | --- |
+| `HKLM\SYSTEM\CurrentControlSet\Services\LGHUBUpdaterService` | `Start` | `REG_DWORD` | `4` | `3` |
+
+## Logitech G HUB - Disable Virtual Joystick Bus Enumerator (logi_joy_bus_enum)
+
+Disables the unused Logitech virtual joystick bus driver to prevent unnecessary HID device polling and reduce input latency.
+
+| Key Path | Value Name | Type | Apply | Default |
+| --- | --- | --- | --- | --- |
+| `HKLM\SYSTEM\CurrentControlSet\Services\logi_joy_bus_enum` | `Start` | `REG_DWORD` | `4` | `3` |

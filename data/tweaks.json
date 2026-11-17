@@ -27909,5 +27909,166 @@
         }
       }
     ]
+  },
+  {
+    "id": "steam-disable-autorun",
+    "name_ru": "Запретить автозапуск Steam при старте Windows (SuppressAutoRun)",
+    "description_ru": "Предотвращает автоматический старт клиента Steam при входе в систему через нативный флаг реестра SuppressAutoRun, ускоряя загрузку Windows без удаления ярлыков.",
+    "category": "steam",
+    "group": "Настройки клиента и фона",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended",
+      "gaming"
+    ],
+    "needs_review": false,
+    "source": {
+      "file": "steam/desc.md",
+      "line_from": 31,
+      "line_to": 35
+    },
+    "registry": [
+      {
+        "hive": "HKCU",
+        "path": "Software\\Valve\\Steam",
+        "name": "SuppressAutoRun",
+        "type": "REG_DWORD",
+        "apply": 1,
+        "apply_block": "Enabled",
+        "revert": {
+          "mode": "set",
+          "value": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "steam-disable-h264-hw-accel",
+    "name_ru": "Отключить аппаратное декодирование H.264 видео в Steam (H264HWAccel)",
+    "description_ru": "Отключает аппаратное ускорение видеокодека H.264 во встроенном браузере Steam (CEF), предотвращая перехват видеодекодера GPU во время параллельного запуска игр.",
+    "category": "steam",
+    "group": "Настройки клиента и фона",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "gaming"
+    ],
+    "needs_review": false,
+    "source": {
+      "file": "steam/desc.md",
+      "line_from": 37,
+      "line_to": 41
+    },
+    "registry": [
+      {
+        "hive": "HKCU",
+        "path": "Software\\Valve\\Steam",
+        "name": "H264HWAccel",
+        "type": "REG_DWORD",
+        "apply": 0,
+        "apply_block": "Enabled",
+        "revert": {
+          "mode": "set",
+          "value": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "steam-disable-overlay-scale",
+    "name_ru": "Отключить масштабирование оверлея под разрешение игры (OverlayScaleInterface)",
+    "description_ru": "Отключает принудительное масштабирование интерфейса оверлея Steam под разрешение экрана, снижая нагрузку на масштабирующий фильтр и графический пайплайн.",
+    "category": "steam",
+    "group": "В игре (In-Game)",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "gaming"
+    ],
+    "needs_review": false,
+    "source": {
+      "file": "steam/desc.md",
+      "line_from": 43,
+      "line_to": 47
+    },
+    "registry": [
+      {
+        "hive": "HKCU",
+        "path": "Software\\Valve\\Steam",
+        "name": "OverlayScaleInterface",
+        "type": "REG_DWORD",
+        "apply": 0,
+        "apply_block": "Enabled",
+        "revert": {
+          "mode": "set",
+          "value": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "peripheral-logitech-disable-updater-service",
+    "name_ru": "Отключить службу фонового обновления Logitech G HUB (LGHUBUpdaterService)",
+    "description_ru": "Отключает фоновую службу автоматических обновлений Logitech G HUB, предотвращая периодические обращения к сети, запись на диск и скачки задержки DPC в играх.",
+    "category": "peripheral",
+    "group": "Игровая периферия (Logitech)",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "gaming"
+    ],
+    "needs_review": true,
+    "source": {
+      "file": "peripheral/desc.md",
+      "line_from": 1872,
+      "line_to": 1878
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "System\\CurrentControlSet\\Services\\LGHUBUpdaterService",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "apply_block": "Enabled",
+        "revert": {
+          "mode": "set",
+          "value": 3
+        }
+      }
+    ]
+  },
+  {
+    "id": "peripheral-logitech-disable-virtual-joystick",
+    "name_ru": "Отключить эмулятор виртуального джойстика Logitech (logi_joy_bus_enum)",
+    "description_ru": "Отключает неиспользуемый виртуальный драйвер шины джойстика Logitech G HUB, устраняя лишние прерывания ввода HID и оптимизируя стек периферии.",
+    "category": "peripheral",
+    "group": "Игровая периферия (Logitech)",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "gaming"
+    ],
+    "needs_review": true,
+    "source": {
+      "file": "peripheral/desc.md",
+      "line_from": 1880,
+      "line_to": 1886
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "System\\CurrentControlSet\\Services\\logi_joy_bus_enum",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "apply_block": "Enabled",
+        "revert": {
+          "mode": "set",
+          "value": 3
+        }
+      }
+    ]
   }
 ]

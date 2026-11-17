@@ -27,3 +27,21 @@ HKCU\Software\Valve\Steam\DWriteEnable	Type: REG_DWORD, Length: 4, Data: 1
 HKCU\Software\Valve\Steam\AllowDownloadsDuringGameplay	Type: REG_DWORD, Length: 4, Data: 0
 // Disabled (default)
 HKCU\Software\Valve\Steam\AllowDownloadsDuringGameplay	Type: REG_DWORD, Length: 4, Data: 1
+
+// Steam > General : Suppress Auto Run on Windows Startup
+// Enabled
+HKCU\Software\Valve\Steam\SuppressAutoRun	Type: REG_DWORD, Length: 4, Data: 1
+// Disabled (default)
+HKCU\Software\Valve\Steam\SuppressAutoRun	Type: REG_DWORD, Length: 4, Data: 0
+
+// Steam > Interface : Disable H.264 Video Hardware Decoding
+// Enabled
+HKCU\Software\Valve\Steam\H264HWAccel	Type: REG_DWORD, Length: 4, Data: 0
+// Disabled (default)
+HKCU\Software\Valve\Steam\H264HWAccel	Type: REG_DWORD, Length: 4, Data: 1
+
+// Steam > In-Game : Disable Overlay Scale Interface
+// Enabled
+HKCU\Software\Valve\Steam\OverlayScaleInterface	Type: REG_DWORD, Length: 4, Data: 0
+// Disabled (default)
+HKCU\Software\Valve\Steam\OverlayScaleInterface	Type: REG_DWORD, Length: 4, Data: 1
