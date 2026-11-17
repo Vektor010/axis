@@ -308,6 +308,30 @@ namespace WinTweaker.ViewModels
                 {
                     return (this._status == TweakStatus.Enabled) ? "Очищено" : "Требуется запуск";
                 }
+
+                // Специальное отображение реального статуса автозапуска Steam
+                if (string.Equals(this._id, "steam-disable-autorun", StringComparison.OrdinalIgnoreCase))
+                {
+                    bool isDis = SteamConfigHelper.IsSteamAutoRunDisabled();
+                    return isDis ? "1 (Автозапуск выключен)" : "0 (Автозапуск включен)";
+                }
+
+                // Специальное отображение статуса внутриигрового оверлея Steam (реестр или localconfig.vdf)
+                if (string.Equals(this._id, "steam-disable-game-overlay", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (this._engine != null && this._engine.Store != null && this._engine.Store.ValueExists("HKCU", @"Software\Valve\Steam", "EnableGameOverlay"))
+                    {
+                        object val = this._engine.Store.GetValue("HKCU", @"Software\Valve\Steam", "EnableGameOverlay");
+                        if (val != null) return val.ToString();
+                    }
+                    int? vdfVal = SteamConfigHelper.GetGameOverlaySetting();
+                    if (vdfVal.HasValue)
+                    {
+                        return vdfVal.Value == 0 ? "0 (Выключен в Steam)" : "1 (Включен в Steam)";
+                    }
+                    return "Не задано (по умолчанию Steam)";
+                }
+
                 if (this._engine != null && this._engine.Store != null && this._model != null && this._model.registry != null && this._model.registry.Count > 0)
                 {
                     var act = this._model.registry[0];
@@ -315,6 +339,10 @@ namespace WinTweaker.ViewModels
                     {
                         object val = this._engine.Store.GetValue(act.hive, act.path, act.name);
                         return val != null ? val.ToString() : "null";
+                    }
+                    if (string.Equals(this._category, "steam", StringComparison.OrdinalIgnoreCase))
+                    {
+                        return "Не задано (по умолчанию Steam)";
                     }
                     return "Не задано (по умолчанию Windows)";
                 }

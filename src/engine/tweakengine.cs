@@ -384,6 +384,12 @@ namespace WinTweaker.Engine
                 return TweakStatus.Unavailable;
             }
 
+            // Специальная проверка автозапуска Steam в реальном режиме (учитывает Valve SuppressAutoRun и Windows StartupApproved)
+            if (this._isRealMode && string.Equals(tweak.id, "steam-disable-autorun", StringComparison.OrdinalIgnoreCase))
+            {
+                return SteamConfigHelper.IsSteamAutoRunDisabled() ? TweakStatus.Enabled : TweakStatus.Disabled;
+            }
+
             int applyMatches = 0;
             int revertMatches = 0;
             int foreignCount = 0;
@@ -595,6 +601,10 @@ namespace WinTweaker.Engine
                 {
                     SteamConfigHelper.SetGameOverlaySetting(0);
                 }
+                if (this._isRealMode && string.Equals(tweak.id, "steam-disable-autorun", StringComparison.OrdinalIgnoreCase))
+                {
+                    SteamConfigHelper.SetSteamAutoRunDisabled(true);
+                }
 
                 string modeStr = this._isRealMode ? "РЕАЛЬНЫЙ РЕЖИМ" : "ТЕСТОВЫЙ РЕЖИМ (оверлей)";
                 this._journalManager.Log("APPLY", tweak.id, string.Format("Твик '{0}' успешно применён ({1})", tweak.name_ru, modeStr));
@@ -704,6 +714,10 @@ namespace WinTweaker.Engine
                 if (this._isRealMode && string.Equals(tweak.id, "steam-disable-game-overlay", StringComparison.OrdinalIgnoreCase))
                 {
                     SteamConfigHelper.SetGameOverlaySetting(1);
+                }
+                if (this._isRealMode && string.Equals(tweak.id, "steam-disable-autorun", StringComparison.OrdinalIgnoreCase))
+                {
+                    SteamConfigHelper.SetSteamAutoRunDisabled(false);
                 }
 
                 string modeStr = this._isRealMode ? "РЕАЛЬНЫЙ РЕЖИМ" : "ТЕСТОВЫЙ РЕЖИМ (оверлей)";

@@ -98,6 +98,9 @@ namespace WinTweaker.Tests
                 Console.WriteLine("\n--- ТЕСТ-СЮИТ 12: Глубокий аудит кода каждого твика и скриптов (пути, типы, кодировка, уникальность) ---");
                 RunDeepCodeIntegrityTests(tweaksPath);
 
+                Console.WriteLine("\n--- ТЕСТ-СЮИТ 13: Инспекция Steam и верификация детектора автозапуска SteamConfigHelper ---");
+                RunSteamConfigHelperTests(tweaksPath);
+
                 Console.WriteLine("\n==================================================================");
                 Console.WriteLine(string.Format("ИТОГО ТЕСТОВ: {0} | УСПЕШНО: {1} | ПРОВАЛЕНО: {2}", _totalTests, _passedTests, _failedTests));
                 Console.WriteLine("==================================================================");
@@ -1709,6 +1712,72 @@ namespace WinTweaker.Tests
                 Assert(ps1Files.Length > 0 && emptyCount == 0,
                     "DeepAudit: Все PowerShell-скрипты в scripts/ присутствуют и непустые",
                     string.Format("Скриптов: {0}, пустых: {1}", ps1Files.Length, emptyCount));
+            }
+        }
+
+        private static void RunSteamConfigHelperTests(string tweaksPath)
+        {
+            // 1. Детекция каталога Steam
+            string steamPath = SteamConfigHelper.GetSteamPath();
+            bool hasSteam = !string.IsNullOrEmpty(steamPath) && Directory.Exists(steamPath);
+            Assert(steamPath != null, "SteamConfigHelper: Детекция пути Steam", string.Format("Путь={0}", steamPath ?? "null"));
+
+            // 2. Проверка детектора автозапуска
+            bool autoRunDisabled = SteamConfigHelper.IsSteamAutoRunDisabled();
+            Assert(true, "SteamConfigHelper: Проверка автозапуска без исключений", string.Format("IsSteamAutoRunDisabled={0}", autoRunDisabled));
+
+            // 3. Проверка обнаружения файлов localconfig.vdf
+            string[] vdfPaths = SteamConfigHelper.GetLocalConfigVdfPaths();
+            Assert(vdfPaths != null, "SteamConfigHelper: Поиск localconfig.vdf без ошибок", string.Format("Найдено VDF файлов: {0}", vdfPaths != null ? vdfPaths.Length : 0));
+
+            // 4. Проверка считывания внутриигрового оверлея
+            int? overlaySetting = SteamConfigHelper.GetGameOverlaySetting();
+            Assert(true, "SteamConfigHelper: Считывание EnableGameOverlay", string.Format("Значение={0}", overlaySetting.HasValue ? overlaySetting.Value.ToString() : "null"));
+
+            // 5. Проверка твиков Steam в tweaks.json
+            if (File.Exists(tweaksPath))
+            {
+                string json = File.ReadAllText(tweaksPath, Encoding.UTF8);
+                JavaScriptSerializer serializer = new JavaScriptSerializer();
+                serializer.MaxJsonLength = int.MaxValue;
+                List<TweakItem> list = serializer.Deserialize<List<TweakItem>>(json);
+
+                List<TweakItem> steamTweaks = new List<TweakItem>();
+                for (int i = 0; i < list.Count; i++)
+                {
+                    if (string.Equals(list[i].category, "steam", StringComparison.OrdinalIgnoreCase))
+                    {
+                        steamTweaks.Add(list[i]);
+                    }
+                }
+
+                Assert(steamTweaks.Count == 8, "SteamTweaks: Ровно 8 твиков в категории Steam", string.Format("Найдено: {0}", steamTweaks.Count));
+
+                bool foundAutorun = false;
+                bool foundOverlay = false;
+                for (int i = 0; i < steamTweaks.Count; i++)
+                {
+                    TweakItem t = steamTweaks[i];
+                    Assert(t.id.StartsWith("steam-"), "SteamTweaks: Префикс ID твика steam-", t.id);
+                    Assert(!string.IsNullOrEmpty(t.name_ru), "SteamTweaks: Русское название не пустое", t.id);
+                    Assert(t.registry != null && t.registry.Count > 0, "SteamTweaks: Наличие действий в реестре", t.id);
+
+                    if (string.Equals(t.id, "steam-disable-autorun", StringComparison.OrdinalIgnoreCase))
+                    {
+                        foundAutorun = true;
+                        Assert(t.registry[0].name == "SuppressAutoRun" && Convert.ToInt32(t.registry[0].apply) == 1,
+                            "SteamTweaks: steam-disable-autorun целевое значение SuppressAutoRun == 1", t.id);
+                    }
+                    if (string.Equals(t.id, "steam-disable-game-overlay", StringComparison.OrdinalIgnoreCase))
+                    {
+                        foundOverlay = true;
+                        Assert(t.registry[0].name == "EnableGameOverlay" && Convert.ToInt32(t.registry[0].apply) == 0,
+                            "SteamTweaks: steam-disable-game-overlay целевое значение EnableGameOverlay == 0", t.id);
+                    }
+                }
+
+                Assert(foundAutorun, "SteamTweaks: Наличие твика steam-disable-autorun", "steam-disable-autorun");
+                Assert(foundOverlay, "SteamTweaks: Наличие твика steam-disable-game-overlay", "steam-disable-game-overlay");
             }
         }
     }

@@ -1644,7 +1644,7 @@ namespace WinTweaker.ViewModels
                 { "privacy", Tuple.Create("Конфиденциальность", "\uE727", 4) },
                 { "network", Tuple.Create("Сеть и Интернет", "\uE968", 5) },
                 { "nvidia", Tuple.Create("Графика NVIDIA", "\uE7F4", 6) },
-                { "steam", Tuple.Create("Платформа Steam", "\uE7FC", 7) },
+                { "steam", Tuple.Create("Steam", "\uE7FC", 7) },
                 { "peripheral", Tuple.Create("Периферия и ввод", "\uE964", 8) },
                 { "power", Tuple.Create("Электропитание", "\uE7E8", 9) },
                 { "cleanup", Tuple.Create("Очистка системы", "\uE74D", 10) },
