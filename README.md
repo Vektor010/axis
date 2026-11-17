@@ -11,6 +11,10 @@
 > **AXIS** is a high-performance, standalone Windows 10/11 optimization suite designed for competitive esports players, system engineers, and enthusiasts.
 > It targets minimal input latency, deterministic frame pacing, and reduced kernel DPC delays—backed by **isolated snapshots (`state.json`) for safe, single-click rollbacks**.
 
+<p align="center">
+  <img src="docs/images/demo.gif" alt="AXIS 2026 Interactive Walkthrough" width="100%" />
+</p>
+
 ---
 
 ## 🏆 Competitive Advantage
