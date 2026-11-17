@@ -94,7 +94,7 @@ namespace WinTweaker.ViewModels
     public class MainViewModel : ObservableObject
     {
         private readonly List<TweakCardViewModel> _allTweaks;
-        private readonly ObservableCollection<TweakCardViewModel> _filteredTweaks;
+        private readonly BatchObservableCollection<TweakCardViewModel> _filteredTweaks;
         private readonly ICollectionView _filteredTweaksView;
         private readonly ObservableCollection<CategoryItemViewModel> _categories;
         private readonly ObservableCollection<NavigationItemViewModel> _navItems;
@@ -1030,7 +1030,7 @@ namespace WinTweaker.ViewModels
             this._settingsSaveNotification = "";
 
             this._allTweaks = new List<TweakCardViewModel>();
-            this._filteredTweaks = new ObservableCollection<TweakCardViewModel>();
+            this._filteredTweaks = new BatchObservableCollection<TweakCardViewModel>();
             this._categories = new ObservableCollection<CategoryItemViewModel>();
             this._navItems = new ObservableCollection<NavigationItemViewModel>();
             this._journalEntries = new ObservableCollection<JournalEntry>();
@@ -1690,11 +1690,10 @@ namespace WinTweaker.ViewModels
 
         public void ApplyFilter()
         {
-            this._filteredTweaks.Clear();
             string query = (this._searchQuery != null) ? this._searchQuery.Trim().ToLowerInvariant() : "";
             string catId = (this._selectedCategory != null) ? this._selectedCategory.Id : "all";
 
-            List<TweakCardViewModel> matching = new List<TweakCardViewModel>();
+            List<TweakCardViewModel> matching = new List<TweakCardViewModel>(this._allTweaks.Count);
 
             for (int i = 0; i < this._allTweaks.Count; i++)
             {
@@ -1773,16 +1772,9 @@ namespace WinTweaker.ViewModels
                 });
             }
 
-            for (int i = 0; i < matching.Count; i++)
-            {
-                this._filteredTweaks.Add(matching[i]);
-            }
-
-            this.ApplyGrouping();
-            if (this._filteredTweaksView != null)
-            {
-                this._filteredTweaksView.Refresh();
-            }
+            // High performance atomic update: ReplaceAll clears and populates without firing intermediate events,
+            // raising exactly ONE single Reset notification to CollectionViewSource.
+            this._filteredTweaks.ReplaceAll(matching);
 
             this.SearchSummaryText = string.Format("Найдено: {0} твиков", this._filteredTweaks.Count);
         }
@@ -1790,10 +1782,19 @@ namespace WinTweaker.ViewModels
         public void ApplyGrouping()
         {
             if (this._filteredTweaksView == null) return;
-            this._filteredTweaksView.GroupDescriptions.Clear();
             if (this._isGrouped)
             {
-                this._filteredTweaksView.GroupDescriptions.Add(new PropertyGroupDescription("Group"));
+                if (this._filteredTweaksView.GroupDescriptions.Count == 0)
+                {
+                    this._filteredTweaksView.GroupDescriptions.Add(new PropertyGroupDescription("Group"));
+                }
+            }
+            else
+            {
+                if (this._filteredTweaksView.GroupDescriptions.Count > 0)
+                {
+                    this._filteredTweaksView.GroupDescriptions.Clear();
+                }
             }
         }
 
@@ -2019,7 +2020,7 @@ namespace WinTweaker.ViewModels
             if (this._settingsManager != null && this._settingsManager.Settings != null)
             {
                 this._settingsManager.Settings.IsDarkTheme = this._isDarkTheme;
-                this._settingsManager.Save();
+                Task.Run(() => this._settingsManager.Save());
             }
 
             if (this.ThemeChanged != null)

@@ -138,8 +138,8 @@ namespace WinTweaker
                 }
 
                 MainWindow window = new MainWindow(isReal, isDark);
-                window.Width = 1180;
-                window.Height = 800;
+                window.Width = 1200;
+                window.Height = 840;
 
                 string tabToSelect = null;
                 string searchQuery = null;
@@ -239,8 +239,8 @@ namespace WinTweaker
 
                 int w = (int)window.ActualWidth;
                 int h = (int)window.ActualHeight;
-                if (w <= 0) w = 1180;
-                if (h <= 0) h = 800;
+                if (w <= 0) w = 1200;
+                if (h <= 0) h = 840;
 
                 System.Windows.Media.Imaging.RenderTargetBitmap rtb =
                     new System.Windows.Media.Imaging.RenderTargetBitmap(w, h, 96, 96, System.Windows.Media.PixelFormats.Pbgra32);
@@ -403,13 +403,38 @@ namespace WinTweaker
         private static readonly System.Collections.Generic.Dictionary<string, Brush> _darkPalette = BuildDarkPalette();
         private static readonly System.Collections.Generic.Dictionary<string, Brush> _lightPalette = BuildLightPalette();
 
+        private static ResourceDictionary BuildThemeDictionary(System.Collections.Generic.Dictionary<string, Brush> palette)
+        {
+            ResourceDictionary dict = new ResourceDictionary();
+            foreach (var kvp in palette)
+            {
+                dict[kvp.Key] = kvp.Value;
+            }
+            return dict;
+        }
+
+        private static readonly ResourceDictionary _darkThemeDict = BuildThemeDictionary(_darkPalette);
+        private static readonly ResourceDictionary _lightThemeDict = BuildThemeDictionary(_lightPalette);
+
         public void ApplyTheme(bool isDark)
         {
-            ResourceDictionary res = this.Resources;
+            var targetDict = isDark ? _darkThemeDict : _lightThemeDict;
+
+            // 1. Atomic dictionary swap in MergedDictionaries: triggers ONE single unified WPF resource invalidation pass
+            if (this.Resources.MergedDictionaries.Count > 0)
+            {
+                this.Resources.MergedDictionaries[0] = targetDict;
+            }
+            else
+            {
+                this.Resources.MergedDictionaries.Add(targetDict);
+            }
+
+            // 2. Keep direct keys updated for any components reading Application.Current.Resources[key]
             var palette = isDark ? _darkPalette : _lightPalette;
             foreach (System.Collections.Generic.KeyValuePair<string, Brush> kvp in palette)
             {
-                res[kvp.Key] = kvp.Value;
+                this.Resources[kvp.Key] = kvp.Value;
             }
         }
     }

@@ -5,10 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="AXIS — Оптимизатор Windows 10/11 (2026)"
-        Height="800"
-        Width="1180"
-        MinWidth="980"
-        MinHeight="620"
+        Height="840"
+        Width="1200"
+        MinWidth="1000"
+        MinHeight="660"
         WindowStartupLocation="CenterScreen"
         Background="{DynamicResource WindowBg}"
         FontFamily="{StaticResource FontUI}"
@@ -1009,14 +1009,22 @@
 
                     <!-- Grouped & Virtualized Tweak Cards List + Empty State -->
                     <Grid Grid.Row="1">
-                        <ScrollViewer VerticalScrollBarVisibility="Auto"
-                                      HorizontalScrollBarVisibility="Disabled"
-                                      CanContentScroll="True">
                         <ItemsControl ItemsSource="{Binding FilteredTweaksView}"
                                       VirtualizingPanel.IsVirtualizing="True"
                                       VirtualizingPanel.IsVirtualizingWhenGrouping="True"
                                       VirtualizingPanel.VirtualizationMode="Recycling"
-                                      ScrollViewer.CanContentScroll="True">
+                                      ScrollViewer.CanContentScroll="True"
+                                      ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                      ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                            <ItemsControl.Template>
+                                <ControlTemplate TargetType="ItemsControl">
+                                    <ScrollViewer CanContentScroll="True"
+                                                  Focusable="False"
+                                                  Padding="{TemplateBinding Padding}">
+                                        <ItemsPresenter />
+                                    </ScrollViewer>
+                                </ControlTemplate>
+                            </ItemsControl.Template>
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <VirtualizingStackPanel />
@@ -1430,7 +1438,6 @@
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
-                    </ScrollViewer>
 
                     <!-- Empty Search Results State Card -->
                     <Border Visibility="{Binding HasNoSearchResults, Converter={StaticResource BoolToVis}}"
