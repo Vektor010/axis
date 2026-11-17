@@ -1639,7 +1639,7 @@
                                             <TextBlock Text="v2.0.0 • 2026" FontFamily="{StaticResource FontMono}" FontSize="10.5" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}" />
                                         </Border>
                                         <Border CornerRadius="6" Background="{DynamicResource SuccessFill}" BorderBrush="{DynamicResource SuccessBorder}" BorderThickness="1" Padding="8,2" Margin="6,0,0,0" VerticalAlignment="Center">
-                                            <TextBlock Text="7667 тестов PASS" FontFamily="{StaticResource FontMono}" FontSize="10.5" FontWeight="SemiBold" Foreground="{DynamicResource SuccessBrush}" />
+                                            <TextBlock Text="7760 тестов PASS" FontFamily="{StaticResource FontMono}" FontSize="10.5" FontWeight="SemiBold" Foreground="{DynamicResource SuccessBrush}" />
                                         </Border>
                                     </StackPanel>
                                     <TextBlock Text="Современный нативный оптимизатор ядра, сетевого стека, GPU и приватности Windows 10/11 с мгновенным откатом по снимкам состояния."
@@ -1739,7 +1739,7 @@
                                         <StackPanel>
                                             <Grid Margin="0,3">
                                                 <TextBlock Text="Всего оптимизаций" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" />
-                                                <TextBlock Text="850 твиков • 12 категорий" FontFamily="{StaticResource FontMono}" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" HorizontalAlignment="Right" />
+                                                <TextBlock Text="856 твиков • 12 категорий" FontFamily="{StaticResource FontMono}" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" HorizontalAlignment="Right" />
                                             </Grid>
                                             <Grid Margin="0,3">
                                                 <TextBlock Text="Первоисточник" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" />
@@ -1751,7 +1751,7 @@
                                             </Grid>
                                             <Grid Margin="0,3">
                                                 <TextBlock Text="Автотесты движка" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" />
-                                                <TextBlock Text="13 сьюитов • 7667 PASS" FontFamily="{StaticResource FontMono}" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource SuccessBrush}" HorizontalAlignment="Right" />
+                                                <TextBlock Text="13 сьюитов • 7760 PASS" FontFamily="{StaticResource FontMono}" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource SuccessBrush}" HorizontalAlignment="Right" />
                                             </Grid>
                                             <Grid Margin="0,3">
                                                 <TextBlock Text="Целостность базы" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" />
@@ -1798,7 +1798,7 @@
                                     </StackPanel>
 
                                     <Grid Margin="0,3">
-                                        <TextBlock Text="Мгновенный поиск по 850 твикам" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
+                                        <TextBlock Text="Мгновенный поиск по 856 твикам" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
                                         <Border HorizontalAlignment="Right" CornerRadius="4" Background="{DynamicResource BadgeBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" Padding="6,2">
                                             <TextBlock Text="Ctrl + K  /  Ctrl + F" FontFamily="{StaticResource FontMono}" FontSize="10.5" Foreground="{DynamicResource TextPrimary}" />
                                         </Border>

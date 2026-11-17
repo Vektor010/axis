@@ -2016,7 +2016,7 @@ namespace WinTweaker.ViewModels
             this.SearchQuery = "";
         }
 
-        private void OnApplyAllRecommended(object obj)
+        private async void OnApplyAllRecommended(object obj)
         {
             if (!this.CanApplyRecommended)
             {
@@ -2024,48 +2024,183 @@ namespace WinTweaker.ViewModels
                 return;
             }
 
+            // Находим все рекомендуемые твики с низким риском, которые ещё не включены
+            List<TweakCardViewModel> targets = new List<TweakCardViewModel>();
+            for (int i = 0; i < this._allTweaks.Count; i++)
+            {
+                TweakCardViewModel tw = this._allTweaks[i];
+                if (tw.IsRecommended && tw.Risk == TweakRisk.Low && tw.Status != TweakStatus.Enabled)
+                {
+                    targets.Add(tw);
+                }
+            }
+
+            // Если по пресету 'recommended' все уже применены или список пуст, берем безопасные с низким риском
+            if (targets.Count == 0)
+            {
+                for (int i = 0; i < this._allTweaks.Count; i++)
+                {
+                    TweakCardViewModel tw = this._allTweaks[i];
+                    if (tw.Risk == TweakRisk.Low && tw.Status != TweakStatus.Enabled)
+                    {
+                        targets.Add(tw);
+                    }
+                }
+            }
+
+            if (targets.Count == 0)
+            {
+                MessageBox.Show("Все рекомендуемые безопасные твики уже применены!", "Применение рекомендуемых", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            string confirmMsg = string.Format(
+                "Применить безопасные рекомендуемые твики ({0} шт.)?\n\n" +
+                "• Каждый параметр будет сохранён в снимок для 100% безопасного отката.\n" +
+                "• Высокорискованные и системно-опасные твики исключены.\n" +
+                "• Операция выполняется безопасно в фоновом потоке без зависания интерфейса.",
+                targets.Count);
+
             MessageBoxResult confirm = MessageBox.Show(
-                "Применить все безопасные рекомендуемые твики?\n(Твики с низким риском будут активированы)",
+                confirmMsg,
                 "Подтверждение применения",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Question);
 
             if (confirm != MessageBoxResult.Yes) return;
 
+            this.StatusNotification = string.Format("Применение {0} рекомендуемых твиков...", targets.Count);
+
             int appliedCount = 0;
+            int errorCount = 0;
+
+            await Task.Run(() =>
+            {
+                for (int i = 0; i < targets.Count; i++)
+                {
+                    TweakCardViewModel tw = targets[i];
+                    try
+                    {
+                        bool ok = this._engine.Apply(tw.Model);
+                        if (ok)
+                        {
+                            appliedCount++;
+                        }
+                        else
+                        {
+                            errorCount++;
+                        }
+                    }
+                    catch
+                    {
+                        errorCount++;
+                    }
+                }
+            });
+
+            // На UI потоке обновляем статус карточек и общую сводку один раз
+            for (int i = 0; i < targets.Count; i++)
+            {
+                targets[i].RefreshStatus();
+            }
+
+            this.OnTweakStateChanged();
+
+            string resultMsg = string.Format("Успешно применено: {0} твиков.", appliedCount);
+            if (errorCount > 0)
+            {
+                resultMsg += string.Format(" (ошибок: {0})", errorCount);
+            }
+            this.StatusNotification = resultMsg;
+
+            MessageBox.Show(
+                string.Format("Применение завершено!\n\nУспешно активировано твиков: {0}\nИсходные значения сохранены для отката.", appliedCount),
+                "Применение рекомендуемых",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+        }
+
+        private async void OnRevertAll(object obj)
+        {
+            List<TweakCardViewModel> targets = new List<TweakCardViewModel>();
             for (int i = 0; i < this._allTweaks.Count; i++)
             {
                 TweakCardViewModel tw = this._allTweaks[i];
-                if (tw.Risk == TweakRisk.Low && tw.Status != TweakStatus.Enabled)
+                if (tw.Status == TweakStatus.Enabled && tw.CanRevert)
                 {
-                    tw.IsChecked = true;
-                    appliedCount++;
+                    targets.Add(tw);
                 }
             }
-            this.StatusNotification = string.Format("Применено рекомендуемых твиков: {0}", appliedCount);
-        }
 
-        private void OnRevertAll(object obj)
-        {
+            if (targets.Count == 0)
+            {
+                MessageBox.Show("Нет активных твиков со снимками для отката.", "Откат твиков", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            string confirmMsg = string.Format(
+                "Откатить все активные твики к исходному состоянию ({0} шт.)?\n\n" +
+                "• Все значения реестра будут возвращены к системным до оптимизации.\n" +
+                "• Операция выполняется безопасно в фоновом потоке без зависания интерфейса.",
+                targets.Count);
+
             MessageBoxResult confirm = MessageBox.Show(
-                "Откатить все активные твики к исходному состоянию?",
+                confirmMsg,
                 "Подтверждение отката",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Warning);
 
             if (confirm != MessageBoxResult.Yes) return;
 
+            this.StatusNotification = string.Format("Откат {0} активных твиков...", targets.Count);
+
             int revertedCount = 0;
-            for (int i = 0; i < this._allTweaks.Count; i++)
+            int errorCount = 0;
+
+            await Task.Run(() =>
             {
-                TweakCardViewModel tw = this._allTweaks[i];
-                if (tw.Status == TweakStatus.Enabled)
+                for (int i = 0; i < targets.Count; i++)
                 {
-                    tw.IsChecked = false;
-                    revertedCount++;
+                    TweakCardViewModel tw = targets[i];
+                    try
+                    {
+                        bool ok = this._engine.Revert(tw.Model);
+                        if (ok)
+                        {
+                            revertedCount++;
+                        }
+                        else
+                        {
+                            errorCount++;
+                        }
+                    }
+                    catch
+                    {
+                        errorCount++;
+                    }
                 }
+            });
+
+            // На UI потоке обновляем статус карточек и общую сводку один раз
+            for (int i = 0; i < targets.Count; i++)
+            {
+                targets[i].RefreshStatus();
             }
-            this.StatusNotification = string.Format("Откачено твиков: {0}", revertedCount);
+
+            this.OnTweakStateChanged();
+
+            string resultMsg = string.Format("Успешно откачено: {0} твиков.", revertedCount);
+            if (errorCount > 0)
+            {
+                resultMsg += string.Format(" (ошибок: {0})", errorCount);
+            }
+            this.StatusNotification = resultMsg;
+
+            MessageBox.Show(
+                string.Format("Откат завершен!\n\nУспешно возвращено к исходному состоянию: {0} твиков.", revertedCount),
+                "Откат твиков",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
         }
 
         private void OnRefreshAll(object obj)
