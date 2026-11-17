@@ -125,9 +125,21 @@ namespace WinTweaker
         {
             try
             {
-                MainWindow window = new MainWindow(true, isDark);
-                window.Width = 1100;
-                window.Height = 740;
+                bool isReal = true;
+                if (args != null)
+                {
+                    for (int i = 0; i < args.Length; i++)
+                    {
+                        if (args[i] == "--mock" || args[i] == "--test" || args[i] == "-test")
+                        {
+                            isReal = false;
+                        }
+                    }
+                }
+
+                MainWindow window = new MainWindow(isReal, isDark);
+                window.Width = 1180;
+                window.Height = 800;
 
                 string tabToSelect = null;
                 string searchQuery = null;
@@ -227,8 +239,8 @@ namespace WinTweaker
 
                 int w = (int)window.ActualWidth;
                 int h = (int)window.ActualHeight;
-                if (w <= 0) w = 1100;
-                if (h <= 0) h = 740;
+                if (w <= 0) w = 1180;
+                if (h <= 0) h = 800;
 
                 System.Windows.Media.Imaging.RenderTargetBitmap rtb =
                     new System.Windows.Media.Imaging.RenderTargetBitmap(w, h, 96, 96, System.Windows.Media.PixelFormats.Pbgra32);

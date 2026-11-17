@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Security.Principal;
@@ -494,6 +495,60 @@ namespace WinTweaker.ViewModels
                     : Brushes.Gray;
             }
         }
+
+        private string _restorePointNotification;
+        public string RestorePointNotification
+        {
+            get { return this._restorePointNotification; }
+            set { this._restorePointNotification = value; this.OnPropertyChanged("RestorePointNotification"); }
+        }
+
+        private bool _isCreatingRestorePoint;
+        public bool IsCreatingRestorePoint
+        {
+            get { return this._isCreatingRestorePoint; }
+            set { this._isCreatingRestorePoint = value; this.OnPropertyChanged("IsCreatingRestorePoint"); }
+        }
+
+        public string SnapshotsCountText
+        {
+            get
+            {
+                int count = this._stateManager != null ? this._stateManager.SnapshotCount : 0;
+                return string.Format("{0} снимков параметров", count);
+            }
+        }
+
+        public bool IsPolling1Sec
+        {
+            get { return this._settingsManager != null && this._settingsManager.Settings.PollingIntervalSeconds == 1; }
+            set { if (value) this.SetPollingInterval(1); }
+        }
+
+        public bool IsPolling2Sec
+        {
+            get { return this._settingsManager == null || this._settingsManager.Settings.PollingIntervalSeconds == 2 || this._settingsManager.Settings.PollingIntervalSeconds == 0; }
+            set { if (value) this.SetPollingInterval(2); }
+        }
+
+        public bool IsPolling5Sec
+        {
+            get { return this._settingsManager != null && this._settingsManager.Settings.PollingIntervalSeconds == 5; }
+            set { if (value) this.SetPollingInterval(5); }
+        }
+
+        public bool IsPollingPaused
+        {
+            get { return this._settingsManager != null && this._settingsManager.Settings.PollingIntervalSeconds == -1; }
+            set { if (value) this.SetPollingInterval(-1); }
+        }
+
+        public ICommand CreateRestorePointCommand { get; private set; }
+        public ICommand OpenSystemProtectionCommand { get; private set; }
+        public ICommand EnableSystemRestoreCommand { get; private set; }
+        public ICommand ExportSnapshotsCommand { get; private set; }
+        public ICommand CopyDiagnosticReportCommand { get; private set; }
+        public ICommand SetPingPresetCommand { get; private set; }
 
         public ICommand ToggleTweaksCategoriesCommand { get; private set; }
 
@@ -1015,6 +1070,12 @@ namespace WinTweaker.ViewModels
             this.ClearSearchCommand = new RelayCommand(this.OnClearSearch);
             this.CopySpecsCommand = new RelayCommand(this.OnCopySpecs);
             this.OpenUrlCommand = new RelayCommand(this.OnOpenUrl);
+            this.CreateRestorePointCommand = new RelayCommand(this.OnCreateRestorePoint);
+            this.OpenSystemProtectionCommand = new RelayCommand(this.OnOpenSystemProtection);
+            this.EnableSystemRestoreCommand = new RelayCommand(this.OnEnableSystemRestore);
+            this.ExportSnapshotsCommand = new RelayCommand(this.OnExportSnapshots);
+            this.CopyDiagnosticReportCommand = new RelayCommand(this.OnCopyDiagnosticReport);
+            this.SetPingPresetCommand = new RelayCommand(this.OnSetPingPreset);
 
             this.InitializeServices();
             this.InitializeNavItems();
@@ -1024,10 +1085,21 @@ namespace WinTweaker.ViewModels
             this.UpdateRecentJournal();
             this.RefreshHistory();
 
-            // Setup live update timer
+            // Setup live update timer with configurable polling interval
             this._liveTimer = new DispatcherTimer();
-            this._liveTimer.Interval = TimeSpan.FromSeconds(2);
-            this._liveTimer.Tick += this.OnLiveTimerTick;
+            int pollSec = (this._settingsManager != null && this._settingsManager.Settings != null) ? this._settingsManager.Settings.PollingIntervalSeconds : 2;
+            if (pollSec == 0) pollSec = 2;
+            if (pollSec > 0)
+            {
+                this._liveTimer.Interval = TimeSpan.FromSeconds(pollSec);
+                this._liveTimer.Tick += this.OnLiveTimerTick;
+                this._liveTimer.Start();
+            }
+            else
+            {
+                this._liveTimer.Interval = TimeSpan.FromSeconds(2);
+                this._liveTimer.Tick += this.OnLiveTimerTick;
+            }
 
             // Start on Overview
             this.SelectedNavItem = this._navItems[0];
@@ -2232,6 +2304,202 @@ namespace WinTweaker.ViewModels
                 this.UpdateRecentJournal();
                 this.StatusNotification = "Журнал очищен.";
             }
+        }
+
+        private void SetPollingInterval(int sec)
+        {
+            if (this._settingsManager != null && this._settingsManager.Settings != null)
+            {
+                this._settingsManager.Settings.PollingIntervalSeconds = sec;
+                this._settingsManager.Save();
+            }
+            if (this._liveTimer != null)
+            {
+                if (sec <= 0)
+                {
+                    this._liveTimer.Stop();
+                }
+                else
+                {
+                    this._liveTimer.Interval = TimeSpan.FromSeconds(sec);
+                    if (!this._liveTimer.IsEnabled) this._liveTimer.Start();
+                }
+            }
+            this.OnPropertyChanged("IsPolling1Sec");
+            this.OnPropertyChanged("IsPolling2Sec");
+            this.OnPropertyChanged("IsPolling5Sec");
+            this.OnPropertyChanged("IsPollingPaused");
+        }
+
+        private async void OnCreateRestorePoint(object obj)
+        {
+            if (this._isCreatingRestorePoint) return;
+            this.IsCreatingRestorePoint = true;
+            this.RestorePointNotification = "Создание контрольной точки Windows...";
+
+            string resultMsg = "";
+            bool ok = false;
+
+            await Task.Run(() =>
+            {
+                try
+                {
+                    string args = "-NoProfile -NonInteractive -ExecutionPolicy Bypass -Command \"Checkpoint-Computer -Description 'AXIS Manual Checkpoint' -RestorePointType 'MODIFY_SETTINGS'\"";
+                    ProcessStartInfo psi = new ProcessStartInfo("powershell.exe", args)
+                    {
+                        CreateNoWindow = true,
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true
+                    };
+                    using (Process proc = Process.Start(psi))
+                    {
+                        proc.WaitForExit(35000);
+                        if (proc.ExitCode == 0)
+                        {
+                            ok = true;
+                            resultMsg = "Точка восстановления успешно создана!";
+                        }
+                        else
+                        {
+                            string err = proc.StandardError.ReadToEnd();
+                            resultMsg = "Ошибка создания: " + (string.IsNullOrEmpty(err) ? ("код " + proc.ExitCode) : err.Trim());
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    resultMsg = "Ошибка: " + ex.Message;
+                }
+            });
+
+            this.IsCreatingRestorePoint = false;
+            this.RestorePointNotification = resultMsg;
+            this.UpdateRestorePointStatus();
+            if (this._journalManager != null)
+            {
+                this._journalManager.Log(ok ? "INFO" : "WARN", "", resultMsg);
+            }
+        }
+
+        private void OnOpenSystemProtection(object obj)
+        {
+            try
+            {
+                Process.Start("SystemPropertiesProtection.exe");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Не удалось открыть окно параметров: " + ex.Message, "Защита системы", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+        private async void OnEnableSystemRestore(object obj)
+        {
+            this.RestorePointNotification = "Активация Защиты системы (C:)...";
+            await Task.Run(() =>
+            {
+                try
+                {
+                    string args = "-NoProfile -NonInteractive -ExecutionPolicy Bypass -Command \"Enable-ComputerRestore -Drive 'C:\\'\"";
+                    ProcessStartInfo psi = new ProcessStartInfo("powershell.exe", args)
+                    {
+                        CreateNoWindow = true,
+                        UseShellExecute = false
+                    };
+                    using (Process proc = Process.Start(psi))
+                    {
+                        proc.WaitForExit(15000);
+                    }
+                }
+                catch { }
+            });
+            this.UpdateRestorePointStatus();
+            this.RestorePointNotification = "Защита системы активирована для диска C:.";
+        }
+
+        private void OnExportSnapshots(object obj)
+        {
+            try
+            {
+                if (this._stateManager != null && File.Exists(this._stateManager.StateFilePath))
+                {
+                    string desktop = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+                    string target = Path.Combine(desktop, string.Format("axis_backup_{0:yyyyMMdd_HHmmss}.json", DateTime.Now));
+                    File.Copy(this._stateManager.StateFilePath, target, true);
+                    MessageBox.Show(
+                        "Резервная копия снимка состояния успешно создана на Рабочем столе:\n" + target,
+                        "Экспорт снимка AXIS",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information);
+                }
+                else
+                {
+                    MessageBox.Show("Снимки пока не созданы (нет активных твиков с историей).", "Экспорт снимка", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка при экспорте: " + ex.Message, "Экспорт снимка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void OnCopyDiagnosticReport(object obj)
+        {
+            try
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine("==================================================================");
+                sb.AppendLine("        AXIS 2.0 (2026) — ДИАГНОСТИЧЕСКИЙ ОТЧЕТ СИСТЕМЫ           ");
+                sb.AppendLine("==================================================================");
+                sb.AppendLine(string.Format("Время отчета: {0:yyyy-MM-dd HH:mm:ss}", DateTime.Now));
+                sb.AppendLine(string.Format("ОС:           {0}", this._osSpec));
+                sb.AppendLine(string.Format("Процессор:    {0}", this._cpuSpec));
+                sb.AppendLine(string.Format("Плата:        {0}", this._motherboardSpec));
+                sb.AppendLine(string.Format("Видеокарта:   {0}", this._gpuSpec));
+                sb.AppendLine(string.Format("Память:       {0}", this._ramSpec));
+                sb.AppendLine(string.Format("Диски:        {0}", this._disksSpec));
+                sb.AppendLine("------------------------------------------------------------------");
+                sb.AppendLine("ПОДСИСТЕМЫ ЯДРА И ЗАДЕРЖКИ:");
+                sb.AppendLine(string.Format("• GPU HAGS:                   {0}", this._hagsStatusText));
+                sb.AppendLine(string.Format("• Hardware Flip Queue:        {0}", this._flipQueueStatusText));
+                sb.AppendLine(string.Format("• MMCSS Responsiveness:       {0}", this._mmcssRespText));
+                sb.AppendLine(string.Format("• MMCSS Throttling:           {0}", this._mmcssThrottlingText));
+                sb.AppendLine(string.Format("• Game Mode (WNF):            {0}", this.GameModeShortStatus));
+                sb.AppendLine("------------------------------------------------------------------");
+                sb.AppendLine("СТАТИСТИКА ТВИТОВ AXIS:");
+                int activeCount = 0;
+                for (int i = 0; i < this._allTweaks.Count; i++)
+                {
+                    if (this._allTweaks[i].Status == TweakStatus.Enabled) activeCount++;
+                }
+                sb.AppendLine(string.Format("• Всего в базе:               {0} твиков (12 категорий)", this._allTweaks.Count));
+                sb.AppendLine(string.Format("• Активно оптимизаций:        {0} ({1:F0}%)", activeCount, this._allTweaks.Count > 0 ? (activeCount * 100.0 / this._allTweaks.Count) : 0));
+                sb.AppendLine(string.Format("• Снимков отката в базе:      {0}", this._stateManager != null ? this._stateManager.SnapshotCount : 0));
+                sb.AppendLine(string.Format("• Защита системы Windows:     {0} (Последняя: {1})", this._systemRestoreStatus, this._lastRestorePointDisplay));
+                sb.AppendLine("==================================================================");
+
+                Clipboard.SetText(sb.ToString());
+                this.SettingsSaveNotification = "Диагностический отчет скопирован в буфер обмена!";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка копирования отчета: " + ex.Message, "Отчет", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+        private void OnSetPingPreset(object obj)
+        {
+            string host = obj as string;
+            if (host == "gateway")
+            {
+                this.PingCustomHost = "";
+            }
+            else if (!string.IsNullOrEmpty(host))
+            {
+                this.PingCustomHost = host;
+            }
+            this.OnSaveSettings(null);
         }
     }
 }

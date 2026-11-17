@@ -300,6 +300,109 @@ namespace WinTweaker.ViewModels
             }
         }
 
+        public string LiveSystemValueText
+        {
+            get
+            {
+                if (this.IsActionTweak)
+                {
+                    return (this._status == TweakStatus.Enabled) ? "Очищено" : "Требуется запуск";
+                }
+                if (this._engine != null && this._engine.Store != null && this._model != null && this._model.registry != null && this._model.registry.Count > 0)
+                {
+                    var act = this._model.registry[0];
+                    if (this._engine.Store.ValueExists(act.hive, act.path, act.name))
+                    {
+                        object val = this._engine.Store.GetValue(act.hive, act.path, act.name);
+                        return val != null ? val.ToString() : "null";
+                    }
+                    return "Не задано (по умолчанию Windows)";
+                }
+                return (this._status == TweakStatus.Enabled) ? "1 (Активно)" : "0 (Выключено)";
+            }
+        }
+
+        public string RecommendedValueText
+        {
+            get
+            {
+                if (this.IsActionTweak) return "Разовое действие";
+                if (this._model != null && this._model.registry != null && this._model.registry.Count > 0)
+                {
+                    var act = this._model.registry[0];
+                    return act.apply != null ? act.apply.ToString() : "1";
+                }
+                return "1";
+            }
+        }
+
+        public string OptimizationStatusText
+        {
+            get
+            {
+                if (this.IsActionTweak)
+                {
+                    return (this._status == TweakStatus.Enabled) ? "Очищено" : "Готово к запуску";
+                }
+                switch (this._status)
+                {
+                    case TweakStatus.Enabled: return "Оптимально";
+                    case TweakStatus.Disabled: return "Требуется оптимизация";
+                    case TweakStatus.PartiallyEnabled: return "Частично";
+                    case TweakStatus.Unavailable: return "Не поддерживается";
+                    case TweakStatus.Executing: return "Применение...";
+                    default: return "Неизвестно";
+                }
+            }
+        }
+
+        public string OptimizationStatusColor
+        {
+            get
+            {
+                if (this._status == TweakStatus.Enabled) return "#22C55E";
+                if (this._status == TweakStatus.PartiallyEnabled) return "#F59E0B";
+                if (this._status == TweakStatus.Unavailable) return "#64748B";
+                return "#8B5CF6";
+            }
+        }
+
+        public string RebootRequirementText
+        {
+            get
+            {
+                if (this._requiresReboot) return "Требуется перезагрузка ПК";
+                if (this.Category == "visibility" || this.Category == "appearance") return "Мгновенно (или перезапуск Проводника)";
+                return "Не требуется (мгновенно)";
+            }
+        }
+
+        public string CompatibilityText
+        {
+            get
+            {
+                if (this._model != null && this._model.min_build.HasValue)
+                {
+                    if (this._model.min_build.Value >= 22000)
+                    {
+                        return string.Format("Windows 11 (сборка {0}+)", this._model.min_build.Value);
+                    }
+                    return string.Format("Windows 10/11 (сборка {0}+)", this._model.min_build.Value);
+                }
+                return "Windows 10 / Windows 11 (любая сборка)";
+            }
+        }
+
+        public string RollbackCapabilityText
+        {
+            get
+            {
+                if (this.IsActionTweak) return "Разовая операция (очистка временных файлов)";
+                if (this.HasSnapshotRecord) return "Снимок сохранен • Мгновенный откат доступен";
+                return "Поддерживается откат к значениям по умолчанию";
+            }
+        }
+
         public TweakRisk Risk
         {
             get { return this._risk; }
@@ -433,6 +536,7 @@ namespace WinTweaker.ViewModels
         public ICommand ToggleCommand { get; private set; }
         public ICommand ToggleExpandCommand { get; private set; }
         public ICommand RevertTweakCommand { get; private set; }
+        public ICommand ApplyTweakCommand { get; private set; }
         public ICommand ExecuteActionCommand { get; private set; }
 
         public TweakCardViewModel(TweakItem model, TweakEngine engine, Action onStateChanged)
@@ -472,6 +576,7 @@ namespace WinTweaker.ViewModels
             this.ToggleCommand = new RelayCommand(this.OnToggleClicked);
             this.ToggleExpandCommand = new RelayCommand(this.OnToggleExpand);
             this.RevertTweakCommand = new RelayCommand(this.OnRevertTweak);
+            this.ApplyTweakCommand = new RelayCommand(this.OnApplyTweak);
             this.ExecuteActionCommand = new RelayCommand(this.OnExecuteAction);
             this.RefreshFromEngine();
         }
@@ -484,6 +589,19 @@ namespace WinTweaker.ViewModels
         private void OnToggleExpand(object obj)
         {
             this.ToggleExpand();
+        }
+
+        private void OnApplyTweak(object obj)
+        {
+            if (this._isBusy) return;
+            if (!this._isChecked)
+            {
+                this.IsChecked = true;
+            }
+            else
+            {
+                this.ExecuteToggleAsync(true);
+            }
         }
 
         private void OnRevertTweak(object obj)
@@ -542,6 +660,13 @@ namespace WinTweaker.ViewModels
             this.OnPropertyChanged("CanRevert");
             this.OnPropertyChanged("RevertToolTip");
             this.OnPropertyChanged("HasSnapshotRecord");
+            this.OnPropertyChanged("LiveSystemValueText");
+            this.OnPropertyChanged("RecommendedValueText");
+            this.OnPropertyChanged("OptimizationStatusText");
+            this.OnPropertyChanged("OptimizationStatusColor");
+            this.OnPropertyChanged("RebootRequirementText");
+            this.OnPropertyChanged("CompatibilityText");
+            this.OnPropertyChanged("RollbackCapabilityText");
         }
 
         public void RefreshStatus()
@@ -557,6 +682,13 @@ namespace WinTweaker.ViewModels
             this.OnPropertyChanged("CanRevert");
             this.OnPropertyChanged("RevertToolTip");
             this.OnPropertyChanged("HasSnapshotRecord");
+            this.OnPropertyChanged("LiveSystemValueText");
+            this.OnPropertyChanged("RecommendedValueText");
+            this.OnPropertyChanged("OptimizationStatusText");
+            this.OnPropertyChanged("OptimizationStatusColor");
+            this.OnPropertyChanged("RebootRequirementText");
+            this.OnPropertyChanged("CompatibilityText");
+            this.OnPropertyChanged("RollbackCapabilityText");
         }
 
         private void OnToggleClicked(object obj)

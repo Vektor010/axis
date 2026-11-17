@@ -1218,16 +1218,16 @@
                                                 </StackPanel>
                                             </Grid>
 
-                                            <!-- Expanded Details Area -->
+                                            <!-- Expanded Details Area (Professional Tweak Inspector) -->
                                             <Border Margin="0,6,0,0"
-                                                    Padding="10,8"
+                                                    Padding="12,10"
                                                     Background="{DynamicResource SearchBg}"
                                                     BorderBrush="{DynamicResource CardBorder}"
                                                     BorderThickness="1"
-                                                    CornerRadius="6"
+                                                    CornerRadius="8"
                                                     Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVis}}">
                                                 <StackPanel>
-                                                    <!-- Full Needs Review Banner in Expanded Part -->
+                                                    <!-- Needs Review Banner -->
                                                     <Border CornerRadius="5"
                                                             Background="{DynamicResource WarningFill}"
                                                             BorderBrush="{DynamicResource WarningBorder}"
@@ -1242,7 +1242,7 @@
                                                                        Foreground="{DynamicResource WarningBrush}"
                                                                        VerticalAlignment="Center"
                                                                        Margin="0,0,6,0" />
-                                                            <TextBlock Text="Требует проверки: значение параметра в реестре отличается от ожидаемого"
+                                                            <TextBlock Text="Внимание: значение параметра в реестре отличается от стандартного шаблона"
                                                                        FontSize="11"
                                                                        FontWeight="SemiBold"
                                                                        Foreground="{DynamicResource WarningBrush}"
@@ -1250,67 +1250,179 @@
                                                         </StackPanel>
                                                     </Border>
 
-                                                    <!-- Full Description / Quote -->
+                                                    <!-- Full Description / Purpose -->
                                                     <TextBlock Text="{Binding ExpandedDescription}"
                                                                FontSize="11.5"
                                                                Foreground="{DynamicResource TextSecondary}"
                                                                TextWrapping="Wrap"
-                                                               Margin="0,0,0,6" />
+                                                               Margin="0,0,0,10" />
 
-                                                    <!-- Technical Details -->
-                                                    <Grid Margin="0,2">
-                                                        <TextBlock Text="Путь в реестре:" FontSize="11" Foreground="{DynamicResource TextSecondary}" />
-                                                        <TextBlock Text="{Binding RegistryPath}" FontSize="10.5" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" HorizontalAlignment="Right" />
-                                                    </Grid>
-                                                    <Grid Margin="0,2">
-                                                        <TextBlock Text="Имя параметра:" FontSize="11" Foreground="{DynamicResource TextSecondary}" />
-                                                        <TextBlock Text="{Binding RegistryName}" FontSize="10.5" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" HorizontalAlignment="Right" />
-                                                    </Grid>
-                                                    <Grid Margin="0,2">
-                                                        <TextBlock Text="Применение:" FontSize="11" Foreground="{DynamicResource TextSecondary}" />
-                                                        <TextBlock Text="{Binding RegistryApplyText}" FontSize="10.5" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" HorizontalAlignment="Right" />
-                                                    </Grid>
-                                                    <Grid Margin="0,2">
-                                                        <TextBlock Text="Значение отката:" FontSize="11" Foreground="{DynamicResource TextSecondary}" />
-                                                        <TextBlock Text="{Binding RegistryRevertText}" FontSize="10.5" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" HorizontalAlignment="Right" />
-                                                    </Grid>
-                                                    <Grid Margin="0,2">
-                                                        <TextBlock Text="Ссылка на источник:" FontSize="11" Foreground="{DynamicResource TextSecondary}" />
-                                                        <TextBlock Text="{Binding SourceLocation}" FontSize="10.5" FontWeight="Medium" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Right" />
+                                                    <!-- Bento Value Comparison Grid -->
+                                                    <Grid Margin="0,0,0,10">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="1.2*" />
+                                                        </Grid.ColumnDefinitions>
+
+                                                        <!-- Col 1: Live System Value -->
+                                                        <Border Grid.Column="0"
+                                                                Background="{DynamicResource CardBg}"
+                                                                BorderBrush="{DynamicResource CardBorder}"
+                                                                BorderThickness="1"
+                                                                CornerRadius="6"
+                                                                Padding="8,6"
+                                                                Margin="0,0,6,0">
+                                                            <StackPanel>
+                                                                <TextBlock Text="ТЕКУЩЕЕ В СИСТЕМЕ" FontSize="9.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" />
+                                                                <TextBlock Text="{Binding LiveSystemValueText}"
+                                                                           FontFamily="{StaticResource FontMono}"
+                                                                           FontSize="12"
+                                                                           FontWeight="Bold"
+                                                                           Foreground="{DynamicResource TextPrimary}"
+                                                                           Margin="0,2,0,4"
+                                                                           TextTrimming="CharacterEllipsis" />
+                                                                <Border CornerRadius="4" Background="{DynamicResource BadgeBg}" Padding="5,1" HorizontalAlignment="Left">
+                                                                    <TextBlock Text="{Binding OptimizationStatusText}" FontSize="9.5" FontWeight="SemiBold" Foreground="{Binding OptimizationStatusColor}" />
+                                                                </Border>
+                                                            </StackPanel>
+                                                        </Border>
+
+                                                        <!-- Col 2: Recommended Value -->
+                                                        <Border Grid.Column="1"
+                                                                Background="{DynamicResource CardBg}"
+                                                                BorderBrush="{DynamicResource CardBorder}"
+                                                                BorderThickness="1"
+                                                                CornerRadius="6"
+                                                                Padding="8,6"
+                                                                Margin="0,0,6,0">
+                                                            <StackPanel>
+                                                                <TextBlock Text="РЕКОМЕНДУЕМОЕ" FontSize="9.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" />
+                                                                <TextBlock Text="{Binding RecommendedValueText}"
+                                                                           FontFamily="{StaticResource FontMono}"
+                                                                           FontSize="12"
+                                                                           FontWeight="Bold"
+                                                                           Foreground="{DynamicResource AccentBrush}"
+                                                                           Margin="0,2,0,4" />
+                                                                <Border CornerRadius="4" Background="{DynamicResource BadgeBg}" Padding="5,1" HorizontalAlignment="Left">
+                                                                    <TextBlock Text="Целевое значение" FontSize="9.5" FontWeight="Medium" Foreground="{DynamicResource TextSecondary}" />
+                                                                </Border>
+                                                            </StackPanel>
+                                                        </Border>
+
+                                                        <!-- Col 3: Compatibility & Reboot -->
+                                                        <Border Grid.Column="2"
+                                                                Background="{DynamicResource CardBg}"
+                                                                BorderBrush="{DynamicResource CardBorder}"
+                                                                BorderThickness="1"
+                                                                CornerRadius="6"
+                                                                Padding="8,6">
+                                                            <StackPanel>
+                                                                <TextBlock Text="СОВМЕСТИМОСТЬ И ПЕРЕЗАГРУЗКА" FontSize="9.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" />
+                                                                <TextBlock Text="{Binding RebootRequirementText}"
+                                                                           FontSize="11"
+                                                                           FontWeight="SemiBold"
+                                                                           Foreground="{DynamicResource TextPrimary}"
+                                                                           Margin="0,2,0,2" />
+                                                                <TextBlock Text="{Binding CompatibilityText}"
+                                                                           FontSize="10"
+                                                                           Foreground="{DynamicResource TextSecondary}"
+                                                                           TextTrimming="CharacterEllipsis" />
+                                                            </StackPanel>
+                                                        </Border>
                                                     </Grid>
 
-                                                    <!-- Revert Button (for Toggle tweaks) -->
-                                                    <Button Style="{StaticResource DangerButtonStyle}"
-                                                            Command="{Binding RevertTweakCommand}"
-                                                            Content="Откатить твик"
-                                                            IsEnabled="{Binding CanRevert}"
-                                                            ToolTip="{Binding RevertToolTip}"
-                                                            HorizontalAlignment="Right"
-                                                            Padding="10,4"
-                                                            FontSize="11"
-                                                            Margin="0,6,0,0"
-                                                            Visibility="{Binding IsToggleTweak, Converter={StaticResource BoolToVis}}" />
-
-                                                    <!-- Execute Action Button (for Cleanup tweaks) -->
-                                                    <Button Style="{StaticResource AccentButtonStyle}"
-                                                            Command="{Binding ExecuteActionCommand}"
-                                                            HorizontalAlignment="Right"
-                                                            Padding="12,4"
-                                                            FontSize="11"
-                                                            Margin="0,6,0,0"
-                                                            Visibility="{Binding IsActionTweak, Converter={StaticResource BoolToVis}}"
-                                                            ToolTip="Запустить процедуру очистки">
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <TextBlock Text="&#xE74D;"
-                                                                       FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
-                                                                       FontSize="11"
-                                                                       VerticalAlignment="Center"
-                                                                       Margin="0,0,6,0" />
-                                                            <TextBlock Text="{Binding DetailsActionButtonText}"
-                                                                       FontWeight="SemiBold"
-                                                                       VerticalAlignment="Center" />
+                                                    <!-- Technical Details Table -->
+                                                    <Border Background="{DynamicResource CardBg}"
+                                                            BorderBrush="{DynamicResource CardBorder}"
+                                                            BorderThickness="1"
+                                                            CornerRadius="6"
+                                                            Padding="10,6"
+                                                            Margin="0,0,0,10">
+                                                        <StackPanel>
+                                                            <Grid Margin="0,2">
+                                                                <TextBlock Text="Путь в реестре:" FontSize="10.5" Foreground="{DynamicResource TextSecondary}" />
+                                                                <TextBlock Text="{Binding RegistryPath}" FontFamily="{StaticResource FontMono}" FontSize="10.5" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" HorizontalAlignment="Right" />
+                                                            </Grid>
+                                                            <Grid Margin="0,2">
+                                                                <TextBlock Text="Имя параметра:" FontSize="10.5" Foreground="{DynamicResource TextSecondary}" />
+                                                                <TextBlock Text="{Binding RegistryName}" FontFamily="{StaticResource FontMono}" FontSize="10.5" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" HorizontalAlignment="Right" />
+                                                            </Grid>
+                                                            <Grid Margin="0,2">
+                                                                <TextBlock Text="Применение:" FontSize="10.5" Foreground="{DynamicResource TextSecondary}" />
+                                                                <TextBlock Text="{Binding RegistryApplyText}" FontSize="10.5" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" HorizontalAlignment="Right" />
+                                                            </Grid>
+                                                            <Grid Margin="0,2">
+                                                                <TextBlock Text="Значение отката:" FontSize="10.5" Foreground="{DynamicResource TextSecondary}" />
+                                                                <TextBlock Text="{Binding RegistryRevertText}" FontSize="10.5" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" HorizontalAlignment="Right" />
+                                                            </Grid>
+                                                            <Grid Margin="0,2">
+                                                                <TextBlock Text="Безопасность отката:" FontSize="10.5" Foreground="{DynamicResource TextSecondary}" />
+                                                                <TextBlock Text="{Binding RollbackCapabilityText}" FontSize="10.5" FontWeight="Medium" Foreground="#34D399" HorizontalAlignment="Right" />
+                                                            </Grid>
+                                                            <Grid Margin="0,2">
+                                                                <TextBlock Text="Источник / стандарт:" FontSize="10.5" Foreground="{DynamicResource TextSecondary}" />
+                                                                <TextBlock Text="{Binding SourceLocation}" FontSize="10.5" FontWeight="Medium" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Right" />
+                                                            </Grid>
                                                         </StackPanel>
-                                                    </Button>
+                                                    </Border>
+
+                                                    <!-- Action Buttons Row -->
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="Auto" />
+                                                        </Grid.ColumnDefinitions>
+
+                                                        <!-- Safety Hint -->
+                                                        <TextBlock Grid.Column="0"
+                                                                   Text="Перед изменением параметр сохраняется в изолированный снимок state.json."
+                                                                   FontSize="10.5"
+                                                                   Foreground="{DynamicResource TextSecondary}"
+                                                                   VerticalAlignment="Center" />
+
+                                                        <!-- Action Buttons for Toggle Tweaks -->
+                                                        <StackPanel Grid.Column="1"
+                                                                    Orientation="Horizontal"
+                                                                    Visibility="{Binding IsToggleTweak, Converter={StaticResource BoolToVis}}">
+                                                            <Button Style="{StaticResource AccentButtonStyle}"
+                                                                    Command="{Binding ApplyTweakCommand}"
+                                                                    Content="Применить оптимизацию"
+                                                                    Padding="12,5"
+                                                                    Height="28"
+                                                                    FontSize="11"
+                                                                    Margin="0,0,8,0" />
+                                                            <Button Style="{StaticResource DangerButtonStyle}"
+                                                                    Command="{Binding RevertTweakCommand}"
+                                                                    Content="Откатить к исходному"
+                                                                    IsEnabled="{Binding CanRevert}"
+                                                                    ToolTip="{Binding RevertToolTip}"
+                                                                    Padding="12,5"
+                                                                    Height="28"
+                                                                    FontSize="11" />
+                                                        </StackPanel>
+
+                                                        <!-- Action Button for Cleanup Tweaks -->
+                                                        <Button Grid.Column="1"
+                                                                Style="{StaticResource AccentButtonStyle}"
+                                                                Command="{Binding ExecuteActionCommand}"
+                                                                Padding="14,5"
+                                                                Height="28"
+                                                                FontSize="11"
+                                                                Visibility="{Binding IsActionTweak, Converter={StaticResource BoolToVis}}"
+                                                                ToolTip="Запустить процедуру очистки">
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <TextBlock Text="&#xE74D;"
+                                                                           FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                                                           FontSize="11"
+                                                                           VerticalAlignment="Center"
+                                                                           Margin="0,0,6,0" />
+                                                                <TextBlock Text="{Binding DetailsActionButtonText}"
+                                                                           FontWeight="SemiBold"
+                                                                           VerticalAlignment="Center" />
+                                                            </StackPanel>
+                                                        </Button>
+                                                    </Grid>
                                                 </StackPanel>
                                             </Border>
                                         </StackPanel>
@@ -1461,97 +1573,300 @@
                 <ScrollViewer VerticalScrollBarVisibility="Auto"
                               HorizontalScrollBarVisibility="Disabled"
                               Visibility="{Binding IsSettingsSelected, Converter={StaticResource BoolToVis}}">
-                    <StackPanel>
-                        <!-- Setting Card: Network Ping -->
-                        <Border Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="12" Padding="16" Margin="0,0,0,12">
-                            <StackPanel>
-                                <TextBlock Text="СЕТЕВАЯ ЗАДЕРЖКА (ПИНГ)" Style="{StaticResource CardHeaderStyle}" />
-                                <TextBlock Text="Адрес узла для измерения сетевой задержки на экране «Обзор». По умолчанию используется адрес шлюза." FontSize="11.5" Foreground="{DynamicResource TextSecondary}" Margin="0,6,0,12" />
+                    <Grid Margin="0,0,4,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
 
-                                <StackPanel Orientation="Horizontal">
-                                    <Border Background="{DynamicResource SearchBg}"
-                                            BorderThickness="1"
-                                            CornerRadius="8"
-                                            Padding="10,0"
-                                            Width="320"
-                                            Height="34"
-                                            VerticalAlignment="Center">
-                                        <Border.Style>
-                                            <Style TargetType="Border">
-                                                <Setter Property="BorderBrush" Value="{DynamicResource SearchBorder}" />
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsFocused, ElementName=PingHostTextBox}" Value="True">
-                                                        <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Border.Style>
-                                        <Grid VerticalAlignment="Center">
-                                            <!-- Watermark / Placeholder -->
-                                            <TextBlock Text="Пусто: до шлюза по умолчанию"
-                                                       FontSize="12"
-                                                       Foreground="{DynamicResource TextSecondary}"
-                                                       VerticalAlignment="Center"
-                                                       IsHitTestVisible="False">
-                                                <TextBlock.Style>
-                                                    <Style TargetType="TextBlock">
-                                                        <Setter Property="Visibility" Value="Collapsed" />
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding Text, ElementName=PingHostTextBox}" Value="">
-                                                                <Setter Property="Visibility" Value="Visible" />
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </TextBlock.Style>
-                                            </TextBlock>
+                        <!-- LEFT COLUMN: System Protection, Snapshots & Diagnostics -->
+                        <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                            <!-- Card 1: Windows System Protection & Restore Points -->
+                            <Border Background="{DynamicResource CardBg}"
+                                    BorderBrush="{DynamicResource CardBorder}"
+                                    BorderThickness="1"
+                                    CornerRadius="12"
+                                    Padding="14,12"
+                                    Margin="0,0,0,10">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                        <Border Width="26" Height="26" CornerRadius="7" Background="#1E1B4B" VerticalAlignment="Center" Margin="0,0,8,0">
+                                            <TextBlock Text="&#xE72E;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="13" Foreground="#A78BFA" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Text="ЗАЩИТА СИСТЕМЫ И ТОЧКИ ВОССТАНОВЛЕНИЯ" Style="{StaticResource CardHeaderStyle}" />
+                                            <TextBlock Text="Теневое копирование тома (VSS) перед оптимизацией" FontSize="10.5" Foreground="{DynamicResource TextSecondary}" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <TextBlock Text="Создайте официальную контрольную точку Windows для гарантированного возврата состояния реестра и системных файлов."
+                                               FontSize="11" Foreground="{DynamicResource TextSecondary}" TextWrapping="Wrap" Margin="0,4,0,10" />
+
+                                    <WrapPanel Margin="0,0,0,6">
+                                        <Button Style="{StaticResource AccentButtonStyle}"
+                                                Command="{Binding CreateRestorePointCommand}"
+                                                IsEnabled="{Binding IsCreatingRestorePoint, Converter={StaticResource InverseBoolToVis}}"
+                                                Padding="12,6" Height="30" Margin="0,0,8,6">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="&#xE72E;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="11" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                                <TextBlock Text="Создать точку сейчас" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                            </StackPanel>
+                                        </Button>
+                                        <Button Style="{StaticResource FluentButtonStyle}"
+                                                Command="{Binding OpenSystemProtectionCommand}"
+                                                Content="Свойства защиты..."
+                                                Padding="10,6" Height="30" Margin="0,0,8,6" />
+                                        <Button Style="{StaticResource FluentButtonStyle}"
+                                                Command="{Binding EnableSystemRestoreCommand}"
+                                                Content="Включить на C:\"
+                                                ToolTip="Включить защиту системы на диске C:"
+                                                Padding="10,6" Height="30" Margin="0,0,0,6" />
+                                    </WrapPanel>
+
+                                    <!-- Notification / Status -->
+                                    <TextBlock Text="{Binding RestorePointNotification}"
+                                               FontSize="11"
+                                               FontWeight="Medium"
+                                               Foreground="{DynamicResource AccentBrush}"
+                                               TextWrapping="Wrap" />
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Card 2: Snapshots & Backup (state.json) -->
+                            <Border Background="{DynamicResource CardBg}"
+                                    BorderBrush="{DynamicResource CardBorder}"
+                                    BorderThickness="1"
+                                    CornerRadius="12"
+                                    Padding="14,12"
+                                    Margin="0,0,0,10">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                        <Border Width="26" Height="26" CornerRadius="7" Background="#064E3B" VerticalAlignment="Center" Margin="0,0,8,0">
+                                            <TextBlock Text="&#xE753;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="13" Foreground="#34D399" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Text="РЕЗЕРВНЫЕ СНИМКИ КОНФИГУРАЦИИ (AXIS)" Style="{StaticResource CardHeaderStyle}" />
+                                            <TextBlock Text="Локальная база исходных параметров реестра" FontSize="10.5" Foreground="{DynamicResource TextSecondary}" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <TextBlock Text="Перед каждым изменением AXIS сохраняет исходное состояние параметра Windows в изолированный snapshot. Это обеспечивает 100% безопасный и предсказуемый откат."
+                                               FontSize="11" Foreground="{DynamicResource TextSecondary}" TextWrapping="Wrap" Margin="0,4,0,8" />
+
+                                    <Border Background="{DynamicResource SearchBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="6" Padding="10,6" Margin="0,0,0,8">
+                                        <TextBlock Text="{Binding SnapshotsCountText}"
+                                                   FontFamily="{StaticResource FontMono}"
+                                                   FontSize="11"
+                                                   Foreground="{DynamicResource TextPrimary}" />
+                                    </Border>
+
+                                    <Button Style="{StaticResource FluentButtonStyle}"
+                                            Command="{Binding ExportSnapshotsCommand}"
+                                            Padding="12,6" Height="30" HorizontalAlignment="Left">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="&#xE792;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="11" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                            <TextBlock Text="Экспорт копии базы на Рабочий стол" FontSize="11" FontWeight="Medium" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Card 3: PC Diagnostic Report -->
+                            <Border Background="{DynamicResource CardBg}"
+                                    BorderBrush="{DynamicResource CardBorder}"
+                                    BorderThickness="1"
+                                    CornerRadius="12"
+                                    Padding="14,12">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                        <Border Width="26" Height="26" CornerRadius="7" Background="#1E293B" VerticalAlignment="Center" Margin="0,0,8,0">
+                                            <TextBlock Text="&#xE9F9;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="13" Foreground="#38BDF8" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Text="ДИАГНОСТИЧЕСКИЙ ОТЧЕТ СИСТЕМЫ" Style="{StaticResource CardHeaderStyle}" />
+                                            <TextBlock Text="Структурированная сводка конфигурации ПК" FontSize="10.5" Foreground="{DynamicResource TextSecondary}" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <TextBlock Text="Скопируйте в буфер исчерпывающий технический отчет (версия ОС, сборка, ЦП, видеокарта, ОЗУ, накопители, статус твиков) для техподдержки или аудита."
+                                               FontSize="11" Foreground="{DynamicResource TextSecondary}" TextWrapping="Wrap" Margin="0,4,0,8" />
+
+                                    <Button Style="{StaticResource FluentButtonStyle}"
+                                            Command="{Binding CopyDiagnosticReportCommand}"
+                                            Padding="12,6" Height="30" HorizontalAlignment="Left">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="&#xE8C8;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="11" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                            <TextBlock Text="Скопировать отчет в буфер обмена" FontSize="11" FontWeight="Medium" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- RIGHT COLUMN: Telemetry Polling, Ping Presets, Font Smoothing, Engine Mode -->
+                        <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                            <!-- Card 4: Telemetry Polling Frequency -->
+                            <Border Background="{DynamicResource CardBg}"
+                                    BorderBrush="{DynamicResource CardBorder}"
+                                    BorderThickness="1"
+                                    CornerRadius="12"
+                                    Padding="14,12"
+                                    Margin="0,0,0,10">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                        <Border Width="26" Height="26" CornerRadius="7" Background="#311042" VerticalAlignment="Center" Margin="0,0,8,0">
+                                            <TextBlock Text="&#xE756;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="13" Foreground="#F43F5E" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Text="ЧАСТОТА ОПРОСА ТЕЛЕМЕТРИИ (CPU/RAM/PING)" Style="{StaticResource CardHeaderStyle}" />
+                                            <TextBlock Text="Интервал обновления графиков и показателей" FontSize="10.5" Foreground="{DynamicResource TextSecondary}" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <TextBlock Text="Для соревновательных игр выберите «Пауза»: фоновый опрос датчиков полностью останавливается (0% CPU overhead)."
+                                               FontSize="11" Foreground="{DynamicResource TextSecondary}" TextWrapping="Wrap" Margin="0,4,0,8" />
+
+                                    <UniformGrid Columns="4" Margin="0,2,0,0">
+                                        <RadioButton Content="1 сек"
+                                                     GroupName="PollingIntervalGroup"
+                                                     IsChecked="{Binding IsPolling1Sec, Mode=TwoWay}"
+                                                     Foreground="{DynamicResource TextPrimary}"
+                                                     FontSize="11"
+                                                     VerticalAlignment="Center" />
+                                        <RadioButton Content="2 сек"
+                                                     GroupName="PollingIntervalGroup"
+                                                     IsChecked="{Binding IsPolling2Sec, Mode=TwoWay}"
+                                                     Foreground="{DynamicResource TextPrimary}"
+                                                     FontSize="11"
+                                                     VerticalAlignment="Center" />
+                                        <RadioButton Content="5 сек"
+                                                     GroupName="PollingIntervalGroup"
+                                                     IsChecked="{Binding IsPolling5Sec, Mode=TwoWay}"
+                                                     Foreground="{DynamicResource TextPrimary}"
+                                                     FontSize="11"
+                                                     VerticalAlignment="Center" />
+                                        <RadioButton Content="Пауза"
+                                                     GroupName="PollingIntervalGroup"
+                                                     IsChecked="{Binding IsPollingPaused, Mode=TwoWay}"
+                                                     Foreground="{DynamicResource AccentBrush}"
+                                                     FontWeight="SemiBold"
+                                                     FontSize="11"
+                                                     VerticalAlignment="Center" />
+                                    </UniformGrid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Card 5: Network Ping & Quick Presets -->
+                            <Border Background="{DynamicResource CardBg}"
+                                    BorderBrush="{DynamicResource CardBorder}"
+                                    BorderThickness="1"
+                                    CornerRadius="12"
+                                    Padding="14,12"
+                                    Margin="0,0,0,10">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                        <Border Width="26" Height="26" CornerRadius="7" Background="#142B3B" VerticalAlignment="Center" Margin="0,0,8,0">
+                                            <TextBlock Text="&#xE968;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="13" Foreground="#22D3EE" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Text="СЕТЕВАЯ ЗАДЕРЖКА И ПРЕСЕТЫ ПИНГА" Style="{StaticResource CardHeaderStyle}" />
+                                            <TextBlock Text="Мониторинг задержки на экране «Обзор»" FontSize="10.5" Foreground="{DynamicResource TextSecondary}" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <TextBlock Text="Адрес узла для регулярного измерения сетевого пинга и джиттера. Выберите быстрый пресет или укажите свой хост."
+                                               FontSize="11" Foreground="{DynamicResource TextSecondary}" Margin="0,4,0,8" />
+
+                                    <!-- Quick Presets -->
+                                    <WrapPanel Margin="0,0,0,8">
+                                        <Button Style="{StaticResource FluentButtonStyle}"
+                                                Command="{Binding SetPingPresetCommand}"
+                                                CommandParameter=""
+                                                Content="Шлюз роутера"
+                                                Padding="8,3" Height="24" FontSize="10.5" Margin="0,0,6,4" />
+                                        <Button Style="{StaticResource FluentButtonStyle}"
+                                                Command="{Binding SetPingPresetCommand}"
+                                                CommandParameter="1.1.1.1"
+                                                Content="Cloudflare (1.1.1.1)"
+                                                Padding="8,3" Height="24" FontSize="10.5" Margin="0,0,6,4" />
+                                        <Button Style="{StaticResource FluentButtonStyle}"
+                                                Command="{Binding SetPingPresetCommand}"
+                                                CommandParameter="8.8.8.8"
+                                                Content="Google (8.8.8.8)"
+                                                Padding="8,3" Height="24" FontSize="10.5" Margin="0,0,6,4" />
+                                        <Button Style="{StaticResource FluentButtonStyle}"
+                                                Command="{Binding SetPingPresetCommand}"
+                                                CommandParameter="77.88.8.8"
+                                                Content="Яндекс (77.88.8.8)"
+                                                Padding="8,3" Height="24" FontSize="10.5" Margin="0,0,0,4" />
+                                    </WrapPanel>
+
+                                    <!-- Input Row -->
+                                    <Grid Margin="0,2,0,4">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <Border Grid.Column="0"
+                                                Background="{DynamicResource SearchBg}"
+                                                BorderBrush="{DynamicResource SearchBorder}"
+                                                BorderThickness="1"
+                                                CornerRadius="7"
+                                                Padding="8,0"
+                                                Height="30"
+                                                VerticalAlignment="Center">
                                             <TextBox x:Name="PingHostTextBox"
                                                      Text="{Binding PingCustomHost, UpdateSourceTrigger=PropertyChanged}"
                                                      Background="Transparent"
                                                      BorderThickness="0"
                                                      Foreground="{DynamicResource TextPrimary}"
-                                                     FontSize="12"
+                                                     FontFamily="{StaticResource FontMono}"
+                                                     FontSize="11.5"
                                                      VerticalAlignment="Center" />
-                                        </Grid>
+                                        </Border>
+                                        <Button Grid.Column="1"
+                                                Style="{StaticResource AccentButtonStyle}"
+                                                Command="{Binding SaveSettingsCommand}"
+                                                Content="Сохранить"
+                                                Margin="6,0,0,0"
+                                                VerticalAlignment="Center"
+                                                Height="30"
+                                                Padding="12,0"
+                                                FontSize="11" />
+                                    </Grid>
+                                    <TextBlock Text="{Binding SettingsSaveNotification}" FontSize="11" Foreground="{DynamicResource SuccessBrush}" Margin="0,2,0,0" />
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Card 6: Font Smoothing & Engine -->
+                            <Border Background="{DynamicResource CardBg}"
+                                    BorderBrush="{DynamicResource CardBorder}"
+                                    BorderThickness="1"
+                                    CornerRadius="12"
+                                    Padding="14,12">
+                                <StackPanel>
+                                    <TextBlock Text="РЕНДЕРИНГ И АРХИТЕКТУРА ДВИЖКА" Style="{StaticResource CardHeaderStyle}" />
+                                    <TextBlock Text="Сглаживание текста интерфейса и режим прямого доступа WinAPI." FontSize="10.5" Foreground="{DynamicResource TextSecondary}" Margin="0,4,0,8" />
+
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                        <RadioButton Content="ClearType (Субпиксельное)"
+                                                     GroupName="TextRenderingGroup"
+                                                     IsChecked="{Binding IsClearTypeRendering, Mode=TwoWay}"
+                                                     Foreground="{DynamicResource TextPrimary}"
+                                                     FontSize="11"
+                                                     Margin="0,0,16,0"
+                                                     VerticalAlignment="Center" />
+                                        <RadioButton Content="Grayscale (Градации серого)"
+                                                     GroupName="TextRenderingGroup"
+                                                     IsChecked="{Binding IsGrayscaleRendering, Mode=TwoWay}"
+                                                     Foreground="{DynamicResource TextPrimary}"
+                                                     FontSize="11"
+                                                     VerticalAlignment="Center" />
+                                    </StackPanel>
+
+                                    <Border Background="{DynamicResource SearchBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="6" Padding="8,6">
+                                        <TextBlock Text="AXIS Engine v2.0 • Прямое взаимодействие с реестром Windows и WinAPI без внешних зависимостей. Полная поддержка изоляции отката."
+                                                   FontSize="10.5" Foreground="{DynamicResource TextSecondary}" TextWrapping="Wrap" />
                                     </Border>
-                                    <Button Style="{StaticResource AccentButtonStyle}" Command="{Binding SaveSettingsCommand}" Content="Сохранить" Margin="10,0,0,0" VerticalAlignment="Center" Height="34" />
                                 </StackPanel>
-                                <TextBlock Text="Подсказка: Оставьте пустым для автоматического пинга шлюза по умолчанию." FontSize="11" Foreground="{DynamicResource TextSecondary}" Margin="0,8,0,0" />
-                                <TextBlock Text="{Binding SettingsSaveNotification}" FontSize="11" Foreground="{DynamicResource SuccessBrush}" Margin="0,4,0,0" />
-                            </StackPanel>
-                        </Border>
-
-                        <!-- Setting Card: Font Smoothing -->
-                        <Border Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="12" Padding="16" Margin="0,0,0,12">
-                            <StackPanel>
-                                <TextBlock Text="СГЛАЖИВАНИЕ ТЕКСТА" Style="{StaticResource CardHeaderStyle}" />
-                                <TextBlock Text="Выбор режима рендеринга шрифтов в интерфейсе. Изменение применяется немедленно и сохраняется в настройках." FontSize="11.5" Foreground="{DynamicResource TextSecondary}" Margin="0,6,0,12" />
-
-                                <StackPanel Orientation="Horizontal">
-                                    <RadioButton Content="ClearType (Субпиксельное)"
-                                                 GroupName="TextRenderingGroup"
-                                                 IsChecked="{Binding IsClearTypeRendering, Mode=TwoWay}"
-                                                 Foreground="{DynamicResource TextPrimary}"
-                                                 FontSize="12"
-                                                 Margin="0,0,20,0"
-                                                 VerticalAlignment="Center" />
-                                    <RadioButton Content="Градации серого (Grayscale)"
-                                                 GroupName="TextRenderingGroup"
-                                                 IsChecked="{Binding IsGrayscaleRendering, Mode=TwoWay}"
-                                                 Foreground="{DynamicResource TextPrimary}"
-                                                 FontSize="12"
-                                                 VerticalAlignment="Center" />
-                                </StackPanel>
-                            </StackPanel>
-                        </Border>
-
-                        <!-- Setting Card: Engine Mode -->
-                        <Border Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="12" Padding="16" Margin="0,0,0,12">
-                            <StackPanel>
-                                <TextBlock Text="РЕЖИМ РАБОТЫ ДВИЖКА" Style="{StaticResource CardHeaderStyle}" />
-                                <TextBlock Text="Прямой рабочий режим: все выбранные оптимизации применяются непосредственно к конфигурации системы и реестру Windows с возможностью мгновенного отката." FontSize="11.5" Foreground="{DynamicResource TextSecondary}" TextWrapping="Wrap" Margin="0,6,0,0" />
-                            </StackPanel>
-                        </Border>
-                    </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </Grid>
                 </ScrollViewer>
 
                 <!-- ==================================================== -->

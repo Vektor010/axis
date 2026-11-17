@@ -13,6 +13,7 @@ namespace WinTweaker.Engine
         public double WindowHeight { get; set; }
         public string PingCustomHost { get; set; }
         public string TextRenderingMode { get; set; }
+        public int PollingIntervalSeconds { get; set; }
         public bool IsGrouped { get; set; }
         public int SortMode { get; set; }
         public Dictionary<string, bool> GroupExpandedStates { get; set; }
@@ -25,6 +26,7 @@ namespace WinTweaker.Engine
             this.WindowHeight = 700;
             this.PingCustomHost = "";
             this.TextRenderingMode = "ClearType";
+            this.PollingIntervalSeconds = 2;
             this.IsGrouped = true;
             this.SortMode = 0;
             this.GroupExpandedStates = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);

@@ -136,6 +136,16 @@ namespace WinTweaker.Engine
             }
         }
 
+        public string StateFilePath
+        {
+            get { return this._filePath; }
+        }
+
+        public int SnapshotCount
+        {
+            get { return (this._data != null && this._data.Snapshots != null) ? this._data.Snapshots.Count : 0; }
+        }
+
         public bool HasSnapshot(string tweakId)
         {
             return this._data != null && this._data.Snapshots.ContainsKey(tweakId);
