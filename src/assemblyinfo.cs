@@ -2,11 +2,11 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
 
-[assembly: AssemblyTitle("VEKTOR")]
-[assembly: AssemblyDescription("VEKTOR — Нативный оптимизатор ядра, сети, GPU и приватности Windows 10/11 (2026)")]
+[assembly: AssemblyTitle("AXIS")]
+[assembly: AssemblyDescription("AXIS — Нативный оптимизатор ядра, сети, GPU и приватности Windows 10/11 (2026)")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Vektor010")]
-[assembly: AssemblyProduct("VEKTOR")]
+[assembly: AssemblyProduct("AXIS")]
 [assembly: AssemblyCopyright("Copyright (C) 2026 Vektor010")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -18,5 +18,5 @@ using System.Windows;
     ResourceDictionaryLocation.SourceAssembly
 )]
 
-[assembly: AssemblyVersion("2.0.0.0")]
-[assembly: AssemblyFileVersion("2.0.0.0")]
+[assembly: AssemblyVersion("2.0.2.0")]
+[assembly: AssemblyFileVersion("2.0.2.0")]

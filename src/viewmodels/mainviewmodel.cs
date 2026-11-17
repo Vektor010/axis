@@ -1354,7 +1354,7 @@ namespace WinTweaker.ViewModels
             try
             {
                 string summary = string.Format(
-                    "VEKTOR — Конфигурация системы\r\n" +
+                    "AXIS 2.0 — Конфигурация системы\r\n" +
                     "Процессор: {0}\r\n" +
                     "Мат. плата: {1}\r\n" +
                     "Видеокарта: {2}\r\n" +
