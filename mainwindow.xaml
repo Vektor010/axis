@@ -4,14 +4,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="WinTweaker"
-        Height="740"
-        Width="1160"
+        Title="VEKTOR — Оптимизатор Windows"
+        Height="760"
+        Width="1180"
         MinWidth="980"
-        MinHeight="600"
+        MinHeight="620"
         WindowStartupLocation="CenterScreen"
         Background="{DynamicResource WindowBg}"
-        FontFamily="Segoe UI Variable Text, Segoe UI"
+        FontFamily="{StaticResource FontUI}"
         Icon="Resources/app.ico"
         UseLayoutRounding="True"
         TextOptions.TextFormattingMode="Ideal"
@@ -55,19 +55,54 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
-                        <!-- Brand Logo Badge -->
+                        <!-- VEKTOR Custom Vector Logo Badge -->
                         <Border Grid.Column="0"
-                                Width="34"
-                                Height="34"
-                                CornerRadius="8"
-                                Background="{DynamicResource AccentBrush}"
-                                VerticalAlignment="Center">
-                            <TextBlock Text="&#xE945;"
-                                       FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
-                                       FontSize="16"
-                                       Foreground="#FFFFFF"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center" />
+                                Width="36"
+                                Height="36"
+                                CornerRadius="10"
+                                BorderThickness="1.2"
+                                VerticalAlignment="Center"
+                                SnapsToDevicePixels="True">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Color="#1F1842" Offset="0.0" />
+                                    <GradientStop Color="#0D0C1B" Offset="1.0" />
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <Border.BorderBrush>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Color="#A78BFA" Offset="0.0" />
+                                    <GradientStop Color="#22D3EE" Offset="1.0" />
+                                </LinearGradientBrush>
+                            </Border.BorderBrush>
+                            <Viewbox Width="22" Height="22" Stretch="Uniform">
+                                <Canvas Width="64" Height="64">
+                                    <Polygon Points="10,14 21,14 33,44 27,54">
+                                        <Polygon.Fill>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                <GradientStop Color="#C4B5FD" Offset="0" />
+                                                <GradientStop Color="#7C3AED" Offset="1" />
+                                            </LinearGradientBrush>
+                                        </Polygon.Fill>
+                                    </Polygon>
+                                    <Polygon Points="27,54 35,54 55,12 43,12">
+                                        <Polygon.Fill>
+                                            <LinearGradientBrush StartPoint="0,1" EndPoint="1,0">
+                                                <GradientStop Color="#6366F1" Offset="0" />
+                                                <GradientStop Color="#22D3EE" Offset="1" />
+                                            </LinearGradientBrush>
+                                        </Polygon.Fill>
+                                    </Polygon>
+                                    <Polygon Points="32,12 37,20 32,28 27,20">
+                                        <Polygon.Fill>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                                <GradientStop Color="#FFFFFF" Offset="0" />
+                                                <GradientStop Color="#67E8F9" Offset="1" />
+                                            </LinearGradientBrush>
+                                        </Polygon.Fill>
+                                    </Polygon>
+                                </Canvas>
+                            </Viewbox>
                         </Border>
 
                         <!-- Title and Subtitle (Visible when sidebar is expanded) -->
@@ -75,12 +110,29 @@
                                     Margin="10,0,0,0"
                                     VerticalAlignment="Center"
                                     Visibility="{Binding IsSidebarExpanded, Converter={StaticResource BoolToVis}}">
-                            <TextBlock Text="WinTweaker"
-                                       FontSize="15"
-                                       FontWeight="SemiBold"
-                                       Foreground="{DynamicResource TextPrimary}" />
-                            <TextBlock Text="Настройка Windows"
-                                       FontSize="11"
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="VEKTOR"
+                                           FontFamily="{StaticResource FontDisplay}"
+                                           FontSize="16"
+                                           FontWeight="Bold"
+                                           Foreground="{DynamicResource TextPrimary}"
+                                           VerticalAlignment="Center" />
+                                <Border CornerRadius="4"
+                                        Background="{DynamicResource AccentFill}"
+                                        BorderBrush="{DynamicResource AccentBorder}"
+                                        BorderThickness="0.8"
+                                        Padding="4,0.5"
+                                        Margin="6,0,0,0"
+                                        VerticalAlignment="Center">
+                                    <TextBlock Text="2.0"
+                                               FontFamily="{StaticResource FontMono}"
+                                               FontSize="9"
+                                               FontWeight="Bold"
+                                               Foreground="{DynamicResource AccentBrush}" />
+                                </Border>
+                            </StackPanel>
+                            <TextBlock Text="Windows Engine"
+                                       FontSize="10.5"
                                        Foreground="{DynamicResource TextSecondary}" />
                         </StackPanel>
 
@@ -139,12 +191,29 @@
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="Auto" />
                                                     <ColumnDefinition Width="*" />
                                                     <ColumnDefinition Width="Auto" />
                                                 </Grid.ColumnDefinitions>
 
+                                                <!-- Fluent 2 Active Indicator Pill -->
+                                                <Border Grid.Column="0"
+                                                        Width="3"
+                                                        Height="15"
+                                                        CornerRadius="1.5"
+                                                        Margin="-4,0,6,0"
+                                                        VerticalAlignment="Center"
+                                                        Visibility="{Binding IsSelected, Converter={StaticResource BoolToVis}}">
+                                                    <Border.Background>
+                                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                                            <GradientStop Color="#A78BFA" Offset="0" />
+                                                            <GradientStop Color="#22D3EE" Offset="1" />
+                                                        </LinearGradientBrush>
+                                                    </Border.Background>
+                                                </Border>
+
                                                 <!-- Icon -->
-                                                <TextBlock Grid.Column="0"
+                                                <TextBlock Grid.Column="1"
                                                            Text="{Binding IconGlyph}"
                                                            FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
                                                            FontSize="15"
@@ -153,7 +222,7 @@
                                                            Width="22" />
 
                                                 <!-- Name -->
-                                                <TextBlock Grid.Column="1"
+                                                <TextBlock Grid.Column="2"
                                                            Text="{Binding Name}"
                                                            FontSize="13"
                                                            FontWeight="Medium"
@@ -163,7 +232,7 @@
                                                            Visibility="{Binding DataContext.IsSidebarExpanded, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}" />
 
                                                 <!-- Counter Badge & Tweaks Chevron -->
-                                                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                                                <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center">
                                                     <Button Style="{StaticResource FluentButtonStyle}"
                                                             Command="{Binding DataContext.ToggleTweaksCategoriesCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                                             Padding="2"
@@ -354,7 +423,8 @@
                     <!-- Screen Title -->
                     <TextBlock Grid.Column="0"
                                Text="{Binding SelectedNavItem.Name}"
-                               FontSize="16"
+                               FontFamily="{StaticResource FontDisplay}"
+                               FontSize="17"
                                FontWeight="SemiBold"
                                Foreground="{DynamicResource TextPrimary}"
                                VerticalAlignment="Center"
@@ -430,6 +500,23 @@
                                      CaretBrush="{DynamicResource TextPrimary}"
                                      FontSize="12"
                                      VerticalAlignment="Center" />
+                            <!-- Raycast/Linear Ctrl+K Shortcut Hint (when search is empty) -->
+                            <Border Grid.Column="2"
+                                    CornerRadius="4"
+                                    Background="{DynamicResource BadgeBg}"
+                                    BorderBrush="{DynamicResource CardBorder}"
+                                    BorderThickness="1"
+                                    Padding="5,1"
+                                    VerticalAlignment="Center"
+                                    IsHitTestVisible="False"
+                                    Visibility="{Binding HasSearchQuery, Converter={StaticResource InverseBoolToVis}}">
+                                <TextBlock Text="Ctrl K"
+                                           FontFamily="{StaticResource FontMono}"
+                                           FontSize="9.5"
+                                           FontWeight="SemiBold"
+                                           Foreground="{DynamicResource TextSecondary}" />
+                            </Border>
+
                             <!-- Clear Button (Cross) -->
                             <Button Grid.Column="2"
                                     Command="{Binding ClearSearchCommand}"
@@ -482,7 +569,7 @@
                               HorizontalScrollBarVisibility="Disabled"
                               Visibility="{Binding IsOverviewSelected, Converter={StaticResource BoolToVis}}">
                     <StackPanel Margin="0,0,4,0">
-                        <!-- 2.1 Four Metric Cards Row -->
+                        <!-- 2.1 Four Bento Metric Cards Row (2026 Typography + Icon Badges) -->
                         <Grid Margin="0,0,0,12">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
@@ -494,10 +581,15 @@
                             <!-- Metric 1: ТЕМПЕРАТУРА -->
                             <Border Grid.Column="0" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="12" Padding="14,12" Margin="0,0,6,0">
                                 <StackPanel>
-                                    <TextBlock Text="ТЕМПЕРАТУРА" FontSize="10.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" />
-                                    <Grid Margin="0,8,0,6">
-                                        <TextBlock Text="{Binding TempDisplay}" FontSize="24" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center" />
-                                        <Polyline Points="{Binding TempSparkline}" Stroke="{DynamicResource WarningBrush}" StrokeThickness="1.5" HorizontalAlignment="Right" VerticalAlignment="Center" Width="90" Height="26" />
+                                    <Grid>
+                                        <TextBlock Text="ТЕМПЕРАТУРА" FontSize="10.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
+                                        <Border Width="22" Height="22" CornerRadius="6" Background="{DynamicResource WarningFill}" HorizontalAlignment="Right">
+                                            <TextBlock Text="&#xE9CA;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="11" Foreground="{DynamicResource WarningBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                    </Grid>
+                                    <Grid Margin="0,6,0,6">
+                                        <TextBlock Text="{Binding TempDisplay}" FontFamily="{StaticResource FontDisplay}" FontSize="25" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center" />
+                                        <Polyline Points="{Binding TempSparkline}" Stroke="{DynamicResource WarningBrush}" StrokeThickness="1.8" HorizontalAlignment="Right" VerticalAlignment="Center" Width="84" Height="26" />
                                     </Grid>
                                     <TextBlock Text="{Binding TempStatus}" FontSize="11" Foreground="{DynamicResource TextSecondary}" />
                                 </StackPanel>
@@ -506,10 +598,15 @@
                             <!-- Metric 2: ЗАГРУЗКА -->
                             <Border Grid.Column="1" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="12" Padding="14,12" Margin="6,0,6,0">
                                 <StackPanel>
-                                    <TextBlock Text="ЗАГРУЗКА ЦП" FontSize="10.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" />
-                                    <Grid Margin="0,8,0,6">
-                                        <TextBlock Text="{Binding CpuDisplay}" FontSize="24" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center" />
-                                        <Polyline Points="{Binding CpuSparkline}" Stroke="{DynamicResource AccentBrush}" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Center" Width="90" Height="26" />
+                                    <Grid>
+                                        <TextBlock Text="ЗАГРУЗКА ЦП" FontSize="10.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
+                                        <Border Width="22" Height="22" CornerRadius="6" Background="{DynamicResource AccentFill}" HorizontalAlignment="Right">
+                                            <TextBlock Text="&#xE950;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="11" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                    </Grid>
+                                    <Grid Margin="0,6,0,6">
+                                        <TextBlock Text="{Binding CpuDisplay}" FontFamily="{StaticResource FontDisplay}" FontSize="25" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center" />
+                                        <Polyline Points="{Binding CpuSparkline}" Stroke="{DynamicResource AccentBrush}" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Center" Width="84" Height="26" />
                                     </Grid>
                                     <TextBlock Text="{Binding CpuStatus}" FontSize="11" Foreground="{DynamicResource TextSecondary}" />
                                 </StackPanel>
@@ -518,24 +615,38 @@
                             <!-- Metric 3: ЗАДЕРЖКА -->
                             <Border Grid.Column="2" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="12" Padding="14,12" Margin="6,0,6,0">
                                 <StackPanel>
-                                    <TextBlock Text="ЗАДЕРЖКА ПИНГА" FontSize="10.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" />
-                                    <Grid Margin="0,8,0,6">
-                                        <TextBlock Text="{Binding PingDisplay}" FontSize="24" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center" />
-                                        <Polyline Points="{Binding PingSparkline}" Stroke="{DynamicResource SuccessBrush}" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Center" Width="90" Height="26" />
+                                    <Grid>
+                                        <TextBlock Text="ЗАДЕРЖКА ПИНГА" FontSize="10.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
+                                        <Border Width="22" Height="22" CornerRadius="6" Background="{DynamicResource SuccessFill}" HorizontalAlignment="Right">
+                                            <TextBlock Text="&#xE968;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="11" Foreground="{DynamicResource SuccessBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                    </Grid>
+                                    <Grid Margin="0,6,0,6">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="{Binding PingDisplay}" FontFamily="{StaticResource FontDisplay}" FontSize="22" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,6,0" />
+                                        <Polyline Grid.Column="1" Points="{Binding PingSparkline}" Stroke="{DynamicResource SuccessBrush}" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Center" Width="64" Height="26" />
                                     </Grid>
                                     <TextBlock Text="{Binding PingStatus}" FontSize="11" Foreground="{DynamicResource TextSecondary}" />
                                 </StackPanel>
                             </Border>
 
-                            <!-- Metric 4: ТВИКИ -->
+                            <!-- Metric 4: ТВИКИ + Прогресс-бар оптимизации -->
                             <Border Grid.Column="3" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="12" Padding="14,12" Margin="6,0,0,0">
                                 <StackPanel>
-                                    <TextBlock Text="АКТИВНЫЕ ТВИКИ" FontSize="10.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" />
-                                    <Grid Margin="0,8,0,6">
-                                        <TextBlock Text="{Binding TweaksDisplay}" FontSize="24" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center" />
-                                        <Polyline Points="{Binding TweaksSparkline}" Stroke="{DynamicResource AccentBrush}" StrokeThickness="1.5" HorizontalAlignment="Right" VerticalAlignment="Center" Width="90" Height="26" />
+                                    <Grid>
+                                        <TextBlock Text="АКТИВНЫЕ ТВИКИ" FontSize="10.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
+                                        <Border CornerRadius="6" Background="{DynamicResource CyanFill}" Padding="6,1.5" HorizontalAlignment="Right">
+                                            <TextBlock Text="{Binding OptimizationPercentText}" FontFamily="{StaticResource FontMono}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource CyanAccentBrush}" />
+                                        </Border>
                                     </Grid>
-                                    <TextBlock Text="{Binding TweaksStatus}" FontSize="11" Foreground="{DynamicResource AccentBrush}" />
+                                    <StackPanel Orientation="Horizontal" Margin="0,6,0,6" VerticalAlignment="Bottom">
+                                        <TextBlock Text="{Binding TweaksDisplay}" FontFamily="{StaticResource FontDisplay}" FontSize="25" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Bottom" />
+                                        <TextBlock Text="{Binding TweaksStatus}" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" Margin="6,0,0,4" VerticalAlignment="Bottom" />
+                                    </StackPanel>
+                                    <ProgressBar Value="{Binding OptimizationPercent, Mode=OneWay}" Minimum="0" Maximum="100" Style="{StaticResource VektorProgressBarStyle}" Margin="0,2,0,0" />
                                 </StackPanel>
                             </Border>
                         </Grid>
@@ -584,34 +695,95 @@
                             <!-- System Specs Card -->
                             <Border Grid.Column="1" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="12" Padding="16,14" Margin="6,0,0,0">
                                 <StackPanel>
-                                    <TextBlock Text="СИСТЕМА" FontSize="10.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,10" />
+                                    <Grid Margin="0,0,0,10">
+                                        <TextBlock Text="СИСТЕМА" FontSize="10.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding CopySpecsFeedback}" FontSize="10.5" Foreground="{DynamicResource SuccessBrush}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                            <Button Style="{StaticResource FluentButtonStyle}"
+                                                    Command="{Binding CopySpecsCommand}"
+                                                    Padding="7,2"
+                                                    FontSize="10.5"
+                                                    ToolTip="Скопировать полную конфигурацию ПК в буфер обмена">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="&#xE8C8;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="10" VerticalAlignment="Center" Margin="0,0,4,0" />
+                                                    <TextBlock Text="Копировать" VerticalAlignment="Center" />
+                                                </StackPanel>
+                                            </Button>
+                                        </StackPanel>
+                                    </Grid>
 
                                     <StackPanel>
                                         <Grid Margin="0,3">
                                             <TextBlock Text="Процессор" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
-                                            <TextBlock Text="{Binding CpuSpec}" FontSize="11" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" HorizontalAlignment="Right" TextTrimming="CharacterEllipsis" MaxWidth="220" />
+                                            <TextBlock Text="{Binding CpuSpec}" ToolTip="{Binding CpuSpec}" FontSize="11" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" HorizontalAlignment="Right" TextTrimming="CharacterEllipsis" MaxWidth="240" />
                                         </Grid>
                                         <Grid Margin="0,3">
                                             <TextBlock Text="Плата" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
-                                            <TextBlock Text="{Binding MotherboardSpec}" FontSize="11" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" HorizontalAlignment="Right" TextTrimming="CharacterEllipsis" MaxWidth="220" />
+                                            <TextBlock Text="{Binding MotherboardSpec}" ToolTip="{Binding MotherboardSpec}" FontSize="11" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" HorizontalAlignment="Right" TextTrimming="CharacterEllipsis" MaxWidth="240" />
                                         </Grid>
                                         <Grid Margin="0,3">
                                             <TextBlock Text="Видеокарта" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
-                                            <TextBlock Text="{Binding GpuSpec}" FontSize="11" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" HorizontalAlignment="Right" TextTrimming="CharacterEllipsis" MaxWidth="220" />
+                                            <TextBlock Text="{Binding GpuSpec}" ToolTip="{Binding GpuSpec}" FontSize="11" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" HorizontalAlignment="Right" TextTrimming="CharacterEllipsis" MaxWidth="240" />
                                         </Grid>
                                         <Grid Margin="0,3">
                                             <TextBlock Text="Память" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
-                                            <TextBlock Text="{Binding RamSpec}" FontSize="11" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" HorizontalAlignment="Right" />
+                                            <TextBlock Text="{Binding RamSpec}" ToolTip="{Binding RamSpec}" FontFamily="{StaticResource FontMono}" FontSize="11" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" HorizontalAlignment="Right" />
                                         </Grid>
                                         <Grid Margin="0,3">
                                             <TextBlock Text="Диски" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
-                                            <TextBlock Text="{Binding DisksSpec}" FontSize="10.5" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" HorizontalAlignment="Right" TextTrimming="CharacterEllipsis" MaxWidth="220" />
+                                            <TextBlock Text="{Binding DisksSpec}" ToolTip="{Binding DisksSpec}" FontSize="10.5" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" HorizontalAlignment="Right" TextTrimming="CharacterEllipsis" MaxWidth="240" />
                                         </Grid>
                                         <Grid Margin="0,3">
                                             <TextBlock Text="ОС" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
-                                            <TextBlock Text="{Binding OsSpec}" FontSize="11" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" HorizontalAlignment="Right" TextTrimming="CharacterEllipsis" MaxWidth="220" />
+                                            <TextBlock Text="{Binding OsSpec}" ToolTip="{Binding OsSpec}" FontSize="11" FontWeight="Medium" Foreground="{DynamicResource TextPrimary}" HorizontalAlignment="Right" TextTrimming="CharacterEllipsis" MaxWidth="240" />
                                         </Grid>
                                     </StackPanel>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <!-- 2.25 Native Kernel Subsystems Bento Row (WDDM HAGS / Flip Queue / MMCSS / WNF Game Mode) -->
+                        <Grid Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="10" Padding="12,10" Margin="0,0,6,0">
+                                <StackPanel>
+                                    <TextBlock Text="GPU HAGS (WDDM 2.9)" FontSize="9.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" />
+                                    <TextBlock Text="{Binding HagsStatusText}" FontFamily="{StaticResource FontDisplay}" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource CyanAccentBrush}" Margin="0,4,0,1" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Text="Аппаратное планирование" FontSize="10" Foreground="{DynamicResource TextSecondary}" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="1" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="10" Padding="12,10" Margin="6,0,6,0">
+                                <StackPanel>
+                                    <TextBlock Text="FLIP QUEUE (WDDM 3.0)" FontSize="9.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" />
+                                    <TextBlock Text="{Binding FlipQueueStatusText}" FontFamily="{StaticResource FontDisplay}" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" Margin="0,4,0,1" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Text="Аппаратная очередь кадров" FontSize="10" Foreground="{DynamicResource TextSecondary}" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="2" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="10" Padding="12,10" Margin="6,0,6,0">
+                                <StackPanel>
+                                    <TextBlock Text="MMCSS • ПЛАНИРОВЩИК" FontSize="9.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" />
+                                    <StackPanel Orientation="Horizontal" Margin="0,4,0,1">
+                                        <TextBlock Text="{Binding MmcssRespText}" FontFamily="{StaticResource FontDisplay}" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" />
+                                        <TextBlock Text=" • " FontSize="12" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
+                                        <TextBlock Text="{Binding MmcssTasksText}" FontSize="11.5" FontWeight="Medium" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding MmcssThrottlingText}" ToolTip="{Binding MmcssThrottlingText}" FontSize="10" Foreground="{DynamicResource TextSecondary}" TextTrimming="CharacterEllipsis" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="3" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="10" Padding="12,10" Margin="6,0,0,0">
+                                <StackPanel>
+                                    <TextBlock Text="GAME MODE (WNF)" FontSize="9.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" />
+                                    <TextBlock Text="{Binding GameModeShortStatus}" ToolTip="{Binding GameModeStatusSummary}" FontFamily="{StaticResource FontDisplay}" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource SuccessBrush}" Margin="0,4,0,1" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Text="{Binding GameModePowerProfileDisplay, StringFormat='Профиль WNF: {0}'}" FontSize="10" Foreground="{DynamicResource TextSecondary}" />
                                 </StackPanel>
                             </Border>
                         </Grid>
@@ -1383,46 +1555,284 @@
                 </ScrollViewer>
 
                 <!-- ==================================================== -->
-                <!-- SCREEN: О ПРОГРАММЕ (ABOUT)                          -->
+                <!-- SCREEN: О ПРОГРАММЕ (ABOUT — VEKTOR 2026 BENTO)      -->
                 <!-- ==================================================== -->
-                <Border Background="{DynamicResource CardBg}"
-                        BorderBrush="{DynamicResource CardBorder}"
-                        BorderThickness="1"
-                        CornerRadius="12"
-                        Padding="28"
-                        VerticalAlignment="Top"
-                        Visibility="{Binding IsAboutSelected, Converter={StaticResource BoolToVis}}">
-                    <StackPanel MaxWidth="520" HorizontalAlignment="Left">
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
-                            <Border Width="48" Height="48" CornerRadius="12" Background="{DynamicResource AccentBrush}" Margin="0,0,16,0">
-                                <TextBlock Text="&#xE946;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="22" Foreground="#FFFFFF" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                            </Border>
-                            <StackPanel VerticalAlignment="Center">
-                                <TextBlock Text="WinTweaker" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource TextPrimary}" />
-                                <TextBlock Text="Личная сборка" FontSize="12" Foreground="{DynamicResource TextSecondary}" />
-                            </StackPanel>
-                        </StackPanel>
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled"
+                              Visibility="{Binding IsAboutSelected, Converter={StaticResource BoolToVis}}">
+                    <StackPanel Margin="0,0,4,12">
+                        <!-- Hero Brand Card -->
+                        <Border Background="{DynamicResource HeroCardBg}"
+                                BorderBrush="{DynamicResource AccentBorder}"
+                                BorderThickness="1"
+                                CornerRadius="14"
+                                Padding="24,22"
+                                Margin="0,0,0,12">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
 
-                        <TextBlock Text="Инструмент для настройки и тонкой оптимизации компонентов Windows." FontSize="12.5" Foreground="{DynamicResource TextSecondary}" TextWrapping="Wrap" Margin="0,0,0,16" />
+                                <!-- Large Authorial VEKTOR Vector Emblem (64x64) -->
+                                <Border Grid.Column="0"
+                                        Width="64"
+                                        Height="64"
+                                        CornerRadius="16"
+                                        BorderThickness="1.6"
+                                        Margin="0,0,20,0"
+                                        VerticalAlignment="Center"
+                                        SnapsToDevicePixels="True">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#231B4A" Offset="0.0" />
+                                            <GradientStop Color="#0C0B19" Offset="1.0" />
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                    <Border.BorderBrush>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#A78BFA" Offset="0.0" />
+                                            <GradientStop Color="#22D3EE" Offset="1.0" />
+                                        </LinearGradientBrush>
+                                    </Border.BorderBrush>
+                                    <Viewbox Width="40" Height="40" Stretch="Uniform">
+                                        <Canvas Width="64" Height="64">
+                                            <Polygon Points="10,14 21,14 33,44 27,54">
+                                                <Polygon.Fill>
+                                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                        <GradientStop Color="#C4B5FD" Offset="0" />
+                                                        <GradientStop Color="#7C3AED" Offset="1" />
+                                                    </LinearGradientBrush>
+                                                </Polygon.Fill>
+                                            </Polygon>
+                                            <Polygon Points="27,54 35,54 55,12 43,12">
+                                                <Polygon.Fill>
+                                                    <LinearGradientBrush StartPoint="0,1" EndPoint="1,0">
+                                                        <GradientStop Color="#6366F1" Offset="0" />
+                                                        <GradientStop Color="#22D3EE" Offset="1" />
+                                                    </LinearGradientBrush>
+                                                </Polygon.Fill>
+                                            </Polygon>
+                                            <Polygon Points="32,12 37,20 32,28 27,20">
+                                                <Polygon.Fill>
+                                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                                        <GradientStop Color="#FFFFFF" Offset="0" />
+                                                        <GradientStop Color="#67E8F9" Offset="1" />
+                                                    </LinearGradientBrush>
+                                                </Polygon.Fill>
+                                            </Polygon>
+                                        </Canvas>
+                                    </Viewbox>
+                                </Border>
 
-                        <Border Background="{DynamicResource SearchBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="8" Padding="14,10" Margin="0,0,0,16">
-                            <StackPanel>
-                                <Grid Margin="0,2">
-                                    <TextBlock Text="Версия приложения" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" />
-                                    <TextBlock Text="1.0.0" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" HorizontalAlignment="Right" />
-                                </Grid>
-                                <Grid Margin="0,2">
-                                    <TextBlock Text="Платформа" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" />
-                                    <TextBlock Text=".NET Framework 4.6.2 (WPF)" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" HorizontalAlignment="Right" />
-                                </Grid>
-                                <Grid Margin="0,2">
-                                    <TextBlock Text="Конфигурация" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" />
-                                    <TextBlock Text="Release x64" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" HorizontalAlignment="Right" />
-                                </Grid>
-                            </StackPanel>
+                                <!-- Brand Title, Badges & Tagline -->
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,4">
+                                        <TextBlock Text="VEKTOR"
+                                                   FontFamily="{StaticResource FontDisplay}"
+                                                   FontSize="24"
+                                                   FontWeight="Bold"
+                                                   Foreground="{DynamicResource TextPrimary}"
+                                                   VerticalAlignment="Center" />
+                                        <Border CornerRadius="6" Background="{DynamicResource AccentFill}" BorderBrush="{DynamicResource AccentBorder}" BorderThickness="1" Padding="8,2" Margin="10,0,0,0" VerticalAlignment="Center">
+                                            <TextBlock Text="v2.0.0 • 2026" FontFamily="{StaticResource FontMono}" FontSize="10.5" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}" />
+                                        </Border>
+                                        <Border CornerRadius="6" Background="{DynamicResource SuccessFill}" BorderBrush="{DynamicResource SuccessBorder}" BorderThickness="1" Padding="8,2" Margin="6,0,0,0" VerticalAlignment="Center">
+                                            <TextBlock Text="7667 тестов PASS" FontFamily="{StaticResource FontMono}" FontSize="10.5" FontWeight="SemiBold" Foreground="{DynamicResource SuccessBrush}" />
+                                        </Border>
+                                    </StackPanel>
+                                    <TextBlock Text="Современный нативный оптимизатор ядра, сетевого стека, GPU и приватности Windows 10/11 с мгновенным откатом по снимкам состояния."
+                                               FontSize="12.5"
+                                               Foreground="{DynamicResource TextSecondary}"
+                                               TextWrapping="Wrap"
+                                               Margin="0,2,16,0" />
+                                </StackPanel>
+
+                                <!-- Quick Action Links -->
+                                <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                                    <Button Style="{StaticResource AccentButtonStyle}"
+                                            Command="{Binding OpenUrlCommand}"
+                                            CommandParameter="https://github.com/Vektor010/win-tweaker"
+                                            Padding="12,6"
+                                            FontSize="11.5"
+                                            Margin="0,0,0,6">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="&#xE774;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="12" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                            <TextBlock Text="GitHub проекта" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Button>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button Style="{StaticResource FluentButtonStyle}"
+                                                Command="{Binding OpenUrlCommand}"
+                                                CommandParameter="https://noverse.dev/docs/win-config/"
+                                                Padding="10,5"
+                                                FontSize="11"
+                                                Margin="0,0,6,0"
+                                                Content="Noverse Docs" />
+                                        <Button Style="{StaticResource FluentButtonStyle}"
+                                                Command="{Binding OpenUrlCommand}"
+                                                CommandParameter="https://github.com/Vektor010/win-tweaker/releases"
+                                                Padding="10,5"
+                                                FontSize="11"
+                                                Content="Релизы" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
                         </Border>
+
+                        <!-- Bento Row 1: Build Info & Database/Upstream Verification -->
+                        <Grid Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Card 1: Build & Platform -->
+                            <Border Grid.Column="0" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="12" Padding="18,16" Margin="0,0,6,0">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                                        <Border Width="24" Height="24" CornerRadius="6" Background="{DynamicResource AccentFill}" Margin="0,0,8,0">
+                                            <TextBlock Text="&#xE950;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="12" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <TextBlock Text="АРХИТЕКТУРА И СБОРКА" Style="{StaticResource CardHeaderStyle}" VerticalAlignment="Center" />
+                                    </StackPanel>
+
+                                    <Border Background="{DynamicResource SearchBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="8" Padding="12,10">
+                                        <StackPanel>
+                                            <Grid Margin="0,3">
+                                                <TextBlock Text="Версия ядра" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" />
+                                                <TextBlock Text="VEKTOR 2.0.0 (2026)" FontFamily="{StaticResource FontMono}" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" HorizontalAlignment="Right" />
+                                            </Grid>
+                                            <Grid Margin="0,3">
+                                                <TextBlock Text="Платформа" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" />
+                                                <TextBlock Text=".NET Framework 4.x • WPF x64" FontFamily="{StaticResource FontMono}" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" HorizontalAlignment="Right" />
+                                            </Grid>
+                                            <Grid Margin="0,3">
+                                                <TextBlock Text="Стиль и рендер" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" />
+                                                <TextBlock Text="Fluent 2 • Mica • DWM Native" FontFamily="{StaticResource FontMono}" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource CyanAccentBrush}" HorizontalAlignment="Right" />
+                                            </Grid>
+                                            <Grid Margin="0,3">
+                                                <TextBlock Text="Размер дистрибутива" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" />
+                                                <TextBlock Text="~1.1 МБ (без зависимостей)" FontFamily="{StaticResource FontMono}" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource SuccessBrush}" HorizontalAlignment="Right" />
+                                            </Grid>
+                                            <Grid Margin="0,3">
+                                                <TextBlock Text="Нативные модули" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" />
+                                                <TextBlock Text="WDDM • WNF • MMCSS • NVML" FontFamily="{StaticResource FontMono}" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" HorizontalAlignment="Right" />
+                                            </Grid>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Card 2: Database & Verification -->
+                            <Border Grid.Column="1" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="12" Padding="18,16" Margin="6,0,0,0">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                                        <Border Width="24" Height="24" CornerRadius="6" Background="{DynamicResource SuccessFill}" Margin="0,0,8,0">
+                                            <TextBlock Text="&#xE73E;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="12" Foreground="{DynamicResource SuccessBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <TextBlock Text="БАЗА ТВИКОВ И ВЕРИФИКАЦИЯ" Style="{StaticResource CardHeaderStyle}" VerticalAlignment="Center" />
+                                    </StackPanel>
+
+                                    <Border Background="{DynamicResource SearchBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="8" Padding="12,10">
+                                        <StackPanel>
+                                            <Grid Margin="0,3">
+                                                <TextBlock Text="Всего оптимизаций" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" />
+                                                <TextBlock Text="850 твиков • 12 категорий" FontFamily="{StaticResource FontMono}" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" HorizontalAlignment="Right" />
+                                            </Grid>
+                                            <Grid Margin="0,3">
+                                                <TextBlock Text="Первоисточник" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" />
+                                                <TextBlock Text="nohuto/win-config @ 6e26333" FontFamily="{StaticResource FontMono}" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Right" />
+                                            </Grid>
+                                            <Grid Margin="0,3">
+                                                <TextBlock Text="Готовые PS1 скрипты" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" />
+                                                <TextBlock Text="52 скрипта (AST проверены)" FontFamily="{StaticResource FontMono}" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" HorizontalAlignment="Right" />
+                                            </Grid>
+                                            <Grid Margin="0,3">
+                                                <TextBlock Text="Автотесты движка" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" />
+                                                <TextBlock Text="13 сьюитов • 7667 PASS" FontFamily="{StaticResource FontMono}" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource SuccessBrush}" HorizontalAlignment="Right" />
+                                            </Grid>
+                                            <Grid Margin="0,3">
+                                                <TextBlock Text="Целостность базы" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" />
+                                                <TextBlock Text="SHA-256 Embedded Verified" FontFamily="{StaticResource FontMono}" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource CyanAccentBrush}" HorizontalAlignment="Right" />
+                                            </Grid>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <!-- Bento Row 2: Key Capabilities & Keyboard Shortcuts -->
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Card 3: Core Capabilities -->
+                            <Border Grid.Column="0" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="12" Padding="18,16" Margin="0,0,6,0">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                        <Border Width="24" Height="24" CornerRadius="6" Background="{DynamicResource CyanFill}" Margin="0,0,8,0">
+                                            <TextBlock Text="&#xE945;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="12" Foreground="{DynamicResource CyanAccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <TextBlock Text="КЛЮЧЕВЫЕ ВОЗМОЖНОСТИ" Style="{StaticResource CardHeaderStyle}" VerticalAlignment="Center" />
+                                    </StackPanel>
+
+                                    <TextBlock Text="• Прямая настройка системного реестра с автоматическим снимком исходных значений и безопасным откатом в один клик." FontSize="11.5" Foreground="{DynamicResource TextSecondary}" TextWrapping="Wrap" Margin="0,0,0,6" />
+                                    <TextBlock Text="• Сетевой стек 2026: TCP BBR2 (Windows 11), отключение Nagle/LLMNR/mDNS, настройка RSS/RSC и очередей сетевой карты." FontSize="11.5" Foreground="{DynamicResource TextSecondary}" TextWrapping="Wrap" Margin="0,0,0,6" />
+                                    <TextBlock Text="• Гейминг и минимальный input-lag: HAGS, Flip Queue, MMCSS/NDIS, Game Mode WNF, отключение CEF-нагрузки Steam и телеметрии NVIDIA." FontSize="11.5" Foreground="{DynamicResource TextSecondary}" TextWrapping="Wrap" Margin="0,0,0,6" />
+                                    <TextBlock Text="• Живой мониторинг температуры GPU (NVML), нагрузки ЦП/RAM, пинга и отслеживание внешних изменений реестра в реальном времени." FontSize="11.5" Foreground="{DynamicResource TextSecondary}" TextWrapping="Wrap" />
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Card 4: Shortcuts & Author Info -->
+                            <Border Grid.Column="1" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="12" Padding="18,16" Margin="6,0,0,0">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                        <Border Width="24" Height="24" CornerRadius="6" Background="{DynamicResource WarningFill}" Margin="0,0,8,0">
+                                            <TextBlock Text="&#xE765;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="12" Foreground="{DynamicResource WarningBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <TextBlock Text="БЫСТРОЕ УПРАВЛЕНИЕ И СОВЕТЫ" Style="{StaticResource CardHeaderStyle}" VerticalAlignment="Center" />
+                                    </StackPanel>
+
+                                    <Grid Margin="0,3">
+                                        <TextBlock Text="Мгновенный поиск по 850 твикам" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
+                                        <Border HorizontalAlignment="Right" CornerRadius="4" Background="{DynamicResource BadgeBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" Padding="6,2">
+                                            <TextBlock Text="Ctrl + K  /  Ctrl + F" FontFamily="{StaticResource FontMono}" FontSize="10.5" Foreground="{DynamicResource TextPrimary}" />
+                                        </Border>
+                                    </Grid>
+                                    <Grid Margin="0,3">
+                                        <TextBlock Text="Ключи реестра и ссылка на источник" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
+                                        <Border HorizontalAlignment="Right" CornerRadius="4" Background="{DynamicResource BadgeBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" Padding="6,2">
+                                            <TextBlock Text="Клик по карточке" FontFamily="{StaticResource FontMono}" FontSize="10.5" Foreground="{DynamicResource TextPrimary}" />
+                                        </Border>
+                                    </Grid>
+                                    <Grid Margin="0,3">
+                                        <TextBlock Text="Копировать конфиг ПК в буфер" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
+                                        <Border HorizontalAlignment="Right" CornerRadius="4" Background="{DynamicResource BadgeBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" Padding="6,2">
+                                            <TextBlock Text="Обзор → Копировать" FontFamily="{StaticResource FontMono}" FontSize="10.5" Foreground="{DynamicResource TextPrimary}" />
+                                        </Border>
+                                    </Grid>
+                                    <Grid Margin="0,3">
+                                        <TextBlock Text="Сверка с GitHub автора (CLI)" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
+                                        <Border HorizontalAlignment="Right" CornerRadius="4" Background="{DynamicResource BadgeBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" Padding="6,2">
+                                            <TextBlock Text="sync-upstream.ps1" FontFamily="{StaticResource FontMono}" FontSize="10.5" Foreground="{DynamicResource CyanAccentBrush}" />
+                                        </Border>
+                                    </Grid>
+
+                                    <Border Background="{DynamicResource SearchBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="8" Padding="10,7" Margin="0,10,0,0">
+                                        <TextBlock Text="Автор сборки: Vektor010 • База знаний: Noverse (nohuto/win-config) • Открытый исходный код"
+                                                   FontSize="10.5"
+                                                   Foreground="{DynamicResource TextSecondary}"
+                                                   TextWrapping="Wrap" />
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
                     </StackPanel>
-                </Border>
+                </ScrollViewer>
             </Grid>
         </Grid>
     </Grid>

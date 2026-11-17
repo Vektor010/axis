@@ -281,6 +281,17 @@ namespace WinTweaker
                 res["AccentFill"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#268B7CF6"));
                 res["AccentBorder"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#8B7CF6"));
 
+                res["CyanAccentBrush"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22D3EE"));
+                res["CyanFill"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2222D3EE"));
+                res["AccentGradient"] = new LinearGradientBrush(
+                    (Color)ColorConverter.ConvertFromString("#7C3AED"),
+                    (Color)ColorConverter.ConvertFromString("#6366F1"),
+                    new Point(0, 0), new Point(1, 1));
+                res["HeroCardBg"] = new LinearGradientBrush(
+                    (Color)ColorConverter.ConvertFromString("#17142B"),
+                    (Color)ColorConverter.ConvertFromString("#11111C"),
+                    new Point(0, 0), new Point(1, 1));
+
                 res["SuccessBrush"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22C55E"));
                 res["SuccessFill"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2622C55E"));
                 res["SuccessBorder"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22C55E"));
@@ -326,9 +337,20 @@ namespace WinTweaker
                 res["TextPrimary"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1B1B28"));
                 res["TextSecondary"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#6B6B80"));
 
-                res["AccentBrush"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#8B7CF6"));
-                res["AccentFill"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#268B7CF6"));
-                res["AccentBorder"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#8B7CF6"));
+                res["AccentBrush"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#7C3AED"));
+                res["AccentFill"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#207C3AED"));
+                res["AccentBorder"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#7C3AED"));
+
+                res["CyanAccentBrush"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0891B2"));
+                res["CyanFill"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#200891B2"));
+                res["AccentGradient"] = new LinearGradientBrush(
+                    (Color)ColorConverter.ConvertFromString("#7C3AED"),
+                    (Color)ColorConverter.ConvertFromString("#4F46E5"),
+                    new Point(0, 0), new Point(1, 1));
+                res["HeroCardBg"] = new LinearGradientBrush(
+                    (Color)ColorConverter.ConvertFromString("#F5F3FF"),
+                    (Color)ColorConverter.ConvertFromString("#FFFFFF"),
+                    new Point(0, 0), new Point(1, 1));
 
                 res["SuccessBrush"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22C55E"));
                 res["SuccessFill"] = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2622C55E"));

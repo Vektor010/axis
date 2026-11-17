@@ -175,6 +175,14 @@ namespace WinTweaker.ViewModels
         private string _pingCustomHost;
         private string _settingsSaveNotification;
 
+        // Native Kernel Diagnostics (WDDM / MMCSS / WNF) & UI 2026 Helpers
+        private string _hagsStatusText;
+        private string _flipQueueStatusText;
+        private string _mmcssRespText;
+        private string _mmcssThrottlingText;
+        private string _mmcssTasksText;
+        private string _copySpecsFeedback;
+
         public ObservableCollection<TweakCardViewModel> FilteredTweaks
         {
             get { return this._filteredTweaks; }
@@ -799,6 +807,20 @@ namespace WinTweaker.ViewModels
             get { return this._gameModeState != null ? this._gameModeState.StatusSummary : "Game Mode: Ожидание"; }
         }
 
+        public string GameModeShortStatus
+        {
+            get
+            {
+                string raw = this.GameModeStatusSummary;
+                if (string.IsNullOrEmpty(raw)) return "Ожидание";
+                if (raw.StartsWith("Game Mode: ", StringComparison.OrdinalIgnoreCase))
+                {
+                    return raw.Substring("Game Mode: ".Length);
+                }
+                return raw;
+            }
+        }
+
         public string GameModeActiveGameDisplay
         {
             get { return this._gameModeState != null ? this._gameModeState.ActiveGameProcessName : "Отсутствует"; }
@@ -869,6 +891,60 @@ namespace WinTweaker.ViewModels
             set { this._settingsSaveNotification = value; this.OnPropertyChanged("SettingsSaveNotification"); }
         }
 
+        // Native Kernel Diagnostics & Progress (2026 Bento Overview)
+        public string HagsStatusText
+        {
+            get { return this._hagsStatusText; }
+            set { this._hagsStatusText = value; this.OnPropertyChanged("HagsStatusText"); }
+        }
+
+        public string FlipQueueStatusText
+        {
+            get { return this._flipQueueStatusText; }
+            set { this._flipQueueStatusText = value; this.OnPropertyChanged("FlipQueueStatusText"); }
+        }
+
+        public string MmcssRespText
+        {
+            get { return this._mmcssRespText; }
+            set { this._mmcssRespText = value; this.OnPropertyChanged("MmcssRespText"); }
+        }
+
+        public string MmcssThrottlingText
+        {
+            get { return this._mmcssThrottlingText; }
+            set { this._mmcssThrottlingText = value; this.OnPropertyChanged("MmcssThrottlingText"); }
+        }
+
+        public string MmcssTasksText
+        {
+            get { return this._mmcssTasksText; }
+            set { this._mmcssTasksText = value; this.OnPropertyChanged("MmcssTasksText"); }
+        }
+
+        public string CopySpecsFeedback
+        {
+            get { return this._copySpecsFeedback; }
+            set { this._copySpecsFeedback = value; this.OnPropertyChanged("CopySpecsFeedback"); }
+        }
+
+        public double OptimizationPercent
+        {
+            get
+            {
+                if (this.TotalTweaksCount <= 0) return 0.0;
+                return Math.Round((100.0 * this.EnabledTweaksCount) / this.TotalTweaksCount, 1);
+            }
+        }
+
+        public string OptimizationPercentText
+        {
+            get
+            {
+                return string.Format("{0:F0}%", this.OptimizationPercent);
+            }
+        }
+
         // Commands
         public ICommand ToggleSidebarCommand { get; private set; }
         public ICommand ToggleThemeCommand { get; private set; }
@@ -881,6 +957,8 @@ namespace WinTweaker.ViewModels
         public ICommand SaveSettingsCommand { get; private set; }
         public ICommand ClearJournalCommand { get; private set; }
         public ICommand ClearSearchCommand { get; private set; }
+        public ICommand CopySpecsCommand { get; private set; }
+        public ICommand OpenUrlCommand { get; private set; }
 
         public event Action<bool> ThemeChanged;
 
@@ -935,6 +1013,8 @@ namespace WinTweaker.ViewModels
             this.SaveSettingsCommand = new RelayCommand(this.OnSaveSettings);
             this.ClearJournalCommand = new RelayCommand(this.OnClearJournal);
             this.ClearSearchCommand = new RelayCommand(this.OnClearSearch);
+            this.CopySpecsCommand = new RelayCommand(this.OnCopySpecs);
+            this.OpenUrlCommand = new RelayCommand(this.OnOpenUrl);
 
             this.InitializeServices();
             this.InitializeNavItems();
@@ -1040,8 +1120,8 @@ namespace WinTweaker.ViewModels
             this.CpuStatus = string.Format("{0} потоков", Environment.ProcessorCount);
             this.RamDisplay = "0 ГБ";
             this.RamStatus = "0 ГБ";
-            this.PingDisplay = "Нет данных";
-            this.PingStatus = "до шлюза";
+            this.PingDisplay = "—";
+            this.PingStatus = "Измерение...";
             this.TempDisplay = "Нет данных";
             this.TempStatus = "Опрос датчика...";
             this.TweaksDisplay = "0";
@@ -1130,6 +1210,7 @@ namespace WinTweaker.ViewModels
             this.RamChartPoints = this.CreateChartPoints(this._ramHistory);
 
             this.UpdateRestorePointStatus();
+            this.RefreshNativeKernelDiagnostics();
 
             // Асинхронное фоновое обновление пинга и точных дифференциалов
             Task.Run(() =>
@@ -1140,6 +1221,104 @@ namespace WinTweaker.ViewModels
                     this.UpdateLiveMetricsUI(m);
                 }));
             });
+        }
+
+        private void RefreshNativeKernelDiagnostics()
+        {
+            this.HagsStatusText = "Нет данных";
+            this.FlipQueueStatusText = "Нет данных";
+            this.MmcssRespText = "—";
+            this.MmcssThrottlingText = "—";
+            this.MmcssTasksText = "—";
+
+            try
+            {
+                GpuHwschService hwsch = new GpuHwschService();
+                GpuHwschState gpuState = hwsch.QueryPrimaryGpuState();
+                if (gpuState != null)
+                {
+                    this.HagsStatusText = string.IsNullOrEmpty(gpuState.HagsStatusDisplay) ? "—" : gpuState.HagsStatusDisplay;
+                    this.FlipQueueStatusText = string.IsNullOrEmpty(gpuState.FlipQueueStatusDisplay) ? "—" : gpuState.FlipQueueStatusDisplay;
+                }
+            }
+            catch { }
+
+            try
+            {
+                MmcssTaskService mmcss = new MmcssTaskService();
+                MmcssTaskState mState = mmcss.QueryState();
+                if (mState != null)
+                {
+                    string rawResp = string.IsNullOrEmpty(mState.SystemResponsivenessDisplay) ? "—" : mState.SystemResponsivenessDisplay;
+                    int parenIdx = rawResp.IndexOf('(');
+                    if (parenIdx > 0)
+                    {
+                        rawResp = rawResp.Substring(0, parenIdx).Trim();
+                    }
+                    this.MmcssRespText = "Resp " + rawResp;
+                    this.MmcssThrottlingText = string.IsNullOrEmpty(mState.NetworkThrottlingDisplay) ? "—" : mState.NetworkThrottlingDisplay;
+                    this.MmcssTasksText = string.Format("{0} задач", mState.AvailableTasksCount);
+                }
+            }
+            catch { }
+
+            try
+            {
+                if (this._gameModeWnfService != null)
+                {
+                    this.GameModeState = this._gameModeWnfService.QueryState();
+                    this.OnPropertyChanged("GameModeStatusSummary");
+                    this.OnPropertyChanged("GameModeShortStatus");
+                    this.OnPropertyChanged("GameModeActiveGameDisplay");
+                    this.OnPropertyChanged("GameModePowerProfileDisplay");
+                    this.OnPropertyChanged("IsGameModeRunning");
+                }
+            }
+            catch { }
+        }
+
+        private void OnCopySpecs(object parameter)
+        {
+            try
+            {
+                string summary = string.Format(
+                    "VEKTOR — Конфигурация системы\r\n" +
+                    "Процессор: {0}\r\n" +
+                    "Мат. плата: {1}\r\n" +
+                    "Видеокарта: {2}\r\n" +
+                    "Память: {3}\r\n" +
+                    "Диски: {4}\r\n" +
+                    "ОС: {5}\r\n" +
+                    "HAGS: {6} | Flip Queue: {7}\r\n" +
+                    "MMCSS Resp: {8} | NDIS Throttling: {9}\r\n" +
+                    "Активных твиков: {10} из {11} ({12})",
+                    this.CpuSpec, this.MotherboardSpec, this.GpuSpec, this.RamSpec,
+                    this.DisksSpec, this.OsSpec, this.HagsStatusText, this.FlipQueueStatusText,
+                    this.MmcssRespText, this.MmcssThrottlingText,
+                    this.EnabledTweaksCount, this.TotalTweaksCount, this.OptimizationPercentText);
+                Clipboard.SetText(summary);
+                this.CopySpecsFeedback = "Скопировано!";
+            }
+            catch
+            {
+                this.CopySpecsFeedback = "Ошибка буфера";
+            }
+        }
+
+        private void OnOpenUrl(object parameter)
+        {
+            string url = parameter as string;
+            if (string.IsNullOrEmpty(url)) return;
+            if (!url.StartsWith("https://", StringComparison.OrdinalIgnoreCase)) return;
+            try
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = url,
+                    UseShellExecute = true
+                });
+            }
+            catch { }
         }
 
         private void UpdateRestorePointStatus()
@@ -1677,6 +1856,8 @@ namespace WinTweaker.ViewModels
             this.OnPropertyChanged("EnabledTweaksCount");
             this.OnPropertyChanged("DisabledTweaksCount");
             this.OnPropertyChanged("NeedsReviewCount");
+            this.OnPropertyChanged("OptimizationPercent");
+            this.OnPropertyChanged("OptimizationPercentText");
             this.OnPropertyChanged("SegmentAllText");
             this.OnPropertyChanged("SegmentEnabledText");
             this.OnPropertyChanged("SegmentDisabledText");

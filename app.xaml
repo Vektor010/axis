@@ -7,6 +7,40 @@
         <common:InverseBooleanToVisibilityConverter x:Key="InverseBoolToVis" />
         <common:GroupToEnabledCountConverter x:Key="GroupToEnabledCountConverter" />
 
+        <!-- VEKTOR 2026 Typography System -->
+        <FontFamily x:Key="FontDisplay">Bahnschrift, Segoe UI Variable Display, Segoe UI</FontFamily>
+        <FontFamily x:Key="FontUI">Segoe UI Variable Text, Segoe UI</FontFamily>
+        <FontFamily x:Key="FontMono">Cascadia Mono, Consolas</FontFamily>
+
+        <!-- VEKTOR 2026 Compact Gradient ProgressBar -->
+        <Style x:Key="VektorProgressBarStyle" TargetType="ProgressBar">
+            <Setter Property="Height" Value="5" />
+            <Setter Property="Background" Value="{DynamicResource SearchBg}" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ProgressBar">
+                        <Grid x:Name="TemplateRoot" SnapsToDevicePixels="True">
+                            <Border x:Name="PART_Track"
+                                    CornerRadius="3"
+                                    Background="{TemplateBinding Background}" />
+                            <Decorator x:Name="PART_Indicator" HorizontalAlignment="Left">
+                                <Border CornerRadius="3">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                            <GradientStop Color="#8B5CF6" Offset="0.0" />
+                                            <GradientStop Color="#6366F1" Offset="0.55" />
+                                            <GradientStop Color="#22D3EE" Offset="1.0" />
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                </Border>
+                            </Decorator>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <!-- Tachyon Group Expander Style -->
         <Style x:Key="TachyonGroupExpanderStyle" TargetType="Expander">
             <Setter Property="Background" Value="Transparent" />
@@ -222,7 +256,7 @@
 
         <!-- Tachyon Accent Button Style -->
         <Style x:Key="AccentButtonStyle" TargetType="Button" BasedOn="{StaticResource FluentButtonStyle}">
-            <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+            <Setter Property="Background" Value="{DynamicResource AccentGradient}" />
             <Setter Property="Foreground" Value="#FFFFFF" />
             <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
             <Setter Property="Template">
@@ -553,7 +587,7 @@
         </Style>
 
         <Style x:Key="LargeNumberStyle" TargetType="TextBlock">
-            <Setter Property="FontFamily" Value="Segoe UI Variable Display, Segoe UI" />
+            <Setter Property="FontFamily" Value="{StaticResource FontDisplay}" />
             <Setter Property="FontSize" Value="28" />
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />

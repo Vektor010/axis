@@ -83,7 +83,8 @@ namespace WinTweaker
 
             this.PreviewKeyDown += delegate(object sender, System.Windows.Input.KeyEventArgs kArgs)
             {
-                if (kArgs.Key == System.Windows.Input.Key.F && (System.Windows.Input.Keyboard.Modifiers & System.Windows.Input.ModifierKeys.Control) == System.Windows.Input.ModifierKeys.Control)
+                bool ctrl = (System.Windows.Input.Keyboard.Modifiers & System.Windows.Input.ModifierKeys.Control) == System.Windows.Input.ModifierKeys.Control;
+                if (ctrl && (kArgs.Key == System.Windows.Input.Key.F || kArgs.Key == System.Windows.Input.Key.K))
                 {
                     if (this.SearchBoxControl != null)
                     {
