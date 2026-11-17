@@ -4,21 +4,21 @@
 - Platform: .NET Framework 4.6.2 (WPF / XAML)
 - Compiler: C# 5.0 (C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe)
 - DO NOT use C# 6.0+ syntax: no string interpolation ($"..."), no null propagation (?.), no nameof(), no expression-bodied members (=>), no read-only auto-properties.
-- Binary size constraint: strictly < 5.0 MB for Tweaker.exe.
+- Binary size constraint: strictly < 5.0 MB for Axis.exe.
 
 ## Build & Test Commands
 - Build: powershell -ExecutionPolicy Bypass -File .\build.ps1
 - Run Tests: .\dist\Tests.exe
-- Target: All 7660 tests MUST pass (7660 PASS / 0 FAIL). Never accept regressions.
+- Target: All 7760 tests MUST pass (7760 PASS / 0 FAIL). Never accept regressions.
 
 ## Theme & UI Standards
 - Palette: Tokyo Night Tachyon Dark (#0B0B12 background, #0F0F17 sidebar, #101018 header, #12121B card, #242434 border, #8B7CF6 accent).
 - DWM Titlebar colors in NativeMethods.ApplyWindowFrameColors must match WindowBg (#0B0B12 / #F3F3F8).
 - Keep search box fixed width (380px) with CaretBrush="{DynamicResource TextPrimary}".
-- Scrollbar must remain an overlay 4px track to prevent layout jumping.
-- Cleanup category tweaks must be action buttons [🗑 Очистить], not toggles.
+- Virtualization: ItemsControl must use internal ScrollViewer with VirtualizingStackPanel (Direct Viewport).
+- Cleanup category tweaks must be action buttons [Очистить], not toggles.
 
 ## Safety Architecture
 - Default mode is MockRegistryStore (no real registry changes). Real mode requires --real flag and admin elevation.
-- 850 tweaks defined in data/tweaks.json according to data/tweaks.schema.json.
-- Refer to AI_INSTRUCTIONS.md for full architecture details.
+- 856 tweaks defined in data/tweaks.json according to data/tweaks.schema.json.
+- Refer to AGENTS.md and docs/architecture/ARCHITECTURE.md for full architecture details.

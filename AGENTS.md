@@ -42,11 +42,35 @@ AXIS is an ultra-compact (~1.2 MB), zero-overhead, native Windows 10/11 optimiza
 | **Full Build & Test** | `powershell -ExecutionPolicy Bypass -File .\build.ps1` | `7760 PASS / 0 FAIL`, 0 AST errors, `dist\Axis.exe` generated |
 | **Run Tests Only** | `dist\Tests.exe` | 13 test suites PASS |
 | **Verify Code & Scripts**| `powershell -ExecutionPolicy Bypass -File .\verify-all.ps1` | AST checks, schema validation, SHA-256 parity |
-| **Headless Screenshot** | `dist\Axis.exe --mock --screenshot test.png --tab overview` | Generates 1180x800 offscreen render |
+| **Headless Screenshot** | `dist\Axis.exe --mock --screenshot test.png --tab overview` | Generates 1200x840 offscreen render |
 
 ---
 
-## 4. Key Codebase Directories
+## 4. Documentation Navigation Map (Single Source of Truth)
+
+All project documentation is organized in [`docs/`](docs/) and visual assets in [`assets/`](assets/). **Never guess paths**; use this index:
+
+| Domain | File Path | Scope & Purpose |
+| :--- | :--- | :--- |
+| **Architecture** | [`docs/architecture/ARCHITECTURE.md`](docs/architecture/ARCHITECTURE.md) | Component model, state isolation, registry store abstraction, MVVM patterns |
+| **Decisions (ADR)** | [`docs/architecture/DECISIONS.md`](docs/architecture/DECISIONS.md) | Architectural decision records (C# 5.0, Frozen Brushes, WNF, JSON state) |
+| **Development** | [`docs/development/DEVELOPMENT.md`](docs/development/DEVELOPMENT.md) | Compiler setup, MSBuild paths, build & test CLI commands |
+| **Contributing** | [`docs/development/CONTRIBUTING.md`](docs/development/CONTRIBUTING.md) | Code style, commit rules, pull request checklist |
+| **Project State** | [`docs/project/PROJECT_STATE.md`](docs/project/PROJECT_STATE.md) | Current operational status, metrics, recent changes, active limitations |
+| **Roadmap** | [`docs/project/ROADMAP.md`](docs/project/ROADMAP.md) | Feature roadmap, planned milestones (v2.1, v2.2) |
+| **Changelog** | [`docs/project/CHANGELOG.md`](docs/project/CHANGELOG.md) | Version history in Keep a Changelog format |
+| **Known Issues** | [`docs/project/KNOWN_ISSUES.md`](docs/project/KNOWN_ISSUES.md) | Documented edge cases, OS build requirements, and workarounds |
+| **Security** | [`docs/security/SECURITY.md`](docs/security/SECURITY.md) | Security model, registry safety boundaries, vulnerability disclosure |
+| **Support** | [`docs/guides/SUPPORT.md`](docs/guides/SUPPORT.md) | Diagnostics export instructions and support workflow |
+| **AI Guide (RU)** | [`docs/guides/AI_INSTRUCTIONS.md`](docs/guides/AI_INSTRUCTIONS.md) | Deep technical context and reference guide in Russian |
+| **Animations** | [`assets/animations/demo.gif`](assets/animations/demo.gif) | Full UI walkthrough animation (original quality) |
+| **Screenshots** | [`assets/screenshots/`](assets/screenshots/) | Tab screenshots: overview, tweaks, settings, about |
+| **Branding** | [`assets/branding/`](assets/branding/) | App icons (`app.ico`) and vector logos (`logo.svg`) |
+| **Diagrams** | [`assets/diagrams/`](assets/diagrams/) | Visual architecture diagrams (`architecture.svg`) |
+
+---
+
+## 5. Key Codebase Directories
 
 ```
 win-tweaker/
@@ -77,10 +101,10 @@ win-tweaker/
 
 ---
 
-## 5. Agent Verification Checklist Before Completing Work
+## 6. Agent Verification Checklist Before Completing Work
 
 1. Did you run `powershell -ExecutionPolicy Bypass -File .\build.ps1`?
 2. Did all 7,760 tests pass?
 3. Did `dist\Axis.exe` compile with a file size under 5.0 MB?
 4. Are all modified `.ps1` scripts valid under PowerShell AST?
-5. Did you update `PROJECT_STATE.md` with your exact changes?
+5. Did you update `docs/project/PROJECT_STATE.md` with your exact changes?

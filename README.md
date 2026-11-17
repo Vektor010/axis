@@ -12,7 +12,7 @@
 > It targets minimal input latency, deterministic frame pacing, and reduced kernel DPC delays—backed by **isolated snapshots (`state.json`) for safe, single-click rollbacks**.
 
 <p align="center">
-  <img src="docs/images/demo.gif" alt="AXIS 2026 Interactive Walkthrough" width="100%" />
+  <img src="assets/animations/demo.gif" alt="AXIS 2026 Interactive Walkthrough" width="100%" />
 </p>
 
 ---
@@ -35,19 +35,19 @@
 
 ### 1. Real-Time Hardware Telemetry & Kernel Subsystems (Overview)
 *Hardware-accelerated dashboard monitoring CPU/RAM workloads over a 60-second window, direct NVIDIA NVML GPU temperatures, WDDM 3.0 Hardware Flip Queue status, and multimedia scheduler (MMCSS) parameters.*
-![Overview](docs/images/overview.png)
+![Overview](assets/screenshots/overview.png)
 
 ### 2. Deep Tweak Inspector (Real System Value vs Target)
 *Every tweak includes an inspector panel revealing the live registry value currently active in Windows, target value, OS build requirements, and explicit Apply / Revert controls.*
-![Tweaks with Inspector](docs/images/tweaks_expanded.png)
+![Tweaks with Inspector](assets/screenshots/tweaks_expanded.png)
 
 ### 3. System Protection, Snapshots & Telemetry Center (Settings)
 *Complete system safety hub: Windows System Restore point creation, local configuration snapshot backup export, esports polling frequency toggle, and ping diagnostics.*
-![Settings Hub](docs/images/settings.png)
+![Settings Hub](assets/screenshots/settings.png)
 
 ### 4. Technical Architecture & Database Verification (About)
 *Real-time verification of embedded tweak parity, AST script status, and native WinAPI module bindings.*
-![About](docs/images/about.png)
+![About](assets/screenshots/about.png)
 
 ---
 
@@ -111,6 +111,20 @@ The build pipeline performs:
 2. AST syntax check across all 52 production scripts (`verify-all.ps1`).
 3. SHA-256 byte-for-byte verification of embedded `tweaks.json`.
 4. Execution of all **7,760 unit and integration tests** (13 test suites).
+
+---
+
+## 📚 Documentation
+
+Detailed technical documentation is organized in [`docs/`](docs/):
+
+| Category | Documents | Description |
+| :--- | :--- | :--- |
+| **Architecture** | [Architecture](docs/architecture/ARCHITECTURE.md) • [Decisions](docs/architecture/DECISIONS.md) | Component model, state isolation, and ADRs |
+| **Development** | [Development](docs/development/DEVELOPMENT.md) • [Contributing](docs/development/CONTRIBUTING.md) | Compiler prerequisites, build instructions, and guidelines |
+| **Project** | [Project State](docs/project/PROJECT_STATE.md) • [Changelog](docs/project/CHANGELOG.md) • [Roadmap](docs/project/ROADMAP.md) • [Known Issues](docs/project/KNOWN_ISSUES.md) | Operational status, releases, and documented edge cases |
+| **Security** | [Security Policy](docs/security/SECURITY.md) | Vulnerability disclosure and registry rollback guarantees |
+| **Guides** | [Support Guide](docs/guides/SUPPORT.md) | Diagnostics export and troubleshooting instructions |
 
 ---
 
