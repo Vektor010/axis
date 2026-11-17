@@ -10,7 +10,8 @@
   - ⚠️ **Запрещено использовать синтаксис C# 6.0+**: интерполяцию строк `$"..."`, оператор `?.`, автосвойства только для чтения `{ get; } = val;`, `nameof(...)`. Используйте `string.Format(...)`, явные проверки на `null`, полные свойства с private-полями.
 - **Платформа**: .NET Framework 4.6.2 (WPF / XAML).
 - **Размер бинарника**: строго **< 5.0 МБ** (текущий размер `Tweaker.exe` ~ 1.06 МБ). Запрещено подключать тяжеловесные внешние NuGet-пакеты.
-- **Скрипт сборки**: `powershell -ExecutionPolicy Bypass -File .\build.ps1` (собирает `dist/Tweaker.exe` и `dist/Tests.exe`).
+- **Скрипт сборки и обязательной проверки**: `powershell -ExecutionPolicy Bypass -File .\build.ps1` (собирает `dist/Tweaker.exe` и `dist/Tests.exe`, а затем **автоматически запускает `verify-all.ps1`**).
+- **Сверка с первоисточником (`nohuto/win-config` и `noverse.dev`)**: `powershell -ExecutionPolicy Bypass -File .\sync-upstream.ps1`.
 
 ---
 
@@ -48,8 +49,8 @@ win-tweaker/
 - `presets` — массив тегов пресетов.
 
 ### Режимы работы
-- **Тестовый режим (по умолчанию)**: `_isRealMode = false`. Все операции применяются исключительно к виртуальному слою `MockRegistryStore` в памяти. Физический реестр Windows не изменяется.
-- **Реальный режим**: активируется флагом `--real`. Требует прав Администратора и отображает защитный диалог подтверждения перед запуском.
+- **Реальный боевой режим (по умолчанию)**: `_isRealMode = true`. Приложение сразу готово применять твики к системному реестру Windows без лишних тестовых заглушек и всплывающих подтверждений (при запуске без прав администратора автоматически запрашивается UAC через манифест).
+- **Тестовый (песочница) режим**: активируется флагом `--test` / `--mock` (и используется автотестами `Tests.exe` на виртуальном `MockRegistryStore`).
 - **Действия очистки (`category == "cleanup"`)**: отображаются в UI как кнопки `[🗑 Очистить]` (свойство `IsActionTweak`), а не как тумблеры включения/выключения.
 
 ---
@@ -79,21 +80,24 @@ win-tweaker/
 
 ---
 
-## 5. Система тестирования (Tests.exe)
+## 5. Система непрерывного тестирования и проверки кода (`verify-all.ps1` + `Tests.exe`)
 
-- **Команда запуска тестов**: `& ".\dist\Tests.exe"`
-- **Количество тестов**: ровно **7660 PASS / 0 FAIL**.
-- **Тест-сьюиты**:
-  0. Валидация JSON-схемы `tweaks.schema.json`.
-  1. Сверка каждого твика с первоисточниками `desc.md`.
-  2. Проверка UI-моделей и параметров категорий.
-  3-6. Валидация пресетов, типов данных и отката.
-  7. On-Demand NVCPL и сервисы NVIDIA.
-  8. Game Mode и WNF подсистема (`gm_effects`).
-  9. Планирование GPU и WDDM Hardware Flip Queue.
-  10. MMCSS Task Service (`SystemResponsiveness`, `NetworkThrottlingIndex`).
-  11. Тотальное сквозное тестирование 850 твиков на `MockRegistryStore`.
-- ⚠️ **Критическое правило**: Любые изменения кода, реестра, структур или ViewModels обязаны сохранять результат **7660 PASS / 0 FAIL**.
+- **Обязательная проверка при каждой сборке**: `.\build.ps1` автоматически вызывает `.\verify-all.ps1`:
+  1. PowerShell AST-валидация всех 52 `.ps1` скриптов (PS 5.1 `ParseFile` + UTF-8 `ParseInput`).
+  2. Глубокий аудит всех 850 твиков (`data/tweaks.json`): уникальность ID, чистота путей реестра без `\r\n`/`\\`, валидность типов, чистота русских текстов.
+  3. Побайтовая SHA-256 сверка встроенного ресурса `tweaks.json` в `dist/Tweaker.exe` с `data/tweaks.json` + проверка лимита `< 5.0 МБ`.
+  4. Прогон `dist/Tests.exe` — **13 тест-сьюитов, 7667 PASS / 0 FAIL**:
+     - 0. Валидация JSON-схемы `tweaks.schema.json`.
+     - 1. Сверка каждого твика с первоисточниками `desc.md` (диапазоны строк, полярность, маркер `(default)`).
+     - 2–6. Проверка UI-моделей, `RegistryStore`, `TweakEngine`, изоляции, `RegistryWatcher`, `RestorePointManager`.
+     - 7. Дизайн Tachyon, On-Demand NVCPL и сервисы NVIDIA.
+     - 8. Game Mode и WNF подсистема (`gm_effects`).
+     - 9. Планирование GPU и WDDM Hardware Flip Queue.
+     - 10. MMCSS Task Service (`SystemResponsiveness`, `NetworkThrottlingIndex`).
+     - 11. Тотальное сквозное тестирование 850 твиков на `MockRegistryStore` (Apply → Enabled → Revert).
+     - 12. Глубокий аудит целостности кода каждого твика и скриптов `scripts/`.
+- **CI/CD шаблон**: `docs/ci-verify.yml.template` (при желании скопировать в `.github/workflows/ci-verify.yml` для автозапуска `.\build.ps1` на Windows-раннере).
+- ⚠️ **Критическое правило**: Любые изменения кода, реестра, структур или ViewModels обязаны проходить `.\build.ps1` со статусом **7667 PASS / 0 FAIL** и 0 AST-ошибок.
 
 ---
 

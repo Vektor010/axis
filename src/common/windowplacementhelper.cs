@@ -112,10 +112,8 @@ namespace WinTweaker.Common
                 return true;
             }
 
-            bool hasScreens = false;
             foreach (Rect screen in screenWorkAreas)
             {
-                hasScreens = true;
                 if (screen.Width <= 0 || screen.Height <= 0)
                 {
                     continue;

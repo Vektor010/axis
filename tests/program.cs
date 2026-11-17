@@ -94,6 +94,10 @@ namespace WinTweaker.Tests
 
                 Console.WriteLine("\n--- ТЕСТ-СЮИТ 11: Тотальное тестирование всех твиков на движке TweakEngine с MockRegistryStore ---");
                 RunAllTweaksEngineMockTests(tweaksPath);
+
+                Console.WriteLine("\n--- ТЕСТ-СЮИТ 12: Глубокий аудит кода каждого твика и скриптов (пути, типы, кодировка, уникальность) ---");
+                RunDeepCodeIntegrityTests(tweaksPath);
+
                 Console.WriteLine("\n==================================================================");
                 Console.WriteLine(string.Format("ИТОГО ТЕСТОВ: {0} | УСПЕШНО: {1} | ПРОВАЛЕНО: {2}", _totalTests, _passedTests, _failedTests));
                 Console.WriteLine("==================================================================");
@@ -1620,6 +1624,91 @@ namespace WinTweaker.Tests
                     }
                 }
                 catch { }
+            }
+        }
+
+        private static void RunDeepCodeIntegrityTests(string tweaksPath)
+        {
+            if (!File.Exists(tweaksPath))
+            {
+                Assert(false, "DeepAudit: Наличие файла tweaks.json", tweaksPath);
+                return;
+            }
+
+            string json = File.ReadAllText(tweaksPath, Encoding.UTF8);
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+            serializer.MaxJsonLength = int.MaxValue;
+            List<TweakItem> tweaks = serializer.Deserialize<List<TweakItem>>(json);
+            Assert(tweaks != null && tweaks.Count > 0, "DeepAudit: Загрузка полной базы твиков", string.Format("Всего: {0}", tweaks != null ? tweaks.Count : 0));
+            if (tweaks == null) return;
+
+            HashSet<string> seenIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            List<string> dupIds = new List<string>();
+            List<string> badPaths = new List<string>();
+            List<string> badTexts = new List<string>();
+            List<string> badTypes = new List<string>();
+            string[] validRegTypes = new string[] { "REG_DWORD", "REG_SZ", "REG_QWORD", "REG_BINARY", "REG_EXPAND_SZ", "REG_MULTI_SZ" };
+
+            for (int i = 0; i < tweaks.Count; i++)
+            {
+                TweakItem t = tweaks[i];
+                if (!seenIds.Add(t.id))
+                {
+                    dupIds.Add(t.id);
+                }
+
+                string combinedText = (t.name_ru ?? "") + " " + (t.description_ru ?? "");
+                if (combinedText.IndexOf('\r') >= 0 || combinedText.IndexOf('\n') >= 0 || combinedText.IndexOf('\uFFFD') >= 0 ||
+                    combinedText.IndexOf("тублер", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    badTexts.Add(t.id);
+                }
+
+                if (t.registry != null)
+                {
+                    for (int r = 0; r < t.registry.Count; r++)
+                    {
+                        RegistryActionItem a = t.registry[r];
+                        if (string.IsNullOrEmpty(a.path) ||
+                            a.path.IndexOf('\r') >= 0 || a.path.IndexOf('\n') >= 0 || a.path.IndexOf('\t') >= 0 ||
+                            a.path.Contains("\\\\") || a.path.StartsWith("\\") || a.path.EndsWith("\\") ||
+                            a.path.Trim() != a.path ||
+                            string.IsNullOrEmpty(a.name) ||
+                            a.name.IndexOf('\r') >= 0 || a.name.IndexOf('\n') >= 0 || a.name.Trim() != a.name)
+                        {
+                            badPaths.Add(string.Format("{0}[{1}]", t.id, a.name));
+                        }
+
+                        if (Array.IndexOf(validRegTypes, a.type) < 0)
+                        {
+                            badTypes.Add(string.Format("{0}:{1}", t.id, a.type));
+                        }
+                    }
+                }
+            }
+
+            Assert(dupIds.Count == 0, "DeepAudit: Все ID твиков строго уникальны", string.Format("Дублей: {0}", dupIds.Count));
+            Assert(badPaths.Count == 0, "DeepAudit: Все пути и имена реестра не содержат переносов строк, табов и двойных слэшей",
+                badPaths.Count == 0 ? string.Format("Проверено {0} твиков", tweaks.Count) : string.Join(", ", badPaths.ToArray()));
+            Assert(badTexts.Count == 0, "DeepAudit: Все русские названия и описания чистые (без разорванных переносов, битой UTF-8 и опечаток)",
+                badTexts.Count == 0 ? string.Format("Проверено {0} твиков", tweaks.Count) : string.Join(", ", badTexts.ToArray()));
+            Assert(badTypes.Count == 0, "DeepAudit: Все типы параметров реестра валидны", string.Format("Невалидных: {0}", badTypes.Count));
+
+            // Проверка наличия и непустоты всех скриптов в scripts/
+            string repoRoot = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(tweaksPath), ".."));
+            string scriptsDir = Path.Combine(repoRoot, "scripts");
+            Assert(Directory.Exists(scriptsDir), "DeepAudit: Существование каталога scripts/", scriptsDir);
+            if (Directory.Exists(scriptsDir))
+            {
+                string[] ps1Files = Directory.GetFiles(scriptsDir, "*.ps1", SearchOption.TopDirectoryOnly);
+                int emptyCount = 0;
+                for (int i = 0; i < ps1Files.Length; i++)
+                {
+                    if (new FileInfo(ps1Files[i]).Length == 0) emptyCount++;
+                }
+                Assert(ps1Files.Length > 0 && emptyCount == 0,
+                    "DeepAudit: Все PowerShell-скрипты в scripts/ присутствуют и непустые",
+                    string.Format("Скриптов: {0}, пустых: {1}", ps1Files.Length, emptyCount));
             }
         }
     }

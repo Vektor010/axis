@@ -1,0 +1,20 @@
+name: Build & Verify All Tweaks
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-verify:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Tweaker.exe, Tests.exe and run verify-all.ps1
+        shell: powershell
+        run: |
+          .\build.ps1
