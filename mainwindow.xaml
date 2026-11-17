@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="VEKTOR — Оптимизатор Windows"
+        Title="AXIS — Оптимизатор Windows 10/11 (2026)"
         Height="760"
         Width="1180"
         MinWidth="980"
@@ -111,7 +111,7 @@
                                     VerticalAlignment="Center"
                                     Visibility="{Binding IsSidebarExpanded, Converter={StaticResource BoolToVis}}">
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <TextBlock Text="VEKTOR"
+                                <TextBlock Text="AXIS"
                                            FontFamily="{StaticResource FontDisplay}"
                                            FontSize="16"
                                            FontWeight="Bold"
@@ -1629,7 +1629,7 @@
                                 <!-- Brand Title, Badges & Tagline -->
                                 <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,4">
-                                        <TextBlock Text="VEKTOR"
+                                        <TextBlock Text="AXIS"
                                                    FontFamily="{StaticResource FontDisplay}"
                                                    FontSize="24"
                                                    FontWeight="Bold"
@@ -1653,7 +1653,7 @@
                                 <StackPanel Grid.Column="2" VerticalAlignment="Center">
                                     <Button Style="{StaticResource AccentButtonStyle}"
                                             Command="{Binding OpenUrlCommand}"
-                                            CommandParameter="https://github.com/Vektor010/win-tweaker"
+                                            CommandParameter="https://github.com/Vektor010/axis"
                                             Padding="12,6"
                                             FontSize="11.5"
                                             Margin="0,0,0,6">
@@ -1672,7 +1672,7 @@
                                                 Content="Noverse Docs" />
                                         <Button Style="{StaticResource FluentButtonStyle}"
                                                 Command="{Binding OpenUrlCommand}"
-                                                CommandParameter="https://github.com/Vektor010/win-tweaker/releases"
+                                                CommandParameter="https://github.com/Vektor010/axis/releases"
                                                 Padding="10,5"
                                                 FontSize="11"
                                                 Content="Релизы" />
@@ -1702,7 +1702,7 @@
                                         <StackPanel>
                                             <Grid Margin="0,3">
                                                 <TextBlock Text="Версия ядра" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" />
-                                                <TextBlock Text="VEKTOR 2.0.0 (2026)" FontFamily="{StaticResource FontMono}" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" HorizontalAlignment="Right" />
+                                                <TextBlock Text="AXIS 2.0.0 (2026)" FontFamily="{StaticResource FontMono}" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" HorizontalAlignment="Right" />
                                             </Grid>
                                             <Grid Margin="0,3">
                                                 <TextBlock Text="Платформа" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" />

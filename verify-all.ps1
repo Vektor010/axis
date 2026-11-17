@@ -94,24 +94,27 @@ if (-not (Test-Path $tweaksPath)) {
 }
 
 # [3/4] Verify Binary Size & Embedded Resource Parity
-Write-Host "`n[3/4] Checking dist/Tweaker.exe size and embedded tweaks.json parity..." -ForegroundColor Yellow
+Write-Host "`n[3/4] Checking dist/Axis.exe & dist/Tweaker.exe size and embedded tweaks.json parity..." -ForegroundColor Yellow
+$axisExe = Join-Path $repoRoot "dist\Axis.exe"
 $tweakerExe = Join-Path $repoRoot "dist\Tweaker.exe"
 $testsExe = Join-Path $repoRoot "dist\Tests.exe"
 
-if (-not (Test-Path $tweakerExe)) {
-    Fail-Check "Missing dist/Tweaker.exe"
+$targetExe = if (Test-Path $axisExe) { $axisExe } else { $tweakerExe }
+
+if (-not (Test-Path $targetExe)) {
+    Fail-Check "Missing dist/Axis.exe (or dist/Tweaker.exe)"
 } else {
-    $sizeBytes = (Get-Item $tweakerExe).Length
+    $sizeBytes = (Get-Item $targetExe).Length
     $sizeMB = [math]::Round($sizeBytes / 1MB, 2)
     if ($sizeBytes -ge 5MB) {
-        Fail-Check "Tweaker.exe exceeds 5 MB limit: $sizeMB MB"
+        Fail-Check "$([System.IO.Path]::GetFileName($targetExe)) exceeds 5 MB limit: $sizeMB MB"
     } else {
-        Pass-Check "Tweaker.exe size OK: $sizeMB MB (< 5.0 MB limit)"
+        Pass-Check "$([System.IO.Path]::GetFileName($targetExe)) size OK: $sizeMB MB (< 5.0 MB limit)"
     }
 
     # Verify embedded tweaks.json matches data/tweaks.json byte-for-byte
     try {
-        $asmBytes = [System.IO.File]::ReadAllBytes($tweakerExe)
+        $asmBytes = [System.IO.File]::ReadAllBytes($targetExe)
         $asm = [System.Reflection.Assembly]::Load($asmBytes)
         $resName = $asm.GetManifestResourceNames() | Where-Object { $_ -like "*tweaks.json" } | Select-Object -First 1
         if (-not $resName) {

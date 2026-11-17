@@ -1,4 +1,4 @@
-# WinTweaker Build Script (.NET Framework 4.x / MSBuild)
+﻿# WinTweaker Build Script (.NET Framework 4.x / MSBuild)
 param(
     [switch]$SkipVerify
 )
@@ -31,7 +31,7 @@ if (-not (Test-Path $distDir)) {
 $tweakerProj = Join-Path $PSScriptRoot "Tweaker.csproj"
 $testsProj = Join-Path $PSScriptRoot "Tests\Tests.csproj"
 
-Write-Host "[2/5] Compiling Tweaker.exe (WPF / BAML / Embedded tweaks.json)..." -ForegroundColor Yellow
+Write-Host "[2/5] Compiling Axis.exe (WPF / BAML / Embedded tweaks.json)..." -ForegroundColor Yellow
 $tweakerArgs = @(
     $tweakerProj,
     "/t:Rebuild",
@@ -42,7 +42,7 @@ $tweakerArgs = @(
 )
 $p1 = Start-Process -FilePath $msBuildExe -ArgumentList $tweakerArgs -Wait -NoNewWindow -PassThru
 if ($p1.ExitCode -ne 0) {
-    Write-Host "[ERROR] Tweaker.exe build failed with exit code $($p1.ExitCode)!" -ForegroundColor Red
+    Write-Host "[ERROR] Axis.exe build failed with exit code $($p1.ExitCode)!" -ForegroundColor Red
     exit $p1.ExitCode
 }
 
@@ -61,16 +61,22 @@ if ($p2.ExitCode -ne 0) {
     exit $p2.ExitCode
 }
 
+$axisExe = Join-Path $distDir "Axis.exe"
 $tweakerExe = Join-Path $distDir "Tweaker.exe"
 $testsExe = Join-Path $distDir "Tests.exe"
 
-if ((Test-Path $tweakerExe) -and (Test-Path $testsExe)) {
-    $s1 = [math]::Round((Get-Item $tweakerExe).Length / 1KB, 1)
+# Сохраняем и Axis.exe (флагман), и Tweaker.exe (обратная совместимость)
+if (Test-Path $axisExe) {
+    Copy-Item $axisExe $tweakerExe -Force
+}
+
+if ((Test-Path $axisExe) -and (Test-Path $testsExe)) {
+    $s1 = [math]::Round((Get-Item $axisExe).Length / 1KB, 1)
     $s2 = [math]::Round((Get-Item $testsExe).Length / 1KB, 1)
 
     Write-Host "[4/5] Both binaries built successfully!" -ForegroundColor Green
-    Write-Host "  -> Tweaker.exe: $tweakerExe ($s1 KB, target: < 5 MB)" -ForegroundColor Cyan
-    Write-Host "  -> Tests.exe:   $testsExe ($s2 KB)" -ForegroundColor Cyan
+    Write-Host "  -> Axis.exe (Flagship): $axisExe ($s1 KB, target: < 5 MB)" -ForegroundColor Cyan
+    Write-Host "  -> Tests.exe:           $testsExe ($s2 KB)" -ForegroundColor Cyan
 
     if (-not $SkipVerify) {
         $verifyScript = Join-Path $PSScriptRoot "verify-all.ps1"
