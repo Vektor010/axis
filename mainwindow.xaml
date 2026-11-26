@@ -124,7 +124,7 @@
                                         Padding="4,0.5"
                                         Margin="6,0,0,0"
                                         VerticalAlignment="Center">
-                                    <TextBlock Text="3.0"
+                                    <TextBlock Text="3.1"
                                                FontFamily="{StaticResource FontMono}"
                                                FontSize="9"
                                                FontWeight="Bold"
@@ -1049,11 +1049,29 @@
 
                                 <!-- Centralized Batch Action Buttons -->
                                 <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Button Style="{StaticResource AccentButtonStyle}"
+                                            Command="{Binding ApplyAllRecommendedCommand}"
+                                            IsEnabled="{Binding CanApplyRecommended}"
+                                            ToolTip="{Binding ApplyRecommendedToolTip}"
+                                            Padding="9,4"
+                                            Height="27"
+                                            FontSize="11.5"
+                                            Margin="0,0,6,0">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="&#xE73E;"
+                                                       FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                                       FontSize="11"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,0,5,0" />
+                                            <TextBlock Text="{Binding RecommendedBatchButtonText}"
+                                                       VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Button>
                                     <Button Style="{StaticResource FluentButtonStyle}"
                                             Command="{Binding ApplySelectedCommand}"
-                                            IsEnabled="{Binding HasSelectedForBatch}"
-                                            ToolTip="Применить только отмеченные галочками твики с проверкой совместимости и конфликтов"
-                                            Padding="10,4"
+                                            IsEnabled="{Binding CanContextApply}"
+                                            ToolTip="{Binding ContextApplyToolTip}"
+                                            Padding="9,4"
                                             Height="27"
                                             FontSize="11.5"
                                             Margin="0,0,6,0">
@@ -1064,31 +1082,13 @@
                                                        Foreground="{DynamicResource AccentBrush}"
                                                        VerticalAlignment="Center"
                                                        Margin="0,0,5,0" />
-                                            <TextBlock Text="{Binding ApplySelectedButtonText}"
-                                                       VerticalAlignment="Center" />
-                                        </StackPanel>
-                                    </Button>
-                                    <Button Style="{StaticResource AccentButtonStyle}"
-                                            Command="{Binding ApplyAllRecommendedCommand}"
-                                            IsEnabled="{Binding CanApplyRecommended}"
-                                            ToolTip="Применить все безопасные рекомендуемые настройки"
-                                            Padding="10,4"
-                                            Height="27"
-                                            FontSize="11.5"
-                                            Margin="0,0,6,0">
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="&#xE73E;"
-                                                       FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
-                                                       FontSize="11"
-                                                       VerticalAlignment="Center"
-                                                       Margin="0,0,5,0" />
-                                            <TextBlock Text="Применить все"
+                                            <TextBlock Text="{Binding ContextApplyButtonText}"
                                                        VerticalAlignment="Center" />
                                         </StackPanel>
                                     </Button>
                                     <Button Style="{StaticResource DangerButtonStyle}"
                                             Command="{Binding RevertAllCommand}"
-                                            Padding="10,4"
+                                            Padding="9,4"
                                             Height="27"
                                             FontSize="11.5"
                                             ToolTip="Откатить все применённые твики до сохранённого исходного состояния">
@@ -1098,7 +1098,7 @@
                                                        FontSize="11"
                                                        VerticalAlignment="Center"
                                                        Margin="0,0,5,0" />
-                                            <TextBlock Text="Откатить все"
+                                            <TextBlock Text="{Binding RevertAllButtonText}"
                                                        VerticalAlignment="Center" />
                                         </StackPanel>
                                     </Button>

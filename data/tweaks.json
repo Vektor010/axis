@@ -2107,7 +2107,9 @@
     "category": "nvidia",
     "type": "toggle",
     "risk": "low",
-    "presets": [],
+    "presets": [
+      "recommended"
+    ],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -2167,7 +2169,9 @@
     "category": "nvidia",
     "type": "toggle",
     "risk": "low",
-    "presets": [],
+    "presets": [
+      "recommended"
+    ],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -2257,7 +2261,9 @@
     "category": "steam",
     "type": "toggle",
     "risk": "low",
-    "presets": [],
+    "presets": [
+      "recommended"
+    ],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -2287,7 +2293,9 @@
     "category": "steam",
     "type": "toggle",
     "risk": "low",
-    "presets": [],
+    "presets": [
+      "recommended"
+    ],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -2347,7 +2355,9 @@
     "category": "steam",
     "type": "toggle",
     "risk": "low",
-    "presets": [],
+    "presets": [
+      "recommended"
+    ],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -2497,7 +2507,9 @@
     "category": "nvidia",
     "type": "toggle",
     "risk": "low",
-    "presets": [],
+    "presets": [
+      "recommended"
+    ],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -4412,7 +4424,7 @@
     "type": "toggle",
     "risk": "low",
     "presets": [
-      "recommended"
+      "maximum"
     ],
     "min_build": null,
     "needs_review": true,
@@ -5488,7 +5500,7 @@
     "type": "toggle",
     "risk": "low",
     "presets": [
-      "recommended"
+      "maximum"
     ],
     "min_build": null,
     "needs_review": true,
@@ -5552,7 +5564,7 @@
     "type": "toggle",
     "risk": "low",
     "presets": [
-      "recommended"
+      "maximum"
     ],
     "min_build": null,
     "needs_review": true,
@@ -5584,7 +5596,7 @@
     "type": "toggle",
     "risk": "low",
     "presets": [
-      "recommended"
+      "maximum"
     ],
     "min_build": null,
     "needs_review": true,
@@ -5680,7 +5692,7 @@
     "type": "toggle",
     "risk": "low",
     "presets": [
-      "recommended"
+      "maximum"
     ],
     "min_build": null,
     "needs_review": true,
@@ -6736,7 +6748,7 @@
     "type": "toggle",
     "risk": "low",
     "presets": [
-      "recommended"
+      "maximum"
     ],
     "min_build": null,
     "needs_review": false,
@@ -7564,7 +7576,7 @@
     "type": "toggle",
     "risk": "low",
     "presets": [
-      "recommended"
+      "maximum"
     ],
     "min_build": null,
     "needs_review": false,
@@ -7692,7 +7704,7 @@
     "type": "toggle",
     "risk": "low",
     "presets": [
-      "recommended"
+      "maximum"
     ],
     "min_build": null,
     "needs_review": false,
@@ -8460,7 +8472,7 @@
     "type": "toggle",
     "risk": "low",
     "presets": [
-      "recommended"
+      "maximum"
     ],
     "min_build": null,
     "needs_review": false,
@@ -8492,7 +8504,7 @@
     "type": "toggle",
     "risk": "low",
     "presets": [
-      "recommended"
+      "maximum"
     ],
     "min_build": null,
     "needs_review": false,
@@ -8524,7 +8536,7 @@
     "type": "toggle",
     "risk": "low",
     "presets": [
-      "recommended"
+      "maximum"
     ],
     "min_build": null,
     "needs_review": false,
@@ -8556,7 +8568,7 @@
     "type": "toggle",
     "risk": "low",
     "presets": [
-      "recommended"
+      "maximum"
     ],
     "min_build": null,
     "needs_review": false,
@@ -8748,7 +8760,7 @@
     "type": "toggle",
     "risk": "low",
     "presets": [
-      "recommended"
+      "maximum"
     ],
     "min_build": null,
     "needs_review": false,
@@ -8780,7 +8792,7 @@
     "type": "toggle",
     "risk": "low",
     "presets": [
-      "recommended"
+      "maximum"
     ],
     "min_build": null,
     "needs_review": false,
@@ -8972,7 +8984,7 @@
     "type": "toggle",
     "risk": "low",
     "presets": [
-      "recommended"
+      "maximum"
     ],
     "min_build": null,
     "needs_review": false,
@@ -9130,7 +9142,7 @@
     "type": "toggle",
     "risk": "low",
     "presets": [
-      "recommended"
+      "maximum"
     ],
     "min_build": null,
     "needs_review": false,
@@ -9226,7 +9238,7 @@
     "type": "toggle",
     "risk": "low",
     "presets": [
-      "recommended"
+      "maximum"
     ],
     "min_build": null,
     "needs_review": false,
@@ -9322,7 +9334,7 @@
     "type": "toggle",
     "risk": "low",
     "presets": [
-      "recommended"
+      "maximum"
     ],
     "min_build": null,
     "needs_review": false,
@@ -9450,7 +9462,7 @@
     "type": "toggle",
     "risk": "low",
     "presets": [
-      "recommended"
+      "maximum"
     ],
     "min_build": null,
     "needs_review": false,
@@ -9482,7 +9494,7 @@
     "type": "toggle",
     "risk": "low",
     "presets": [
-      "recommended"
+      "maximum"
     ],
     "min_build": null,
     "needs_review": false,
@@ -9546,7 +9558,7 @@
     "type": "toggle",
     "risk": "low",
     "presets": [
-      "recommended"
+      "maximum"
     ],
     "min_build": null,
     "needs_review": false,
@@ -9578,7 +9590,7 @@
     "type": "toggle",
     "risk": "low",
     "presets": [
-      "recommended"
+      "maximum"
     ],
     "min_build": null,
     "needs_review": false,
@@ -9610,7 +9622,7 @@
     "type": "toggle",
     "risk": "low",
     "presets": [
-      "recommended"
+      "maximum"
     ],
     "min_build": null,
     "needs_review": false,
@@ -9796,7 +9808,7 @@
     "type": "toggle",
     "risk": "low",
     "presets": [
-      "recommended"
+      "maximum"
     ],
     "min_build": null,
     "needs_review": false,
@@ -27595,7 +27607,6 @@
         "name": "SuppressAutoRun",
         "type": "REG_DWORD",
         "apply": 1,
-        "apply_block": "Enabled",
         "revert": {
           "mode": "set",
           "value": 0
@@ -27962,7 +27973,9 @@
     "category": "nvidia",
     "type": "toggle",
     "risk": "low",
-    "presets": [],
+    "presets": [
+      "recommended"
+    ],
     "min_build": null,
     "needs_review": true,
     "source": {

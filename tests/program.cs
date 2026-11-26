@@ -2059,8 +2059,8 @@ namespace WinTweaker.Tests
                 }
             }
 
-            Assert(recCount == 233 && recHighOrMed == 0 && !vbsOrHvciInRec,
-                "Recommended_Integrity: Все 233 рекомендованных твика безопасны (risk=low), VBS/HVCI исключены из автоприменения",
+            Assert(recCount == 216 && recHighOrMed == 0 && !vbsOrHvciInRec,
+                "Recommended_Integrity: Все 216 рекомендованных твиков безопасны (risk=low), VBS/HVCI исключены из автоприменения",
                 string.Format("rec={0}, nonLow={1}, vbsHvci={2}", recCount, recHighOrMed, vbsOrHvciInRec));
             Assert(shortDesc == 0, "Catalog_Descriptions: У всех 897 твиков есть подробные описания на русском языке", "short=" + shortDesc);
 

@@ -5,6 +5,16 @@ All notable changes to AXIS will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.0] - 2026-11-26
+
+### Clear Contextual Batch Buttons, OS Protection Guard & Smarter Recommended Preset
+- **Unambiguous Batch Action Buttons**:
+  - **«Применить рекомендуемые (N)»**: clearly indicates the curated safe Noverse/esports preset (`N` unapplied of `216`).
+  - **«Применить все (M)» / «Применить раздел (M)» / «Применить выбранные (M)»**: dynamically follows user intent—applies explicitly checked cards when any are selected, or all remaining eligible tweaks in the currently open tab/category (`Все`, `Внимание`, `Сеть`, `Steam`, etc.) when no checkboxes are ticked.
+  - **«Откатить все (K)»**: shows active snapshot-backed rollback count cleanly.
+- **High-Risk & OS Protection Guard (`AxisDialogWindow`)**: When applying a whole tab/section containing `high`-risk or security-sensitive tweaks (Defender, Firewall, UAC, VBS/HVCI, SmartScreen, BitLocker, etc.), `AxisDialogWindow.ShowBatchConfirmWithGuard` defaults to applying safe tweaks first while giving the user an explicit opt-in checkbox to include OS-protection tweaks too.
+- **Curated `216` Recommended Preset (`data/tweaks.json` + `tweakengine.cs`)**: Removed 24 surprising/controversial items (`DisablePagingExecutive`, `NtfsDisableEncryption`, full toast/notification shutdowns, legacy boot menu, sleep/hibernate removal, lockscreen removal, root cert / PowerShell security relaxations) from `recommended`, removed stale NVIDIA batch block for safe NVIDIA tweaks, and promoted 7 proven NVIDIA/Steam optimizations (HAGS, NV telemetry/tasks, Noverse minimal NV profile, Steam smooth scroll/GPU webviews/gameplay downloads).
+
 ## [3.0.0] - 2026-11-26
 
 ### Global Audit, Unified Dark-Blue Design System, Real Telemetry & Batch Engine

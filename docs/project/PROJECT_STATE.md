@@ -1,8 +1,8 @@
 # PROJECT_STATE.md — Current Operational State
 
 **Last Updated**: 2026-11-26  
-**Version**: v3.0.0 (Unified Dark-Blue UI, Custom Modals, Live Hardware Telemetry & Batch Engine)  
-**Binary Output**: `dist/Axis.exe` (1.38 MB, standalone x64, 897 tweaks, 233 safe recommended, 8,159 PASS)
+**Version**: v3.1.0 (Human-Clear Contextual Batch Buttons, Risk Guard Consent & Curated 216 Recommended Preset)  
+**Binary Output**: `dist/Axis.exe` (1.38 MB, standalone x64, 897 tweaks, 216 curated recommended, 8,159 PASS)
 
 ---
 

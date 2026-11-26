@@ -280,6 +280,33 @@ namespace WinTweaker.UI
             return res == true;
         }
 
+        public static bool ShowBatchConfirmWithGuard(
+            string title,
+            string subtitle,
+            string message,
+            IEnumerable<string> items,
+            string guardCheckBoxText,
+            out bool guardChecked,
+            string confirmText = "Применить",
+            string cancelText = "Отмена")
+        {
+            guardChecked = false;
+            if (Application.Current == null) return false;
+            AxisDialogWindow dlg = new AxisDialogWindow(
+                string.IsNullOrEmpty(guardCheckBoxText) ? AxisDialogKind.Question : AxisDialogKind.Warning,
+                title, subtitle, message, null, items, confirmText, cancelText, null, false);
+            if (!string.IsNullOrEmpty(guardCheckBoxText))
+            {
+                dlg.GuardOptionCheckBox.Content = guardCheckBoxText;
+                dlg.GuardOptionBorder.Visibility = Visibility.Visible;
+            }
+            Window owner = ResolveOwner();
+            if (owner != null) dlg.Owner = owner;
+            bool? res = dlg.ShowDialog();
+            guardChecked = dlg.GuardOptionCheckBox.IsChecked == true;
+            return res == true;
+        }
+
         public static void ShowTweakDetails(TweakCardViewModel card)
         {
             if (Application.Current == null || card == null) return;

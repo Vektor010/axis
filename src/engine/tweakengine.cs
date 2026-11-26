@@ -67,14 +67,13 @@ namespace WinTweaker.Engine
             if (tweak == null) return false;
             if (tweak.registry == null || tweak.registry.Count == 0) return false;
 
-            // Исключается раздел NVIDIA и разовые cleanup/action операции
-            if (string.Equals(tweak.category, "nvidia", StringComparison.OrdinalIgnoreCase)) return false;
+            // Исключаются разовые cleanup/action операции
             if (SpecialTweakExecutor.IsCleanupAction(tweak)) return false;
 
             // Входят только твики типа toggle
             if (!string.Equals(tweak.type, "toggle", StringComparison.OrdinalIgnoreCase)) return false;
 
-            // Входят risk low или medium (high исключается)
+            // Входят risk low или medium (high исключается из автопакета)
             bool isLowOrMed = string.Equals(tweak.risk, "low", StringComparison.OrdinalIgnoreCase) ||
                               string.Equals(tweak.risk, "medium", StringComparison.OrdinalIgnoreCase);
             if (!isLowOrMed) return false;

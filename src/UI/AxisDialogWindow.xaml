@@ -123,6 +123,23 @@
                         <StackPanel x:Name="MetadataPanel" />
                     </Border>
 
+                    <!-- Optional High-Risk Guard CheckBox -->
+                    <Border x:Name="GuardOptionBorder"
+                            Visibility="Collapsed"
+                            Background="{DynamicResource WarningFill}"
+                            BorderBrush="{DynamicResource WarningBorder}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="10,8"
+                            Margin="0,12,0,0">
+                        <CheckBox x:Name="GuardOptionCheckBox"
+                                  Style="{StaticResource TachyonCheckBoxStyle}"
+                                  FontSize="11.5"
+                                  FontWeight="SemiBold"
+                                  Foreground="{DynamicResource WarningBrush}"
+                                  Content="Включить также настройки повышенного риска / защиты ОС" />
+                    </Border>
+
                     <!-- Optional Items Preview List (Batch operations / Conflicts / Logs) -->
                     <Border x:Name="ItemsBorder"
                             Visibility="Collapsed"
