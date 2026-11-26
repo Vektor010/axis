@@ -7,9 +7,7 @@
     "category": "security",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -39,9 +37,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -71,9 +67,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -103,9 +97,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -135,9 +127,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -167,9 +157,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -199,9 +187,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -231,9 +217,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -263,9 +247,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -295,9 +277,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -327,9 +307,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -359,9 +337,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -391,9 +367,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -423,9 +397,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -455,9 +427,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -487,9 +457,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -519,9 +487,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -551,9 +517,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -583,9 +547,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -615,9 +577,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -647,9 +607,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -679,9 +637,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -711,9 +667,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -743,9 +697,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -775,9 +727,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -807,9 +757,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -839,9 +787,7 @@
     "category": "system",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -871,9 +817,7 @@
     "category": "system",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -903,9 +847,7 @@
     "category": "system",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -935,9 +877,7 @@
     "category": "system",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -967,9 +907,7 @@
     "category": "system",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -999,9 +937,7 @@
     "category": "system",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -1031,9 +967,7 @@
     "category": "system",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -1063,9 +997,7 @@
     "category": "system",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -1095,9 +1027,7 @@
     "category": "system",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -1127,9 +1057,7 @@
     "category": "system",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -1159,9 +1087,7 @@
     "category": "system",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -1191,9 +1117,7 @@
     "category": "system",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -1223,9 +1147,7 @@
     "category": "system",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -1255,9 +1177,7 @@
     "category": "system",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -1287,9 +1207,7 @@
     "category": "system",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -1319,9 +1237,7 @@
     "category": "system",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -1351,9 +1267,7 @@
     "category": "system",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -1383,9 +1297,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -1415,9 +1327,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -1447,9 +1357,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -1479,9 +1387,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -1511,9 +1417,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -1543,9 +1447,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -1575,9 +1477,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -1607,9 +1507,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -1639,9 +1537,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -1671,9 +1567,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "high",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -1703,9 +1597,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -1735,9 +1627,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -1767,9 +1657,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -1799,9 +1687,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -1831,9 +1717,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -1863,9 +1747,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -1895,9 +1777,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -1927,9 +1807,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -1959,9 +1837,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -1991,9 +1867,7 @@
     "category": "privacy",
     "type": "toggle",
     "risk": "medium",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -2023,9 +1897,7 @@
     "category": "privacy",
     "type": "toggle",
     "risk": "medium",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -2055,9 +1927,7 @@
     "category": "network",
     "type": "toggle",
     "risk": "high",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -2087,9 +1957,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -2119,11 +1987,9 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
-    "needs_review": false,
+    "needs_review": true,
     "source": {
       "file": "visibility/desc.md",
       "line_from": 1933,
@@ -2134,11 +2000,11 @@
         "hive": "HKCU",
         "path": "Control Panel\\Desktop\\WindowMetrics",
         "name": "MinAnimate",
-        "type": "REG_DWORD",
-        "apply": 0,
+        "type": "REG_SZ",
+        "apply": "0",
         "revert": {
           "mode": "set",
-          "value": 1
+          "value": "1"
         }
       }
     ]
@@ -2151,9 +2017,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -2183,9 +2047,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -2215,9 +2077,7 @@
     "category": "visibility",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -2247,9 +2107,7 @@
     "category": "nvidia",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -2279,9 +2137,7 @@
     "category": "nvidia",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -2311,9 +2167,7 @@
     "category": "nvidia",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -2338,14 +2192,12 @@
   {
     "id": "nvidia-powermizer-maximum-performance",
     "name_ru": "Режим управления питанием: максимальная производительность",
-    "description_ru": "Предотвращает сброс рабочих частот видеокарты во время коротких пауз в играх, сглаживая график времени кадра.",
+    "description_ru": "Включает режим максимальной производительности PowerMizer на видеокарте NVIDIA (PowerMizerEnable/Level/LevelAC = 1), предотвращая сброс частот в играх.",
     "group": "Производительность GPU",
     "category": "nvidia",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -2375,9 +2227,7 @@
     "category": "steam",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -2407,9 +2257,7 @@
     "category": "steam",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -2439,9 +2287,7 @@
     "category": "steam",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -2471,9 +2317,7 @@
     "category": "steam",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -2503,9 +2347,7 @@
     "category": "steam",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -2535,9 +2377,7 @@
     "category": "nvidia",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -2567,9 +2407,7 @@
     "category": "nvidia",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -2599,9 +2437,7 @@
     "category": "nvidia",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -2631,9 +2467,7 @@
     "category": "nvidia",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -2658,16 +2492,14 @@
   {
     "id": "nvidia-noverse-minimal-profile",
     "name_ru": "Соревновательный DRS-профиль Noverse (NV-Minimal)",
-    "description_ru": "Активирует профиль драйвера Noverse.dev: минимальный инпут-лаг, максимальная производительность текстур, отключение G-Sync/V-Sync и визуальных задержек.",
+    "description_ru": "Активирует реальный DRS Base Profile от Noverse.dev (NV-Minimal) напрямую через nvapi64.dll: PrerenderLimit=1, PowerMizer=MaxPerf, VSync=Off, TextureQuality=HighPerformance, ShaderCache=Unlimited, G-SYNC=Off, ThreadedOpt=Off.",
     "group": "Профили драйвера (Noverse)",
     "category": "nvidia",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
-    "needs_review": false,
+    "needs_review": true,
     "source": {
       "file": "nvidia/desc.md",
       "line_from": 1181,
@@ -2695,9 +2527,7 @@
     "category": "nvidia",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -2786,7 +2616,7 @@
   {
     "id": "system-mmcss-responsiveness",
     "name_ru": "Максимальная отзывчивость системы (SystemResponsiveness)",
-    "description_ru": "Отключает резервирование 20% ресурсов процессора под низкоприоритетные задачи, передавая 100% мощности активному процессу.",
+    "description_ru": "Отключает резервирование CPU службой MMCSS (SystemResponsiveness = 100; значения ниже 10 ядро сбрасывает обратно на 20 по умолчанию).",
     "group": "Планировщик и кванты",
     "category": "system",
     "type": "toggle",
@@ -2807,7 +2637,7 @@
         "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
         "name": "SystemResponsiveness",
         "type": "REG_DWORD",
-        "apply": 0,
+        "apply": 100,
         "revert": {
           "mode": "set",
           "value": 20
@@ -3111,9 +2941,7 @@
     "category": "system",
     "type": "toggle",
     "risk": "medium",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -3540,7 +3368,7 @@
     "registry": [
       {
         "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Control\\Power",
+        "path": "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Power",
         "name": "HiberbootEnabled",
         "type": "REG_DWORD",
         "apply": 0,
@@ -3969,8 +3797,8 @@
   },
   {
     "id": "network-disable-ipv6-components",
-    "name_ru": "Отключить компоненты IPv6 (DisabledComponents)",
-    "description_ru": "Отключает неиспользуемые компоненты протокола IPv6, предотвращая скрытые таймауты сетевого стека.",
+    "name_ru": "Приоритет IPv4 над IPv6 (DisabledComponents = 0x20)",
+    "description_ru": "Переключает сетевой стек на предпочтение IPv4 (0x20 / 32) согласно рекомендациям Noverse и Microsoft без 5-секундной задержки загрузки.",
     "group": "Сетевой стек",
     "category": "network",
     "type": "toggle",
@@ -3991,7 +3819,7 @@
         "path": "SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
         "name": "DisabledComponents",
         "type": "REG_DWORD",
-        "apply": 255,
+        "apply": 32,
         "revert": {
           "mode": "set",
           "value": 0
@@ -4615,9 +4443,7 @@
     "category": "security",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      "recommended"
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -4647,9 +4473,7 @@
     "category": "security",
     "type": "toggle",
     "risk": "medium",
-    "presets": [
-      "recommended"
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -4679,9 +4503,7 @@
     "category": "security",
     "type": "toggle",
     "risk": "medium",
-    "presets": [
-      "recommended"
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -4711,9 +4533,7 @@
     "category": "security",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      "recommended"
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -4743,9 +4563,7 @@
     "category": "security",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      "recommended"
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -4773,11 +4591,9 @@
     "description_ru": "Очищает скомпилированные кэши шейдеров DirectX и видеокарт NVIDIA (DXCache, GLCache, NV_Cache) для устранения микрофризов после смены драйвера.",
     "group": "Кэши и шейдеры",
     "category": "cleanup",
-    "type": "toggle",
+    "type": "action",
     "risk": "low",
-    "presets": [
-      "recommended"
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -4805,11 +4621,9 @@
     "description_ru": "Сбрасывает локальный кэш сопоставления IP-адресов службы DNS Client для устранения сетевых задержек и недоступности сайтов.",
     "group": "Сеть и DNS",
     "category": "cleanup",
-    "type": "toggle",
+    "type": "action",
     "risk": "low",
-    "presets": [
-      "recommended"
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -4837,11 +4651,9 @@
     "description_ru": "Очищает загруженные поврежденные и устаревшие установочные пакеты из каталога SoftwareDistribution\\Download, освобождая гигабайты места.",
     "group": "Системный диск",
     "category": "cleanup",
-    "type": "toggle",
+    "type": "action",
     "risk": "low",
-    "presets": [
-      "recommended"
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -4869,11 +4681,9 @@
     "description_ru": "Удаляет временный мусор сторонних программ, установочные логи и кэшированные остатки файлов из пользовательской и системной папок Temp.",
     "group": "Системный диск",
     "category": "cleanup",
-    "type": "toggle",
+    "type": "action",
     "risk": "low",
-    "presets": [
-      "recommended"
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -4901,11 +4711,9 @@
     "description_ru": "Удаляет устаревшие кэшированные файлы WinINet и встроенных веб-компонентов из каталога INetCache.",
     "group": "Сеть и DNS",
     "category": "cleanup",
-    "type": "toggle",
+    "type": "action",
     "risk": "low",
-    "presets": [
-      "recommended"
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -4933,11 +4741,9 @@
     "description_ru": "Удаляет накопленные фрагменты фоновых обновлений службы Delivery Optimization (DoSvc), освобождая гигабайты свободного места.",
     "group": "Системный диск",
     "category": "cleanup",
-    "type": "toggle",
+    "type": "action",
     "risk": "low",
-    "presets": [
-      "recommended"
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -4965,11 +4771,9 @@
     "description_ru": "Удаляет аварийные дампы памяти ядра (MEMORY.DMP, Minidump) и журналы сбоев драйверов LiveKernelReports.",
     "group": "Журналы и дампы",
     "category": "cleanup",
-    "type": "toggle",
+    "type": "action",
     "risk": "low",
-    "presets": [
-      "recommended"
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -4997,11 +4801,9 @@
     "description_ru": "Удаляет накопленные архивы отчетов об ошибках и телеметрии падений приложений службы Windows Error Reporting.",
     "group": "Журналы и дампы",
     "category": "cleanup",
-    "type": "toggle",
+    "type": "action",
     "risk": "low",
-    "presets": [
-      "recommended"
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -5029,11 +4831,9 @@
     "description_ru": "Очищает накопленные устаревшие лог-файлы CBS, DISM, NetSetup и диагностики WMI.",
     "group": "Журналы и дампы",
     "category": "cleanup",
-    "type": "toggle",
+    "type": "action",
     "risk": "low",
-    "presets": [
-      "recommended"
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -5061,11 +4861,9 @@
     "description_ru": "Выполняет принудительную очистку системных корзин $Recycle.Bin на всех смонтированных томах.",
     "group": "Системный диск",
     "category": "cleanup",
-    "type": "toggle",
+    "type": "action",
     "risk": "low",
-    "presets": [
-      "recommended"
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -5093,11 +4891,9 @@
     "description_ru": "Сбрасывает поврежденные файлы кэша миниатюр Проводника (*.db), освобождая память и исправляя отображение иконок.",
     "group": "Проводник и оболочка",
     "category": "cleanup",
-    "type": "toggle",
+    "type": "action",
     "risk": "low",
-    "presets": [
-      "recommended"
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -5125,11 +4921,9 @@
     "description_ru": "Очищает поврежденный кэш FNTCACHE.DAT подсистемы шрифтов, устраняя артефакты и сбои отрисовки текста в Windows.",
     "group": "Проводник и оболочка",
     "category": "cleanup",
-    "type": "toggle",
+    "type": "action",
     "risk": "low",
-    "presets": [
-      "recommended"
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -5159,9 +4953,7 @@
     "category": "cleanup",
     "type": "action",
     "risk": "low",
-    "presets": [
-      "recommended"
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -5191,9 +4983,7 @@
     "category": "cleanup",
     "type": "action",
     "risk": "low",
-    "presets": [
-      "recommended"
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -5221,11 +5011,9 @@
     "description_ru": "Очищает устаревшие файлы трассировки запуска приложений из папки C:\\Windows\\Prefetch на скоростных NVMe SSD.",
     "group": "Системный диск",
     "category": "cleanup",
-    "type": "toggle",
+    "type": "action",
     "risk": "low",
-    "presets": [
-      "recommended"
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -5253,11 +5041,9 @@
     "description_ru": "Разрешает удаление всех замененных и устаревших версий компонентов в WinSxS через DISM /ResetBase, освобождая гигабайты диска.",
     "group": "Системный диск",
     "category": "cleanup",
-    "type": "toggle",
+    "type": "action",
     "risk": "medium",
-    "presets": [
-      "recommended"
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -5479,9 +5265,7 @@
     "category": "network",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      "recommended"
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -5506,7 +5290,7 @@
   {
     "id": "network-congestion-provider-bbr",
     "name_ru": "Контроль перегрузок TCP BBR2/CUBIC (CongestionProvider)",
-    "description_ru": "Устанавливает алгоритм контроля сетевых перегрузок TCP BBR2 (Windows 11; на Windows 10 не поддерживается, по умолчанию CUBIC) для снижения RTT и буферизации.",
+    "description_ru": "Устанавливает алгоритм контроля сетевых перегрузок TCP BBR2 через netsh int tcp set supplemental (Windows 11; по умолчанию CUBIC) для снижения RTT и буферизации.",
     "group": "Сетевой стек и ядро",
     "category": "network",
     "type": "toggle",
@@ -5601,8 +5385,8 @@
   },
   {
     "id": "network-interrupt-moderation-low",
-    "name_ru": "Отключить задержку прерываний сетевой карты (ITR)",
-    "description_ru": "Отключает троттлинг прерываний сетевого адаптера (ITR = 0 / Off), гарантируя мгновенную обработку сетевых пакетов ядрами CPU.",
+    "name_ru": "Отключить модерацию прерываний сетевой карты (*InterruptModeration / ITR)",
+    "description_ru": "Отключает коалесценцию прерываний (*InterruptModeration=0 для Realtek/Intel/Broadcom и ITR=0 при наличии) для минимальной сетевой задержки.",
     "group": "Задержки и прерывания",
     "category": "network",
     "type": "toggle",
@@ -5613,20 +5397,20 @@
     "min_build": null,
     "needs_review": true,
     "source": {
-      "file": "network/desc.md",
-      "line_from": 1364,
-      "line_to": 1378
+      "file": "network/docs/interrupt-moderation.md",
+      "line_from": 51,
+      "line_to": 54
     },
     "registry": [
       {
         "hive": "HKLM",
         "path": "SYSTEM\\CurrentControlSet\\Control\\Class\\{4D36E972-E325-11CE-BFC1-08002bE10318}\\00XX",
-        "name": "ITR",
+        "name": "*InterruptModeration",
         "type": "REG_SZ",
         "apply": "0",
         "revert": {
           "mode": "set",
-          "value": "65535"
+          "value": "1"
         }
       }
     ]
@@ -6710,11 +6494,11 @@
         "hive": "HKLM",
         "path": "SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e96c-e325-11ce-bfc1-08002be10318}\\00xx\\PowerSettings",
         "name": "PerformanceIdleTime",
-        "type": "REG_DWORD",
-        "apply": 0,
+        "type": "REG_BINARY",
+        "apply": "00000000",
         "revert": {
           "mode": "set",
-          "value": 30
+          "value": "1E000000"
         }
       }
     ]
@@ -7495,9 +7279,7 @@
     "category": "security",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      "recommended"
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -7655,9 +7437,7 @@
     "category": "network",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      "recommended"
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -8033,7 +7813,7 @@
   },
   {
     "id": "privacy-disable-find-my-device",
-    "name_ru": "Отключить службу \u0027Поиск устройства\u0027 (AllowFindMyDevice)",
+    "name_ru": "Отключить службу 'Поиск устройства' (AllowFindMyDevice)",
     "description_ru": "Отключает фоновую геолокацию и отслеживание устройства Find My Device, предотвращая сбор координат компьютером.",
     "group": "Конфиденциальность и геолокация",
     "category": "privacy",
@@ -8289,7 +8069,7 @@
   },
   {
     "id": "privacy-disable-file-history",
-    "name_ru": "Отключить службу \u0027История файлов\u0027 (DisableFileHistory)",
+    "name_ru": "Отключить службу 'История файлов' (DisableFileHistory)",
     "description_ru": "Отключает фоновое создание резервных копий и отслеживание журнала изменений файлов через NTFS Change Journal.",
     "group": "Фоновые службы и бэкапы",
     "category": "privacy",
@@ -8642,7 +8422,7 @@
   {
     "id": "system-turn-off-user-tracking",
     "name_ru": "Отключить отслеживание запуска программ (NoInstrumentation)",
-    "description_ru": "Отключает встроенное профилирование частоты запуска программ в меню \u0027Пуск\u0027, снижая фоновые дисковые операции.",
+    "description_ru": "Отключает встроенное профилирование частоты запуска программ в меню 'Пуск', снижая фоновые дисковые операции.",
     "group": "Меню Пуск и отслеживание",
     "category": "system",
     "type": "toggle",
@@ -8801,7 +8581,7 @@
   },
   {
     "id": "visibility-disable-widgets",
-    "name_ru": "Отключить службу \u0027Виджеты\u0027 (AllowNewsAndInterests)",
+    "name_ru": "Отключить службу 'Виджеты' (AllowNewsAndInterests)",
     "description_ru": "Полностью отключает фоновую службу новостей и виджетов Windows 11 (DSH), освобождая память и ресурсы процессора.",
     "group": "Панель задач Windows 11",
     "category": "visibility",
@@ -8897,8 +8677,8 @@
   },
   {
     "id": "visibility-hide-people-bar",
-    "name_ru": "Убрать значок \u0027Люди\u0027 с панели задач (HidePeopleBar)",
-    "description_ru": "Скрывает устаревший значок контактов \u0027Люди\u0027 (People Bar), освобождая место на панели задач.",
+    "name_ru": "Убрать значок 'Люди' с панели задач (HidePeopleBar)",
+    "description_ru": "Скрывает устаревший значок контактов 'Люди' (People Bar), освобождая место на панели задач.",
     "group": "Панель задач",
     "category": "visibility",
     "type": "toggle",
@@ -8929,7 +8709,7 @@
   },
   {
     "id": "visibility-hide-task-view-button",
-    "name_ru": "Скрыть кнопку \u0027Просмотр задач\u0027 (HideTaskViewButton)",
+    "name_ru": "Скрыть кнопку 'Просмотр задач' (HideTaskViewButton)",
     "description_ru": "Убирает кнопку виртуальных рабочих столов и переключения задач из системной панели задач.",
     "group": "Панель задач",
     "category": "visibility",
@@ -8961,8 +8741,8 @@
   },
   {
     "id": "power-remove-sleep-option",
-    "name_ru": "Скрыть режим \u0027Сон\u0027 из меню выключения (ShowSleepOption)",
-    "description_ru": "Убирает пункт спящего режима из меню кнопки \u0027Пуск\u0027 и диалога выключения Windows, предотвращая случайный переход в сон.",
+    "name_ru": "Скрыть режим 'Сон' из меню выключения (ShowSleepOption)",
+    "description_ru": "Убирает пункт спящего режима из меню кнопки 'Пуск' и диалога выключения Windows, предотвращая случайный переход в сон.",
     "group": "Управление питанием и выключение",
     "category": "power",
     "type": "toggle",
@@ -8993,8 +8773,8 @@
   },
   {
     "id": "power-remove-hibernate-option",
-    "name_ru": "Скрыть режим \u0027Гибернация\u0027 из меню выключения (ShowHibernateOption)",
-    "description_ru": "Убирает режим гибернации из списков выключения питания в меню \u0027Пуск\u0027.",
+    "name_ru": "Скрыть режим 'Гибернация' из меню выключения (ShowHibernateOption)",
+    "description_ru": "Убирает режим гибернации из списков выключения питания в меню 'Пуск'.",
     "group": "Управление питанием и выключение",
     "category": "power",
     "type": "toggle",
@@ -9090,7 +8870,7 @@
   {
     "id": "visibility-prevent-lockscreen-camera",
     "name_ru": "Отключить доступ к камере на экране блокировки (NoLockScreenCamera)",
-    "description_ru": "Запрещает запуск приложения \u0027Камера\u0027 до разблокировки устройства пользователем.",
+    "description_ru": "Запрещает запуск приложения 'Камера' до разблокировки устройства пользователем.",
     "group": "Экран входа и персонализация",
     "category": "visibility",
     "type": "toggle",
@@ -9122,7 +8902,7 @@
   {
     "id": "visibility-no-recent-docs-history",
     "name_ru": "Не сохранять журнал недавних документов (NoRecentDocsHistory)",
-    "description_ru": "Запрещает операционной системе вести список недавно открывавшихся файлов и программ в проводнике и меню \u0027Пуск\u0027.",
+    "description_ru": "Запрещает операционной системе вести список недавно открывавшихся файлов и программ в проводнике и меню 'Пуск'.",
     "group": "Проводник и конфиденциальность",
     "category": "visibility",
     "type": "toggle",
@@ -9250,14 +9030,12 @@
   {
     "id": "security-removable-disks-deny-write",
     "name_ru": "Запретить запись на съемные диски (Deny_Write)",
-    "description_ru": "Переводит все подключаемые USB-флешки и съемные накопители в режим \u0027Только для чтения\u0027, защищая от утечек информации и заражения червями.",
+    "description_ru": "Переводит все подключаемые USB-флешки и съемные накопители в режим 'Только для чтения', защищая от утечек информации и заражения червями.",
     "group": "Защита съемных носителей",
     "category": "security",
     "type": "toggle",
     "risk": "medium",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -9281,7 +9059,7 @@
   },
   {
     "id": "system-notifications-no-use-store",
-    "name_ru": "Убрать \u0027Поиск приложения в Store\u0027 при открытии файлов (NoUseStoreOpenWith)",
+    "name_ru": "Убрать 'Поиск приложения в Store' при открытии файлов (NoUseStoreOpenWith)",
     "description_ru": "Убирает навязчивое предложение открыть Windows Store при попытке запустить файл с неизвестным расширением.",
     "group": "Диалог открытия файлов",
     "category": "system",
@@ -9378,7 +9156,7 @@
   {
     "id": "system-notifications-no-tile",
     "name_ru": "Отключить push-уведомления для живых плиток (NoTileApplicationNotification)",
-    "description_ru": "Блокирует сетевую передачу push-обновлений для живых плиток в меню \u0027Пуск\u0027, уменьшая сетевой фоновый трафик.",
+    "description_ru": "Блокирует сетевую передачу push-обновлений для живых плиток в меню 'Пуск', уменьшая сетевой фоновый трафик.",
     "group": "Уведомления и оповещения",
     "category": "system",
     "type": "toggle",
@@ -9634,7 +9412,7 @@
   {
     "id": "system-storage-sense-downloads-threshold",
     "name_ru": "Отключить автоочистку Загрузок службой Storage Sense (ConfigStorageSenseDownloadsCleanupThreshold)",
-    "description_ru": "Запрещает службе контроля памяти автоматически удалять неиспользуемые файлы из папки \u0027Загрузки\u0027.",
+    "description_ru": "Запрещает службе контроля памяти автоматически удалять неиспользуемые файлы из папки 'Загрузки'.",
     "group": "Контроль памяти (Storage Sense)",
     "category": "system",
     "type": "toggle",
@@ -9863,9 +9641,7 @@
     "category": "security",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      "recommended"
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -9895,9 +9671,7 @@
     "category": "security",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      "recommended"
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -9927,9 +9701,7 @@
     "category": "security",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      "recommended"
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -9953,8 +9725,8 @@
   },
   {
     "id": "system-start-hide-recently-added-apps",
-    "name_ru": "Скрыть список \u0027Недавно добавленные\u0027 в меню Пуск (HideRecentlyAddedApps)",
-    "description_ru": "Убирает раздел недавно установленных программ из верхней части меню \u0027Пуск\u0027, сохраняя аккуратный вид списка приложений.",
+    "name_ru": "Скрыть список 'Недавно добавленные' в меню Пуск (HideRecentlyAddedApps)",
+    "description_ru": "Убирает раздел недавно установленных программ из верхней части меню 'Пуск', сохраняя аккуратный вид списка приложений.",
     "group": "Меню Пуск",
     "category": "system",
     "type": "toggle",
@@ -10049,7 +9821,7 @@
   },
   {
     "id": "system-start-no-new-app-alert",
-    "name_ru": "Отключить оповещение \u0027Установлено новое приложение\u0027 (NoNewAppAlert)",
+    "name_ru": "Отключить оповещение 'Установлено новое приложение' (NoNewAppAlert)",
     "description_ru": "Блокирует показ уведомлений о появлении новых установленных программ при выходе на рабочий стол.",
     "group": "Уведомления и оболочка",
     "category": "system",
@@ -10081,8 +9853,8 @@
   },
   {
     "id": "system-start-hide-most-used-apps",
-    "name_ru": "Скрыть список \u0027Часто используемые\u0027 в меню Пуск (ShowOrHideMostUsedApps)",
-    "description_ru": "Убирает автоматический список наиболее популярных приложений из меню \u0027Пуск\u0027.",
+    "name_ru": "Скрыть список 'Часто используемые' в меню Пуск (ShowOrHideMostUsedApps)",
+    "description_ru": "Убирает автоматический список наиболее популярных приложений из меню 'Пуск'.",
     "group": "Меню Пуск",
     "category": "system",
     "type": "toggle",
@@ -10311,9 +10083,7 @@
     "category": "peripheral",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -10343,9 +10113,7 @@
     "category": "peripheral",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -18134,7 +17902,7 @@
     "id": "privacy-ai-disable-recall-snapshots",
     "name_ru": "Запретить сохранение снимков экрана для службы Windows Recall",
     "description_ru": "Полностью блокирует регулярное создание и анализ локальных скриншотов рабочего стола AI-службой Recall.",
-    "group": "Windows Recall \u0026 Copilot",
+    "group": "Windows Recall & Copilot",
     "category": "privacy",
     "type": "toggle",
     "risk": "low",
@@ -18167,7 +17935,7 @@
     "id": "privacy-ai-allow-recall-enablement",
     "name_ru": "Запретить принудительное включение функций Windows Recall",
     "description_ru": "Запрещает системе автоматически активировать функции Recall при установке обновлений или входе.",
-    "group": "Windows Recall \u0026 Copilot",
+    "group": "Windows Recall & Copilot",
     "category": "privacy",
     "type": "toggle",
     "risk": "low",
@@ -18200,7 +17968,7 @@
     "id": "privacy-ai-disable-click-to-do",
     "name_ru": "Отключить интерактивный контекстный AI-инструмент Click to Do",
     "description_ru": "Отключает фоновый экранный парсер и контекстные подсказки AI-модели Click to Do в Windows.",
-    "group": "Windows Recall \u0026 Copilot",
+    "group": "Windows Recall & Copilot",
     "category": "privacy",
     "type": "toggle",
     "risk": "low",
@@ -19983,9 +19751,7 @@
     "category": "security",
     "type": "toggle",
     "risk": "medium",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": 19041,
     "needs_review": false,
     "source": {
@@ -20378,9 +20144,7 @@
     "category": "security",
     "type": "toggle",
     "risk": "medium",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": 19041,
     "needs_review": false,
     "source": {
@@ -21037,9 +20801,7 @@
     "category": "security",
     "type": "toggle",
     "risk": "medium",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": 19041,
     "needs_review": false,
     "source": {
@@ -21861,9 +21623,7 @@
     "category": "security",
     "type": "toggle",
     "risk": "medium",
-    "presets": [
-      
-    ],
+    "presets": [],
     "min_build": 19041,
     "needs_review": false,
     "source": {
@@ -26336,9 +26096,7 @@
     "group": "Security",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "security/desc.md",
@@ -26367,9 +26125,7 @@
     "group": "Security",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "security/desc.md",
@@ -26398,9 +26154,7 @@
     "group": "Security",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "security/desc.md",
@@ -26429,9 +26183,7 @@
     "group": "Security",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "security/desc.md",
@@ -26460,9 +26212,7 @@
     "group": "Security",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "security/desc.md",
@@ -26491,9 +26241,7 @@
     "group": "Security",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "security/desc.md",
@@ -26522,9 +26270,7 @@
     "group": "GPU Scheduling",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "system/desc.md",
@@ -26553,9 +26299,7 @@
     "group": "GPU Scheduling",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "system/desc.md",
@@ -26584,9 +26328,7 @@
     "group": "GPU Scheduling",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "system/desc.md",
@@ -26615,9 +26357,7 @@
     "group": "GPU Scheduling",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "system/desc.md",
@@ -26646,9 +26386,7 @@
     "group": "GPU Scheduling",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "system/desc.md",
@@ -26677,9 +26415,7 @@
     "group": "GPU Scheduling",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "system/desc.md",
@@ -26708,9 +26444,7 @@
     "group": "GPU Scheduling",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "system/desc.md",
@@ -26739,9 +26473,7 @@
     "group": "GPU Scheduling",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "system/desc.md",
@@ -26770,9 +26502,7 @@
     "group": "GPU Scheduling",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "system/desc.md",
@@ -26801,9 +26531,7 @@
     "group": "GPU Scheduling",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "system/desc.md",
@@ -26832,9 +26560,7 @@
     "group": "GPU Scheduling",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "system/desc.md",
@@ -26863,9 +26589,7 @@
     "group": "Network Services",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "network/desc.md",
@@ -26894,9 +26618,7 @@
     "group": "Network Services",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "network/desc.md",
@@ -26925,9 +26647,7 @@
     "group": "Network Services",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "network/desc.md",
@@ -26956,9 +26676,7 @@
     "group": "Network Services",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "network/desc.md",
@@ -26987,9 +26705,7 @@
     "group": "Network HW Offloads",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "network/desc.md",
@@ -27018,9 +26734,7 @@
     "group": "Network HW Offloads",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "network/desc.md",
@@ -27049,9 +26763,7 @@
     "group": "Network HW Offloads",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "network/desc.md",
@@ -27080,9 +26792,7 @@
     "group": "Network HW Offloads",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "network/desc.md",
@@ -27111,9 +26821,7 @@
     "group": "DWM Engine",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "system/desc.md",
@@ -27142,9 +26850,7 @@
     "group": "DWM Optimization",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "system/desc.md",
@@ -27173,9 +26879,7 @@
     "group": "DWM Optimization",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "system/desc.md",
@@ -27204,9 +26908,7 @@
     "group": "DWM Optimization",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "system/desc.md",
@@ -27235,9 +26937,7 @@
     "group": "DWM Engine",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "system/desc.md",
@@ -27266,9 +26966,7 @@
     "group": "DWM Optimization",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "system/desc.md",
@@ -27297,9 +26995,7 @@
     "group": "DWM Engine",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "system/desc.md",
@@ -27328,9 +27024,7 @@
     "group": "DWM Engine",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "system/desc.md",
@@ -27359,9 +27053,7 @@
     "group": "GPU Scheduling",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "system/desc.md",
@@ -27390,9 +27082,7 @@
     "group": "GPU Scheduling",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "system/desc.md",
@@ -27421,9 +27111,7 @@
     "group": "GPU Scheduling",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "system/desc.md",
@@ -27452,9 +27140,7 @@
     "group": "GPU Scheduling",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "system/desc.md",
@@ -27483,9 +27169,7 @@
     "group": "GPU Scheduling",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "system/desc.md",
@@ -27514,9 +27198,7 @@
     "group": "GPU Scheduling",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "system/desc.md",
@@ -27545,9 +27227,7 @@
     "group": "GPU Scheduling",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "system/desc.md",
@@ -27576,9 +27256,7 @@
     "group": "GPU Scheduling",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "system/desc.md",
@@ -27607,9 +27285,7 @@
     "group": "Network HW Offloads",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "network/desc.md",
@@ -27638,9 +27314,7 @@
     "group": "Network HW Offloads",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "network/desc.md",
@@ -27669,9 +27343,7 @@
     "group": "Network HW Offloads",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "network/desc.md",
@@ -27700,9 +27372,7 @@
     "group": "Network HW Offloads",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "network/desc.md",
@@ -27731,9 +27401,7 @@
     "group": "Network HW Offloads",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "network/desc.md",
@@ -27762,9 +27430,7 @@
     "group": "7-Zip Options",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "misc/desc.md",
@@ -27793,9 +27459,7 @@
     "group": "System Responsiveness",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "system/desc.md",
@@ -27824,9 +27488,7 @@
     "group": "StartAllBack Options",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "misc/desc.md",
@@ -27855,9 +27517,7 @@
     "group": "StartAllBack Options",
     "type": "toggle",
     "risk": "low",
-    "presets": [
-      
-    ],
+    "presets": [],
     "needs_review": true,
     "source": {
       "file": "misc/desc.md",
@@ -28067,6 +27727,629 @@
         "revert": {
           "mode": "set",
           "value": 3
+        }
+      }
+    ]
+  },
+  {
+    "id": "system-timer-disable-dynamic-tick",
+    "name_ru": "Отключить динамический тик ядра (bcdedit disabledynamictick)",
+    "description_ru": "Фиксирует периодический системный таймер (bcdedit /set {current} disabledynamictick yes), устраняя дрейф задержек при выходе ядер из простоя.",
+    "group": "Системные таймеры и тактовая частота",
+    "category": "system",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/bcd-edits.md",
+      "line_from": 56,
+      "line_to": 59
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "BCD00000000\\Objects\\{default}\\Elements\\260000A5",
+        "name": "Element",
+        "type": "REG_BINARY",
+        "apply": "01",
+        "apply_block": null,
+        "revert": {
+          "mode": "set",
+          "value": "00"
+        }
+      }
+    ]
+  },
+  {
+    "id": "system-timer-serialize-expiration",
+    "name_ru": "Отключить сериализацию истечения таймеров (SerializeTimerExpiration = 0)",
+    "description_ru": "Отключает объединение истечения таймеров в ядре (KiSerializeTimerExpiration = 0), снижая джиттер системных прерываний.",
+    "group": "Системные таймеры и тактовая частота",
+    "category": "system",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/timer-expiration.md",
+      "line_from": 4,
+      "line_to": 7
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Kernel",
+        "name": "SerializeTimerExpiration",
+        "type": "REG_DWORD",
+        "apply": 0,
+        "apply_block": null,
+        "revert": {
+          "mode": "set",
+          "value": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "system-timer-per-cpu-tick",
+    "name_ru": "Поядерное планирование тактов таймера (EnablePerCpuClockTickScheduling)",
+    "description_ru": "Включает распределённое планирование тактовых таймеров на каждом логическом ядре CPU (EnablePerCpuClockTickScheduling = 1).",
+    "group": "Системные таймеры и тактовая частота",
+    "category": "system",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [],
+    "min_build": 22000,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/timer-expiration.md",
+      "line_from": 8,
+      "line_to": 11
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Kernel",
+        "name": "EnablePerCpuClockTickScheduling",
+        "type": "REG_DWORD",
+        "apply": 1,
+        "apply_block": null,
+        "revert": {
+          "mode": "set",
+          "value": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "system-disable-memory-compression",
+    "name_ru": "Отключить сжатие оперативной памяти (MMAgent MemoryCompression)",
+    "description_ru": "Отключает фоновое сжатие страниц памяти процессом MemCompression (Disable-MMAgent -MemoryCompression) для систем с достаточным объёмом ОЗУ.",
+    "group": "Память и процессы",
+    "category": "system",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/memory-compression.md",
+      "line_from": 22,
+      "line_to": 25
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Superfetch",
+        "name": "AdminDisable",
+        "type": "REG_DWORD",
+        "apply": 512,
+        "apply_block": null,
+        "revert": {
+          "mode": "set",
+          "value": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "system-dxg-hwsch-thread-offload",
+    "name_ru": "Разгрузка потоков планировщика GPU (HwSchThreadOffloadMode = 2)",
+    "description_ru": "Разрешает перенос аппаратных очередей GPU (HAGS) в выделенный режим разгрузки на Windows 11 24H2+.",
+    "group": "Графическая подсистема (DirectX / DWM)",
+    "category": "system",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [],
+    "min_build": 26100,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/hags.md",
+      "line_from": 13,
+      "line_to": 16
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers\\Scheduler",
+        "name": "HwSchThreadOffloadMode",
+        "type": "REG_DWORD",
+        "apply": 2,
+        "apply_block": null,
+        "revert": {
+          "mode": "delete",
+          "value": null
+        }
+      }
+    ]
+  },
+  {
+    "id": "system-dxg-hw-queue-packet-cap",
+    "name_ru": "Ограничить очередь DMA-пакетов GPU (HwQueuePacketCap = 1)",
+    "description_ru": "Ограничивает глубину очереди DMA-пакетов на узел планировщика (HwQueuePacketCap = 1, диапазон 1–14) для снижения рендер-задержки.",
+    "group": "Графическая подсистема (DirectX / DWM)",
+    "category": "system",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/hags.md",
+      "line_from": 16,
+      "line_to": 19
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers\\Scheduler",
+        "name": "HwQueuePacketCap",
+        "type": "REG_DWORD",
+        "apply": 1,
+        "apply_block": null,
+        "revert": {
+          "mode": "delete",
+          "value": null
+        }
+      }
+    ]
+  },
+  {
+    "id": "power-noverse-high-performance-plan",
+    "name_ru": "Схема электропитания Noverse High Performance (powercfg)",
+    "description_ru": "Активирует профиль Высокой производительности (SCHEME_MIN) и отключает парковку/троттлинг CPU, выборочную приостановку USB, PCIe ASPM и таймаут диска через powercfg.",
+    "group": "Планы и профили питания",
+    "category": "power",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "power/docs/power-plan.md",
+      "line_from": 4,
+      "line_to": 7
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Control\\Power\\User\\PowerSchemes",
+        "name": "SCHEME_MIN",
+        "type": "REG_SZ",
+        "apply": "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c",
+        "apply_block": null,
+        "revert": {
+          "mode": "set",
+          "value": "381b4222-f694-41f0-9685-ff5bb260df2e"
+        }
+      }
+    ]
+  },
+  {
+    "id": "nvidia-disable-scheduled-tasks",
+    "name_ru": "Отключить фоновые задачи телеметрии NVIDIA (NvTmRep* / NvTmMon*)",
+    "description_ru": "Отключает запланированные задачи отчётности и мониторинга сбоев NVIDIA (NvTmRep, NvTmRepOnLogon, NvTmMon) в Планировщике заданий Windows.",
+    "group": "Телеметрия и службы",
+    "category": "nvidia",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "nvidia/docs/disable-scheduled-tasks.md",
+      "line_from": 4,
+      "line_to": 7
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\NVIDIA Corporation\\NVControlPanel2\\Client",
+        "name": "NvTmRep",
+        "type": "REG_DWORD",
+        "apply": 1,
+        "apply_block": null,
+        "revert": {
+          "mode": "delete",
+          "value": null
+        }
+      }
+    ]
+  },
+  {
+    "id": "nvidia-enable-developer-settings",
+    "name_ru": "Открыть раздел Developer Settings в панели NVIDIA (NvDevToolsVisible)",
+    "description_ru": "Отображает скрытые настройки разработчика в Панели управления NVIDIA (NvDevToolsVisible = 1) для управления счётчиками производительности GPU.",
+    "group": "Конфиденциальность и права",
+    "category": "nvidia",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "nvidia/docs/enable-developer-settings.md",
+      "line_from": 7,
+      "line_to": 10
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "System\\CurrentControlSet\\Services\\nvlddmkm\\Global\\NVTweak",
+        "name": "NvDevToolsVisible",
+        "type": "REG_DWORD",
+        "apply": 1,
+        "apply_block": null,
+        "revert": {
+          "mode": "set",
+          "value": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "steam-vdf-disable-game-recording",
+    "name_ru": "Отключить фоновую запись игр Steam (GameRecording = 0)",
+    "description_ru": "Записывает BackgroundRecordMode=0 в localconfig.vdf, полностью отключая фоновую запись геймплея Steam Game Recording.",
+    "group": "Конфигурация Steam (localconfig.vdf)",
+    "category": "steam",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended",
+      "gaming"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "steam/docs/Steam-Config.ps1",
+      "line_from": 151,
+      "line_to": 154
+    },
+    "registry": [
+      {
+        "hive": "HKCU",
+        "path": "Software\\Valve\\Steam",
+        "name": "BackgroundRecordMode",
+        "type": "REG_DWORD",
+        "apply": 0,
+        "apply_block": null,
+        "revert": {
+          "mode": "set",
+          "value": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "steam-vdf-disable-remote-play",
+    "name_ru": "Отключить Steam Remote Play (EnableStreaming = 0)",
+    "description_ru": "Отключает службу потоковой трансляции Remote Play в localconfig.vdf (streaming_v2\\EnableStreaming=0).",
+    "group": "Конфигурация Steam (localconfig.vdf)",
+    "category": "steam",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended",
+      "gaming"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "steam/docs/Steam-Config.ps1",
+      "line_from": 145,
+      "line_to": 148
+    },
+    "registry": [
+      {
+        "hive": "HKCU",
+        "path": "Software\\Valve\\Steam",
+        "name": "EnableStreaming",
+        "type": "REG_DWORD",
+        "apply": 0,
+        "apply_block": null,
+        "revert": {
+          "mode": "set",
+          "value": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "steam-vdf-library-low-perf",
+    "name_ru": "Включить упрощённый режим производительности библиотеки Steam",
+    "description_ru": "Активирует LibraryLowPerfMode=1 в localconfig.vdf для снижения нагрузки на GPU и CPU от интерфейса библиотеки.",
+    "group": "Конфигурация Steam (localconfig.vdf)",
+    "category": "steam",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended",
+      "gaming"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "steam/docs/Steam-Config.ps1",
+      "line_from": 158,
+      "line_to": 161
+    },
+    "registry": [
+      {
+        "hive": "HKCU",
+        "path": "Software\\Valve\\Steam",
+        "name": "LibraryLowPerfMode",
+        "type": "REG_DWORD",
+        "apply": 1,
+        "apply_block": null,
+        "revert": {
+          "mode": "set",
+          "value": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "steam-vdf-library-low-bandwidth",
+    "name_ru": "Включить экономию трафика библиотеки Steam (LowBandwidthMode)",
+    "description_ru": "Активирует LibraryLowBandwidthMode=1 в localconfig.vdf, отключая фоновую подгрузку тяжёлых анимированных обложек.",
+    "group": "Конфигурация Steam (localconfig.vdf)",
+    "category": "steam",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended",
+      "gaming"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "steam/docs/Steam-Config.ps1",
+      "line_from": 157,
+      "line_to": 160
+    },
+    "registry": [
+      {
+        "hive": "HKCU",
+        "path": "Software\\Valve\\Steam",
+        "name": "LibraryLowBandwidthMode",
+        "type": "REG_DWORD",
+        "apply": 1,
+        "apply_block": null,
+        "revert": {
+          "mode": "set",
+          "value": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "steam-vdf-disable-community-content",
+    "name_ru": "Скрыть контент сообщества в библиотеке Steam",
+    "description_ru": "Устанавливает LibraryDisableCommunityContent=1 в localconfig.vdf, убирая ленты скриншотов и руководств из карточек игр.",
+    "group": "Конфигурация Steam (localconfig.vdf)",
+    "category": "steam",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "gaming"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "steam/docs/Steam-Config.ps1",
+      "line_from": 159,
+      "line_to": 162
+    },
+    "registry": [
+      {
+        "hive": "HKCU",
+        "path": "Software\\Valve\\Steam",
+        "name": "LibraryDisableCommunityContent",
+        "type": "REG_DWORD",
+        "apply": 1,
+        "apply_block": null,
+        "revert": {
+          "mode": "set",
+          "value": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "steam-vdf-disable-broadcast",
+    "name_ru": "Отключить трансляции Steam Broadcast (Permissions = 0)",
+    "description_ru": "Запрещает трансляцию экрана через Steam (Broadcast\\Permissions=0, FirstTimeComplete=1) в localconfig.vdf.",
+    "group": "Конфигурация Steam (localconfig.vdf)",
+    "category": "steam",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended",
+      "gaming"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "steam/docs/Steam-Config.ps1",
+      "line_from": 133,
+      "line_to": 136
+    },
+    "registry": [
+      {
+        "hive": "HKCU",
+        "path": "Software\\Valve\\Steam",
+        "name": "Permissions",
+        "type": "REG_DWORD",
+        "apply": 0,
+        "apply_block": null,
+        "revert": {
+          "mode": "set",
+          "value": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "steam-vdf-disable-friends-autologin",
+    "name_ru": "Отключить автовход в список друзей и чат Steam",
+    "description_ru": "Устанавливает SignIntoFriends=0 в localconfig.vdf, предотвращая автоматическое подключение веб-чата при запуске.",
+    "group": "Конфигурация Steam (localconfig.vdf)",
+    "category": "steam",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "gaming"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "steam/docs/Steam-Config.ps1",
+      "line_from": 148,
+      "line_to": 151
+    },
+    "registry": [
+      {
+        "hive": "HKCU",
+        "path": "Software\\Valve\\Steam",
+        "name": "SignIntoFriends",
+        "type": "REG_DWORD",
+        "apply": 0,
+        "apply_block": null,
+        "revert": {
+          "mode": "set",
+          "value": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "steam-vdf-reduce-motion",
+    "name_ru": "Включить уменьшение анимаций интерфейса Steam (ReduceMotion)",
+    "description_ru": "Устанавливает Accessibility\\ReduceMotion=1 в localconfig.vdf, снижая накладные расходы композитинга CEF.",
+    "group": "Конфигурация Steam (localconfig.vdf)",
+    "category": "steam",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended",
+      "gaming"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "steam/docs/Steam-Config.ps1",
+      "line_from": 166,
+      "line_to": 169
+    },
+    "registry": [
+      {
+        "hive": "HKCU",
+        "path": "Software\\Valve\\Steam",
+        "name": "ReduceMotion",
+        "type": "REG_DWORD",
+        "apply": 1,
+        "apply_block": null,
+        "revert": {
+          "mode": "set",
+          "value": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "steam-vdf-disable-overlay-browser-restore",
+    "name_ru": "Не восстанавливать вкладки браузера оверлея Steam",
+    "description_ru": "Устанавливает InGameOverlayRestoreBrowserTabs=0 в localconfig.vdf, предотвращая фоновый запуск старых вкладок.",
+    "group": "Конфигурация Steam (localconfig.vdf)",
+    "category": "steam",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended",
+      "gaming"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "steam/docs/Steam-Config.ps1",
+      "line_from": 139,
+      "line_to": 142
+    },
+    "registry": [
+      {
+        "hive": "HKCU",
+        "path": "Software\\Valve\\Steam",
+        "name": "InGameOverlayRestoreBrowserTabs",
+        "type": "REG_DWORD",
+        "apply": 0,
+        "apply_block": null,
+        "revert": {
+          "mode": "set",
+          "value": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "steam-vdf-disable-news-popup",
+    "name_ru": "Отключить всплывающие новости и промо-уведомления Steam",
+    "description_ru": "Устанавливает NotifyAvailableGames=0 в localconfig.vdf, убирая рекламные уведомления об играх и акциях.",
+    "group": "Конфигурация Steam (localconfig.vdf)",
+    "category": "steam",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended",
+      "gaming"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "steam/docs/Steam-Config.ps1",
+      "line_from": 154,
+      "line_to": 157
+    },
+    "registry": [
+      {
+        "hive": "HKCU",
+        "path": "Software\\Valve\\Steam",
+        "name": "NotifyAvailableGames",
+        "type": "REG_DWORD",
+        "apply": 0,
+        "apply_block": null,
+        "revert": {
+          "mode": "set",
+          "value": 1
         }
       }
     ]

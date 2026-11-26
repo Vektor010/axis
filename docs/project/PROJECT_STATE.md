@@ -1,8 +1,8 @@
 # PROJECT_STATE.md — Current Operational State
 
-**Last Updated**: 2026-11-18  
-**Version**: v2.0.2 (Steam Architecture Audit & Windows Startup Dual-Engine Fix)  
-**Binary Output**: `dist/Axis.exe` (1.22 MB, standalone x64)
+**Last Updated**: 2026-11-26  
+**Version**: v2.1.0 (Full Noverse 2026 1:1 Engine & Hardware Execution Overhaul)  
+**Binary Output**: `dist/Axis.exe` (1.27 MB, standalone x64, 875 tweaks)
 
 ---
 

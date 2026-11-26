@@ -117,5 +117,121 @@ namespace WinTweaker.Common
             }
             catch { }
         }
+
+        private const int HWND_BROADCAST = 0xFFFF;
+        private const int WM_SETTINGCHANGE = 0x001A;
+        private const uint SMTO_ABORTIFHUNG = 0x0002;
+        private const uint SPI_SETMOUSE = 0x0004;
+        private const uint SPI_SETANIMATION = 0x0049;
+        private const uint SPIF_UPDATEINIFILE = 0x01;
+        private const uint SPIF_SENDCHANGE = 0x02;
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct ANIMATIONINFO
+        {
+            public uint cbSize;
+            public int iMinAnimate;
+        }
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        private static extern IntPtr SendMessageTimeout(
+            IntPtr hWnd,
+            int Msg,
+            IntPtr wParam,
+            string lParam,
+            uint fuFlags,
+            uint uTimeout,
+            out IntPtr lpdwResult);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool SystemParametersInfo(
+            uint uiAction,
+            uint uiParam,
+            IntPtr pvParam,
+            uint fWinIni);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool SystemParametersInfo(
+            uint uiAction,
+            uint uiParam,
+            int[] pvParam,
+            uint fWinIni);
+
+        public static void BroadcastSettingChange(string area)
+        {
+            try
+            {
+                IntPtr res;
+                SendMessageTimeout(new IntPtr(HWND_BROADCAST), WM_SETTINGCHANGE, IntPtr.Zero, area, SMTO_ABORTIFHUNG, 500, out res);
+            }
+            catch { }
+        }
+
+        public static void ApplyLiveOsRefresh(string hive, string path, string name, object writtenValue)
+        {
+            if (string.IsNullOrEmpty(path)) return;
+            try
+            {
+                string lowPath = path.ToLowerInvariant();
+                if (lowPath == @"control panel\mouse" &&
+                    (string.Equals(name, "MouseSpeed", StringComparison.OrdinalIgnoreCase) ||
+                     string.Equals(name, "MouseThreshold1", StringComparison.OrdinalIgnoreCase) ||
+                     string.Equals(name, "MouseThreshold2", StringComparison.OrdinalIgnoreCase)))
+                {
+                    int[] mouseParams = new int[3];
+                    mouseParams[0] = ReadHkcuInt(@"Control Panel\Mouse", "MouseThreshold1", 0);
+                    mouseParams[1] = ReadHkcuInt(@"Control Panel\Mouse", "MouseThreshold2", 0);
+                    mouseParams[2] = ReadHkcuInt(@"Control Panel\Mouse", "MouseSpeed", 0);
+                    SystemParametersInfo(SPI_SETMOUSE, 0, mouseParams, SPIF_UPDATEINIFILE | SPIF_SENDCHANGE);
+                }
+                else if (lowPath == @"control panel\desktop\windowmetrics" &&
+                         string.Equals(name, "MinAnimate", StringComparison.OrdinalIgnoreCase))
+                {
+                    int val = 0;
+                    if (writtenValue != null) int.TryParse(writtenValue.ToString(), out val);
+                    ANIMATIONINFO ai = new ANIMATIONINFO();
+                    ai.cbSize = (uint)Marshal.SizeOf(typeof(ANIMATIONINFO));
+                    ai.iMinAnimate = (val != 0) ? 1 : 0;
+                    IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(ANIMATIONINFO)));
+                    try
+                    {
+                        Marshal.StructureToPtr(ai, ptr, false);
+                        SystemParametersInfo(SPI_SETANIMATION, ai.cbSize, ptr, SPIF_UPDATEINIFILE | SPIF_SENDCHANGE);
+                    }
+                    finally
+                    {
+                        Marshal.FreeHGlobal(ptr);
+                    }
+                }
+                else if (lowPath.StartsWith(@"control panel\desktop") ||
+                         lowPath.Contains(@"explorer\visualeffects") ||
+                         lowPath.Contains(@"explorer\advanced"))
+                {
+                    BroadcastSettingChange("Environment");
+                    BroadcastSettingChange("WindowMetrics");
+                }
+            }
+            catch { }
+        }
+
+        private static int ReadHkcuInt(string subkey, string name, int fallback)
+        {
+            try
+            {
+                using (Microsoft.Win32.RegistryKey k = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(subkey, false))
+                {
+                    if (k != null)
+                    {
+                        object v = k.GetValue(name);
+                        int parsed;
+                        if (v != null && int.TryParse(v.ToString(), out parsed)) return parsed;
+                    }
+                }
+            }
+            catch { }
+            return fallback;
+        }
     }
 }

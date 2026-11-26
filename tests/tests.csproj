@@ -39,6 +39,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.ServiceProcess" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -61,6 +62,8 @@
     <Compile Include="..\src\Engine\GpuHwschService.cs" />
     <Compile Include="..\src\Engine\MmcssTaskService.cs" />
     <Compile Include="..\src\Engine\SteamConfigHelper.cs" />
+    <Compile Include="..\src\Engine\NvDrsService.cs" />
+    <Compile Include="..\src\Engine\SpecialTweakExecutor.cs" />
     <Compile Include="..\src\Engine\TemperatureSource.cs" />
   </ItemGroup>
 

@@ -5,6 +5,16 @@ All notable changes to AXIS will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2026-11-26
+
+### Major Engine Overhaul & Noverse 2026 1:1 Alignment
+- **Dynamic Hardware Enumeration (`SpecialTweakExecutor`)**: Replaced literal placeholder paths (`00XX`, `00xx`, `...`) with live enumeration of physical PCI/USB network adapters, USB/HD Audio `PowerSettings`, NVIDIA Display Class adapters (`ClassGUID {4d36e968...}`), and PCI device MSI/IRQ affinity instances (`Enum\PCI\VEN_...`) with CPU topology-aware `AssignmentSetOverride` masks.
+- **Native Windows Subsystem Executors**: Added real `bcdedit.exe` execution/status inspection (`system-bcd-*`, `disabledynamictick`, `useplatformclock`, `loadoptions`), `netsh.exe` TCP BBR2 + `loopbacklargemtu=disabled` fix for Steam/localhost, `powercfg.exe` High Performance plan + hibernation control, `MMAgent` memory compression, and live `ServiceController` start/stop.
+- **Native NVIDIA DRS (`nvapi64.dll` via `NvDrsService`)**: Replaced fake registry writes for `nvidia-noverse-minimal-profile` with direct NVIDIA Base Profile DRS configuration (26 settings from `NV-Minimal.nip`), added `NvTmRep*`/`NvTmMon*` scheduled task disabling, `NvDevToolsVisible`, multi-key PowerMizer, and fixed `nvcpl.ps1 -Action Create/Restore` with portable standalone fallback.
+- **Full Steam `localconfig.vdf` Engine (18 tweaks)**: Added 10 Noverse Steam configuration tweaks (`BackgroundRecordMode`, `EnableStreaming`, `LibraryLowPerfMode`, `LibraryLowBandwidthMode`, `LibraryDisableCommunityContent`, `Broadcast\Permissions`, `SignIntoFriends`, `ReduceMotion`, `InGameOverlayRestoreBrowserTabs`, `NotifyAvailableGames`).
+- **Complete `REG_BINARY` / `REG_QWORD` / Live Win32 Refresh & Real Cleanup**: Fixed `REG_BINARY` parsing/serialization and `.reg` `=hex:` backups, added `SystemParametersInfo` / `WM_SETTINGCHANGE` live updates, fixed `SystemResponsiveness=100`, `HiberbootEnabled` path (`Session Manager\Power`), `*InterruptModeration` on NICs, `DisabledComponents=0x20` IPv4 preference, `%ProgramData%\Tweaker\` real-mode storage, and unified all 16 real `cleanup-*` actions cleanly out of batch recommended apply.
+- **CI & Automated Verification**: Added `.github/workflows/ci-build-release.yml` (`windows-latest` MSBuild + `verify-all.ps1` + GitHub Release automation) and Test Suite 14 (**7,956 assertions**, 100% PASS, 0 FAIL).
+
 ## [2.0.2] - 2026-11-18
 
 ### Fixed & Audited

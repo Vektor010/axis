@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Win32;
 
@@ -251,6 +252,223 @@ namespace WinTweaker.Engine
             {
                 return false;
             }
+        }
+
+        public static string GetLocalConfigValue(string sectionName, string keyName)
+        {
+            return GetLocalConfigValueFromFiles(GetLocalConfigVdfPaths(), sectionName, keyName);
+        }
+
+        public static string GetLocalConfigValueFromFiles(string[] vdfFiles, string sectionName, string keyName)
+        {
+            try
+            {
+                if (vdfFiles == null || vdfFiles.Length == 0 || string.IsNullOrEmpty(keyName)) return null;
+                for (int i = 0; i < vdfFiles.Length; i++)
+                {
+                    if (!File.Exists(vdfFiles[i])) continue;
+                    string text = File.ReadAllText(vdfFiles[i], Encoding.UTF8);
+                    string val = ReadVdfKeyValue(text, sectionName, keyName);
+                    if (val != null) return val;
+                }
+            }
+            catch { }
+            return null;
+        }
+
+        public static bool SetLocalConfigValue(string sectionName, string keyName, string value)
+        {
+            return SetLocalConfigValueInFiles(GetLocalConfigVdfPaths(), sectionName, keyName, value);
+        }
+
+        public static bool SetLocalConfigValueInFiles(string[] vdfFiles, string sectionName, string keyName, string value)
+        {
+            try
+            {
+                if (vdfFiles == null || vdfFiles.Length == 0 || string.IsNullOrEmpty(keyName)) return false;
+                bool anyModified = false;
+                for (int i = 0; i < vdfFiles.Length; i++)
+                {
+                    string path = vdfFiles[i];
+                    if (!File.Exists(path)) continue;
+                    string text = File.ReadAllText(path, Encoding.UTF8);
+                    string bak = path + ".bak";
+                    if (!File.Exists(bak))
+                    {
+                        File.Copy(path, bak, true);
+                    }
+                    string updated = WriteVdfKeyValue(text, sectionName, keyName, value);
+                    if (updated != null)
+                    {
+                        File.WriteAllText(path, updated, new UTF8Encoding(false));
+                        anyModified = true;
+                    }
+                }
+                return anyModified;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private static string ReadVdfKeyValue(string text, string sectionName, string keyName)
+        {
+            if (string.IsNullOrEmpty(text)) return null;
+            bool isRoot = string.IsNullOrEmpty(sectionName) || string.Equals(sectionName, "root", StringComparison.OrdinalIgnoreCase);
+            int blockStart, blockEnd;
+            if (!FindVdfSectionRange(text, isRoot ? null : sectionName, out blockStart, out blockEnd)) return null;
+
+            string slice = text.Substring(blockStart, blockEnd - blockStart);
+            if (isRoot)
+            {
+                // For root, only match keys outside deeper braces
+                string shallow = StripNestedVdfBlocks(slice);
+                Match mr = Regex.Match(shallow, "\"" + Regex.Escape(keyName) + "\"\\s+\"([^\"]*)\"", RegexOptions.IgnoreCase);
+                return mr.Success ? mr.Groups[1].Value : null;
+            }
+
+            Match m = Regex.Match(slice, "\"" + Regex.Escape(keyName) + "\"\\s+\"([^\"]*)\"", RegexOptions.IgnoreCase);
+            return m.Success ? m.Groups[1].Value : null;
+        }
+
+        private static string WriteVdfKeyValue(string text, string sectionName, string keyName, string value)
+        {
+            if (string.IsNullOrEmpty(text)) return null;
+            int blockStart, blockEnd;
+            bool isRoot = string.IsNullOrEmpty(sectionName) || string.Equals(sectionName, "root", StringComparison.OrdinalIgnoreCase);
+
+            if (!FindVdfSectionRange(text, isRoot ? null : sectionName, out blockStart, out blockEnd))
+            {
+                if (isRoot) return null;
+                int rootStart, rootEnd;
+                if (!FindVdfSectionRange(text, null, out rootStart, out rootEnd)) return null;
+                string newSection = string.Format("\r\n\t\"{0}\"\r\n\t{{\r\n\t\t\"{1}\"\t\t\"{2}\"\r\n\t}}\r\n", sectionName, keyName, value);
+                return text.Insert(rootEnd, newSection);
+            }
+
+            string inner = text.Substring(blockStart, blockEnd - blockStart);
+            Regex keyRx = new Regex("(\"" + Regex.Escape(keyName) + "\"\\s+\")[^\"]*(\")", RegexOptions.IgnoreCase);
+            if (!isRoot && keyRx.IsMatch(inner))
+            {
+                string replacedInner = keyRx.Replace(inner, "${1}" + value + "${2}", 1);
+                return text.Substring(0, blockStart) + replacedInner + text.Substring(blockEnd);
+            }
+
+            if (isRoot)
+            {
+                // Replace only top-level key if present in root depth
+                string replacedRoot;
+                if (TryReplaceShallowVdfKey(inner, keyName, value, out replacedRoot))
+                {
+                    return text.Substring(0, blockStart) + replacedRoot + text.Substring(blockEnd);
+                }
+            }
+
+            string indent = isRoot ? "\t" : "\t\t";
+            string insertion = string.Format("\r\n{0}\"{1}\"\t\t\"{2}\"\r\n", indent, keyName, value);
+            return text.Insert(blockEnd, insertion);
+        }
+
+        private static bool FindVdfSectionRange(string text, string sectionName, out int contentStart, out int contentEnd)
+        {
+            contentStart = 0;
+            contentEnd = 0;
+            if (string.IsNullOrEmpty(sectionName))
+            {
+                int firstBrace = text.IndexOf('{');
+                if (firstBrace < 0) return false;
+                int close = FindMatchingBrace(text, firstBrace);
+                if (close < 0) return false;
+                contentStart = firstBrace + 1;
+                contentEnd = close;
+                return true;
+            }
+
+            Match m = Regex.Match(text, "\"" + Regex.Escape(sectionName) + "\"\\s*\\{", RegexOptions.IgnoreCase);
+            if (!m.Success) return false;
+            int openBrace = text.IndexOf('{', m.Index);
+            int closeBrace = FindMatchingBrace(text, openBrace);
+            if (closeBrace < 0) return false;
+            contentStart = openBrace + 1;
+            contentEnd = closeBrace;
+            return true;
+        }
+
+        private static int FindMatchingBrace(string text, int openIndex)
+        {
+            int depth = 0;
+            bool inQuotes = false;
+            for (int i = openIndex; i < text.Length; i++)
+            {
+                char c = text[i];
+                if (c == '\\' && inQuotes) { i++; continue; }
+                if (c == '"') { inQuotes = !inQuotes; continue; }
+                if (!inQuotes)
+                {
+                    if (c == '{') depth++;
+                    else if (c == '}')
+                    {
+                        depth--;
+                        if (depth == 0) return i;
+                    }
+                }
+            }
+            return -1;
+        }
+
+        private static string StripNestedVdfBlocks(string slice)
+        {
+            StringBuilder sb = new StringBuilder(slice.Length);
+            int depth = 0;
+            bool inQuotes = false;
+            for (int i = 0; i < slice.Length; i++)
+            {
+                char c = slice[i];
+                if (c == '\\' && inQuotes && i + 1 < slice.Length) { if (depth == 0) sb.Append(c).Append(slice[i + 1]); i++; continue; }
+                if (c == '"') { inQuotes = !inQuotes; if (depth == 0) sb.Append(c); continue; }
+                if (!inQuotes)
+                {
+                    if (c == '{') { depth++; continue; }
+                    if (c == '}') { if (depth > 0) depth--; continue; }
+                }
+                if (depth == 0) sb.Append(c);
+            }
+            return sb.ToString();
+        }
+
+        private static bool TryReplaceShallowVdfKey(string inner, string keyName, string newValue, out string updated)
+        {
+            updated = inner;
+            int depth = 0;
+            bool inQuotes = false;
+            for (int i = 0; i < inner.Length; i++)
+            {
+                char c = inner[i];
+                if (c == '\\' && inQuotes) { i++; continue; }
+                if (c == '"')
+                {
+                    if (!inQuotes && depth == 0)
+                    {
+                        string sub = inner.Substring(i);
+                        Match m = Regex.Match(sub, "^\"" + Regex.Escape(keyName) + "\"(\\s+)\"([^\"]*)\"", RegexOptions.IgnoreCase);
+                        if (m.Success)
+                        {
+                            string replacement = string.Format("\"{0}\"{1}\"{2}\"", keyName, m.Groups[1].Value, newValue);
+                            updated = inner.Substring(0, i) + replacement + inner.Substring(i + m.Length);
+                            return true;
+                        }
+                    }
+                    inQuotes = !inQuotes;
+                    continue;
+                }
+                if (!inQuotes)
+                {
+                    if (c == '{') depth++;
+                    else if (c == '}' && depth > 0) depth--;
+                }
+            }
+            return false;
         }
     }
 }

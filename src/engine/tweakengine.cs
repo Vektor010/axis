@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using Microsoft.Win32;
+using WinTweaker.Common;
 using WinTweaker.Models;
 
 namespace WinTweaker.Engine
@@ -66,8 +67,9 @@ namespace WinTweaker.Engine
             if (tweak == null) return false;
             if (tweak.registry == null || tweak.registry.Count == 0) return false;
 
-            // Исключается раздел NVIDIA целиком
+            // Исключается раздел NVIDIA и разовые cleanup/action операции
             if (string.Equals(tweak.category, "nvidia", StringComparison.OrdinalIgnoreCase)) return false;
+            if (SpecialTweakExecutor.IsCleanupAction(tweak)) return false;
 
             // Входят только твики типа toggle
             if (!string.Equals(tweak.type, "toggle", StringComparison.OrdinalIgnoreCase)) return false;
@@ -384,12 +386,22 @@ namespace WinTweaker.Engine
                 return TweakStatus.Unavailable;
             }
 
+            if (SpecialTweakExecutor.IsCustomRealExecutorTweak(tweak))
+            {
+                TweakStatus specialStatus = SpecialTweakExecutor.CheckSpecialStatus(tweak, this._store, this._stateManager, this._isRealMode);
+                if (specialStatus != TweakStatus.Unknown || SpecialTweakExecutor.IsCleanupAction(tweak))
+                {
+                    return specialStatus;
+                }
+            }
+
             // Специальная проверка автозапуска Steam в реальном режиме (учитывает Valve SuppressAutoRun и Windows StartupApproved)
             if (this._isRealMode && string.Equals(tweak.id, "steam-disable-autorun", StringComparison.OrdinalIgnoreCase))
             {
                 return SteamConfigHelper.IsSteamAutoRunDisabled() ? TweakStatus.Enabled : TweakStatus.Disabled;
             }
 
+            int totalTargets = 0;
             int applyMatches = 0;
             int revertMatches = 0;
             int foreignCount = 0;
@@ -397,112 +409,128 @@ namespace WinTweaker.Engine
             for (int i = 0; i < tweak.registry.Count; i++)
             {
                 RegistryActionItem action = tweak.registry[i];
-                if (!this._store.ValueExists(action.hive, action.path, action.name))
+                List<string> targetPaths = SpecialTweakExecutor.ResolveTargetPaths(tweak, action, this._isRealMode);
+                if (targetPaths.Count == 0)
                 {
-                    // Для оверлея Steam: если в реестре нет значения, проверяем реальный localconfig.vdf
-                    if (string.Equals(tweak.id, "steam-disable-game-overlay", StringComparison.OrdinalIgnoreCase))
-                    {
-                        int? vdfVal = SteamConfigHelper.GetGameOverlaySetting();
-                        if (vdfVal.HasValue)
-                        {
-                            if (vdfVal.Value == 0) applyMatches++;
-                            else if (vdfVal.Value == 1) revertMatches++;
-                            else foreignCount++;
-                            continue;
-                        }
-                    }
+                    return TweakStatus.Unavailable;
+                }
 
-                    bool isRevertAbsent = false;
-                    if (action.revert != null && (action.revert.mode == "delete" || action.revert.mode == "absent"))
+                for (int p = 0; p < targetPaths.Count; p++)
+                {
+                    totalTargets++;
+                    string targetPath = targetPaths[p];
+
+                    if (!this._store.ValueExists(action.hive, targetPath, action.name))
                     {
-                        isRevertAbsent = true;
-                    }
-                    else if (this._stateManager != null && this._stateManager.HasSnapshot(tweak.id))
-                    {
-                        TweakSnapshot snap = this._stateManager.GetSnapshot(tweak.id);
-                        if (snap != null && snap.Values != null && i < snap.Values.Count && !snap.Values[i].Existed)
+                        // Для оверлея Steam: если в реестре нет значения, проверяем реальный localconfig.vdf
+                        if (string.Equals(tweak.id, "steam-disable-game-overlay", StringComparison.OrdinalIgnoreCase))
+                        {
+                            int? vdfVal = SteamConfigHelper.GetGameOverlaySetting();
+                            if (vdfVal.HasValue)
+                            {
+                                if (vdfVal.Value == 0) applyMatches++;
+                                else if (vdfVal.Value == 1) revertMatches++;
+                                else foreignCount++;
+                                continue;
+                            }
+                        }
+
+                        bool isRevertAbsent = false;
+                        if (action.revert != null && (action.revert.mode == "delete" || action.revert.mode == "absent"))
                         {
                             isRevertAbsent = true;
-                        }
-                    }
-
-                    if (isRevertAbsent)
-                    {
-                        revertMatches++;
-                    }
-                    else
-                    {
-                        foreignCount++;
-                    }
-                    continue;
-                }
-
-                object curVal = this._store.GetValue(action.hive, action.path, action.name);
-                if (curVal == null)
-                {
-                    foreignCount++;
-                    continue;
-                }
-
-                bool isApply = false;
-                bool isRevert = false;
-
-                if (action.type == "REG_DWORD")
-                {
-                    try
-                    {
-                        long currentInt = Convert.ToInt64(curVal) & 0xFFFFFFFFL;
-                        if (action.apply != null && currentInt == (Convert.ToInt64(action.apply) & 0xFFFFFFFFL))
-                        {
-                            isApply = true;
-                        }
-
-                        if (action.revert != null && action.revert.value != null && currentInt == (Convert.ToInt64(action.revert.value) & 0xFFFFFFFFL))
-                        {
-                            isRevert = true;
                         }
                         else if (this._stateManager != null && this._stateManager.HasSnapshot(tweak.id))
                         {
                             TweakSnapshot snap = this._stateManager.GetSnapshot(tweak.id);
-                            if (snap != null && snap.Values != null && i < snap.Values.Count && snap.Values[i].Value != null)
+                            if (snap != null && snap.Values != null)
                             {
-                                if (currentInt == (Convert.ToInt64(snap.Values[i].Value) & 0xFFFFFFFFL))
+                                for (int sv = 0; sv < snap.Values.Count; sv++)
                                 {
-                                    isRevert = true;
+                                    if (string.Equals(snap.Values[sv].Path, targetPath, StringComparison.OrdinalIgnoreCase) &&
+                                        string.Equals(snap.Values[sv].Name, action.name, StringComparison.OrdinalIgnoreCase) &&
+                                        !snap.Values[sv].Existed)
+                                    {
+                                        isRevertAbsent = true;
+                                        break;
+                                    }
                                 }
                             }
                         }
+
+                        if (isRevertAbsent)
+                        {
+                            revertMatches++;
+                        }
+                        else
+                        {
+                            foreignCount++;
+                        }
+                        continue;
                     }
-                    catch
+
+                    object curVal = this._store.GetValue(action.hive, targetPath, action.name);
+                    if (curVal == null)
                     {
                         foreignCount++;
                         continue;
                     }
-                }
-                else
-                {
-                    string curStr = curVal.ToString();
-                    if (action.apply != null && string.Equals(curStr, action.apply.ToString(), StringComparison.OrdinalIgnoreCase))
+
+                    object expectedApply = action.apply;
+                    if (this._isRealMode && string.Equals(tweak.id, "affinities-gpu-core-affinity", StringComparison.OrdinalIgnoreCase))
                     {
-                        isApply = true;
+                        expectedApply = SpecialTweakExecutor.ComputeOptimalGpuAffinityMask();
                     }
 
-                    if (action.revert != null && action.revert.value != null && string.Equals(curStr, action.revert.value.ToString(), StringComparison.OrdinalIgnoreCase))
+                    string cmpType = action.type;
+                    if (string.Equals(action.name, "MinAnimate", StringComparison.OrdinalIgnoreCase) && !(curVal is int))
+                    {
+                        cmpType = "REG_SZ";
+                    }
+
+                    bool isApply = SpecialTweakExecutor.RegistryValuesEqual(cmpType, curVal, expectedApply);
+                    bool isRevert = false;
+
+                    if (action.revert != null && action.revert.value != null &&
+                        SpecialTweakExecutor.RegistryValuesEqual(cmpType, curVal, action.revert.value))
                     {
                         isRevert = true;
                     }
-                }
+                    else if (this._stateManager != null && this._stateManager.HasSnapshot(tweak.id))
+                    {
+                        TweakSnapshot snap = this._stateManager.GetSnapshot(tweak.id);
+                        if (snap != null && snap.Values != null)
+                        {
+                            for (int sv = 0; sv < snap.Values.Count; sv++)
+                            {
+                                RegistryValueSnapshot rvs = snap.Values[sv];
+                                if (string.Equals(rvs.Path, targetPath, StringComparison.OrdinalIgnoreCase) &&
+                                    string.Equals(rvs.Name, action.name, StringComparison.OrdinalIgnoreCase) &&
+                                    rvs.Value != null &&
+                                    SpecialTweakExecutor.RegistryValuesEqual(cmpType, curVal, rvs.Value))
+                                {
+                                    isRevert = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
 
-                if (isApply) applyMatches++;
-                else if (isRevert) revertMatches++;
-                else foreignCount++;
+                    if (isApply) applyMatches++;
+                    else if (isRevert) revertMatches++;
+                    else foreignCount++;
+                }
             }
 
-            if (applyMatches == tweak.registry.Count)
+            if (totalTargets == 0)
+            {
+                return TweakStatus.Unavailable;
+            }
+            if (applyMatches == totalTargets)
             {
                 return TweakStatus.Enabled;
             }
-            if (revertMatches == tweak.registry.Count)
+            if (revertMatches == totalTargets)
             {
                 return TweakStatus.Disabled;
             }
@@ -524,11 +552,41 @@ namespace WinTweaker.Engine
 
             try
             {
+                if (SpecialTweakExecutor.IsCustomRealExecutorTweak(tweak) &&
+                    (this._isRealMode || SpecialTweakExecutor.IsCleanupAction(tweak)))
+                {
+                    if (this._restorePointManager != null && this._isRealMode && !SpecialTweakExecutor.IsCleanupAction(tweak))
+                    {
+                        string rpMsg;
+                        this._restorePointManager.EnsureRestorePoint(tweak.name_ru ?? tweak.id, this._journalManager, out rpMsg);
+                    }
+                    return SpecialTweakExecutor.ApplySpecial(tweak, this._store, this._stateManager, this._journalManager, this._isRealMode);
+                }
+
                 // 0. Обеспечение точки восстановления перед применением
                 if (this._restorePointManager != null)
                 {
                     string rpMsg;
                     this._restorePointManager.EnsureRestorePoint(tweak.name_ru ?? tweak.id, this._journalManager, out rpMsg);
+                }
+
+                // Предварительно разрешаем все целевые пути
+                List<RegistryActionItem> expandedActions = new List<RegistryActionItem>();
+                List<string> expandedPaths = new List<string>();
+                for (int i = 0; i < tweak.registry.Count; i++)
+                {
+                    RegistryActionItem action = tweak.registry[i];
+                    List<string> targets = SpecialTweakExecutor.ResolveTargetPaths(tweak, action, this._isRealMode);
+                    if (targets.Count == 0)
+                    {
+                        this._journalManager.Log("WARN", tweak.id, "Целевое устройство/ветка реестра не найдены в системе.");
+                        return false;
+                    }
+                    for (int p = 0; p < targets.Count; p++)
+                    {
+                        expandedActions.Add(action);
+                        expandedPaths.Add(targets[p]);
+                    }
                 }
 
                 // 1. Создаем снимок исходного состояния ДО применения, если снимка еще нет
@@ -537,19 +595,23 @@ namespace WinTweaker.Engine
                     TweakSnapshot snapshot = new TweakSnapshot();
                     snapshot.TweakId = tweak.id;
 
-                    for (int i = 0; i < tweak.registry.Count; i++)
+                    for (int i = 0; i < expandedActions.Count; i++)
                     {
-                        RegistryActionItem action = tweak.registry[i];
+                        RegistryActionItem action = expandedActions[i];
+                        string targetPath = expandedPaths[i];
+
                         RegistryValueSnapshot valSnap = new RegistryValueSnapshot();
                         valSnap.Hive = action.hive;
-                        valSnap.Path = action.path;
+                        valSnap.Path = targetPath;
                         valSnap.Name = action.name;
-                        valSnap.Existed = this._store.ValueExists(action.hive, action.path, action.name);
+                        valSnap.Existed = this._store.ValueExists(action.hive, targetPath, action.name);
 
                         if (valSnap.Existed)
                         {
-                            valSnap.Value = this._store.GetValue(action.hive, action.path, action.name);
-                            valSnap.Kind = this._store.GetValueKind(action.hive, action.path, action.name).ToString();
+                            object rawCur = this._store.GetValue(action.hive, targetPath, action.name);
+                            valSnap.Kind = this._store.GetValueKind(action.hive, targetPath, action.name).ToString();
+                            byte[] rawBytes = rawCur as byte[];
+                            valSnap.Value = (rawBytes != null) ? SpecialTweakExecutor.FormatHexBytes(rawBytes) : rawCur;
                         }
                         else
                         {
@@ -562,7 +624,7 @@ namespace WinTweaker.Engine
                         // Если реальный режим - экспортируем .reg файл до записи
                         if (this._isRealMode)
                         {
-                            this._journalManager.ExportRegBackup(tweak.id, action.hive, action.path, action.name, valSnap.Value, action.type);
+                            this._journalManager.ExportRegBackup(tweak.id, action.hive, targetPath, action.name, valSnap.Value, action.type);
                         }
                     }
 
@@ -570,30 +632,37 @@ namespace WinTweaker.Engine
                 }
 
                 // 2. Применяем значения в реестр/оверлей
-                for (int i = 0; i < tweak.registry.Count; i++)
+                for (int i = 0; i < expandedActions.Count; i++)
                 {
-                    RegistryActionItem action = tweak.registry[i];
-                    RegistryValueKind kind = RegistryValueKind.DWord;
-                    object valToWrite = action.apply;
+                    RegistryActionItem action = expandedActions[i];
+                    string targetPath = expandedPaths[i];
+                    string effectiveType = action.type;
+                    object rawApply = action.apply;
 
-                    if (action.type == "REG_DWORD")
+                    if (this._isRealMode && string.Equals(action.name, "MinAnimate", StringComparison.OrdinalIgnoreCase) &&
+                        targetPath.EndsWith(@"\WindowMetrics", StringComparison.OrdinalIgnoreCase))
                     {
-                        kind = RegistryValueKind.DWord;
-                        valToWrite = unchecked((int)Convert.ToInt64(action.apply));
+                        effectiveType = "REG_SZ";
+                        rawApply = rawApply != null ? rawApply.ToString() : "0";
                     }
-                    else if (action.type == "REG_SZ")
+                    else if (this._isRealMode && string.Equals(tweak.id, "affinities-gpu-core-affinity", StringComparison.OrdinalIgnoreCase))
                     {
-                        kind = RegistryValueKind.String;
-                        valToWrite = action.apply.ToString();
+                        rawApply = SpecialTweakExecutor.ComputeOptimalGpuAffinityMask();
                     }
 
-                    this._store.SetValue(action.hive, action.path, action.name, valToWrite, kind);
-                }
+                    RegistryValueKind kind;
+                    object valToWrite = SpecialTweakExecutor.ConvertToRegistryValue(effectiveType, rawApply, out kind);
 
-                // Специальные действия для On-Demand твиков в реальном режиме
-                if (this._isRealMode && string.Equals(tweak.id, "nvidia-on-demand-nvcpl", StringComparison.OrdinalIgnoreCase))
-                {
-                    ExecuteNvcplAction("Install");
+                    this._store.SetValue(action.hive, targetPath, action.name, valToWrite, kind);
+
+                    if (this._isRealMode)
+                    {
+                        NativeMethods.ApplyLiveOsRefresh(action.hive, targetPath, action.name, valToWrite);
+                        if (string.Equals(action.name, "Start", StringComparison.OrdinalIgnoreCase) && valToWrite is int)
+                        {
+                            SpecialTweakExecutor.ApplyServiceRuntimeState(targetPath, (int)valToWrite);
+                        }
+                    }
                 }
 
                 // Специальные действия для Steam в реальном режиме
@@ -623,92 +692,104 @@ namespace WinTweaker.Engine
 
             try
             {
+                if (SpecialTweakExecutor.IsCustomRealExecutorTweak(tweak) &&
+                    (this._isRealMode || SpecialTweakExecutor.IsCleanupAction(tweak)))
+                {
+                    return SpecialTweakExecutor.RevertSpecial(tweak, this._store, this._stateManager, this._journalManager, this._isRealMode);
+                }
+
                 TweakSnapshot snapshot = this._stateManager.GetSnapshot(tweak.id);
 
                 for (int i = 0; i < tweak.registry.Count; i++)
                 {
                     RegistryActionItem action = tweak.registry[i];
+                    List<string> targets = SpecialTweakExecutor.ResolveTargetPaths(tweak, action, this._isRealMode);
                     string mode = "snapshot";
                     if (action.revert != null && !string.IsNullOrEmpty(action.revert.mode))
                     {
                         mode = action.revert.mode.ToLowerInvariant();
                     }
 
-                    if (mode == "snapshot")
+                    if (mode == "snapshot" && snapshot != null && snapshot.Values != null && snapshot.Values.Count > 0)
                     {
-                        // Восстановление из снимка
-                        RegistryValueSnapshot valSnap = null;
-                        if (snapshot != null && snapshot.Values != null)
+                        for (int s = 0; s < snapshot.Values.Count; s++)
                         {
-                            for (int s = 0; s < snapshot.Values.Count; s++)
-                            {
-                                if (string.Equals(snapshot.Values[s].Name, action.name, StringComparison.OrdinalIgnoreCase))
-                                {
-                                    valSnap = snapshot.Values[s];
-                                    break;
-                                }
-                            }
-                        }
+                            RegistryValueSnapshot valSnap = snapshot.Values[s];
+                            if (!string.Equals(valSnap.Name, action.name, StringComparison.OrdinalIgnoreCase)) continue;
 
-                        if (valSnap != null)
-                        {
                             if (valSnap.Existed && valSnap.Value != null)
                             {
-                                RegistryValueKind k = RegistryValueKind.DWord;
-                                if (action.type == "REG_DWORD")
+                                string snapType = action.type;
+                                if (string.Equals(valSnap.Kind, "String", StringComparison.OrdinalIgnoreCase)) snapType = "REG_SZ";
+                                else if (string.Equals(valSnap.Kind, "Binary", StringComparison.OrdinalIgnoreCase)) snapType = "REG_BINARY";
+                                else if (string.Equals(valSnap.Kind, "QWord", StringComparison.OrdinalIgnoreCase)) snapType = "REG_QWORD";
+                                else if (string.Equals(valSnap.Kind, "ExpandString", StringComparison.OrdinalIgnoreCase)) snapType = "REG_EXPAND_SZ";
+                                else if (string.Equals(valSnap.Kind, "MultiString", StringComparison.OrdinalIgnoreCase)) snapType = "REG_MULTI_SZ";
+
+                                RegistryValueKind k;
+                                object valToWrite = SpecialTweakExecutor.ConvertToRegistryValue(snapType, valSnap.Value, out k);
+                                string writePath = !string.IsNullOrEmpty(valSnap.Path) ? valSnap.Path : (targets.Count > 0 ? targets[0] : action.path);
+                                this._store.SetValue(valSnap.Hive ?? action.hive, writePath, action.name, valToWrite, k);
+                                if (this._isRealMode)
                                 {
-                                    k = RegistryValueKind.DWord;
-                                    this._store.SetValue(action.hive, action.path, action.name, unchecked((int)Convert.ToInt64(valSnap.Value)), k);
-                                }
-                                else if (action.type == "REG_SZ")
-                                {
-                                    k = RegistryValueKind.String;
-                                    this._store.SetValue(action.hive, action.path, action.name, valSnap.Value != null ? valSnap.Value.ToString() : "", k);
-                                }
-                                else
-                                {
-                                    this._store.SetValue(action.hive, action.path, action.name, valSnap.Value, k);
+                                    NativeMethods.ApplyLiveOsRefresh(valSnap.Hive ?? action.hive, writePath, action.name, valToWrite);
+                                    if (string.Equals(action.name, "Start", StringComparison.OrdinalIgnoreCase) && valToWrite is int)
+                                    {
+                                        SpecialTweakExecutor.ApplyServiceRuntimeState(writePath, (int)valToWrite);
+                                    }
                                 }
                             }
                             else
                             {
-                                this._store.DeleteValue(action.hive, action.path, action.name);
+                                string delPath = !string.IsNullOrEmpty(valSnap.Path) ? valSnap.Path : (targets.Count > 0 ? targets[0] : action.path);
+                                this._store.DeleteValue(valSnap.Hive ?? action.hive, delPath, action.name);
+                                if (this._isRealMode)
+                                {
+                                    NativeMethods.ApplyLiveOsRefresh(valSnap.Hive ?? action.hive, delPath, action.name, null);
+                                }
                             }
                         }
                     }
-                    else if (mode == "set")
+                    else
                     {
-                        // Явная установка значения по умолчанию
-                        RegistryValueKind k = RegistryValueKind.DWord;
-                        object val = action.revert != null ? action.revert.value : 0;
-                        if (action.type == "REG_DWORD")
+                        for (int p = 0; p < targets.Count; p++)
                         {
-                            k = RegistryValueKind.DWord;
-                            this._store.SetValue(action.hive, action.path, action.name, unchecked((int)Convert.ToInt64(val)), k);
+                            string targetPath = targets[p];
+                            if (mode == "set")
+                            {
+                                string effectiveType = action.type;
+                                object val = action.revert != null ? action.revert.value : 0;
+                                if (this._isRealMode && string.Equals(action.name, "MinAnimate", StringComparison.OrdinalIgnoreCase) &&
+                                    targetPath.EndsWith(@"\WindowMetrics", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    effectiveType = "REG_SZ";
+                                    val = val != null ? val.ToString() : "1";
+                                }
+                                RegistryValueKind k;
+                                object valToWrite = SpecialTweakExecutor.ConvertToRegistryValue(effectiveType, val, out k);
+                                this._store.SetValue(action.hive, targetPath, action.name, valToWrite, k);
+                                if (this._isRealMode)
+                                {
+                                    NativeMethods.ApplyLiveOsRefresh(action.hive, targetPath, action.name, valToWrite);
+                                    if (string.Equals(action.name, "Start", StringComparison.OrdinalIgnoreCase) && valToWrite is int)
+                                    {
+                                        SpecialTweakExecutor.ApplyServiceRuntimeState(targetPath, (int)valToWrite);
+                                    }
+                                }
+                            }
+                            else if (mode == "delete")
+                            {
+                                this._store.DeleteValue(action.hive, targetPath, action.name);
+                                if (this._isRealMode)
+                                {
+                                    NativeMethods.ApplyLiveOsRefresh(action.hive, targetPath, action.name, null);
+                                }
+                            }
                         }
-                        else if (action.type == "REG_SZ")
-                        {
-                            k = RegistryValueKind.String;
-                            this._store.SetValue(action.hive, action.path, action.name, val != null ? val.ToString() : "", k);
-                        }
-                        else
-                        {
-                            this._store.SetValue(action.hive, action.path, action.name, val, k);
-                        }
-                    }
-                    else if (mode == "delete")
-                    {
-                        this._store.DeleteValue(action.hive, action.path, action.name);
                     }
                 }
 
                 this._stateManager.RemoveSnapshot(tweak.id);
-
-                // Специальные действия для On-Demand твиков в реальном режиме
-                if (this._isRealMode && string.Equals(tweak.id, "nvidia-on-demand-nvcpl", StringComparison.OrdinalIgnoreCase))
-                {
-                    ExecuteNvcplAction("Uninstall");
-                }
 
                 // Специальные действия для Steam в реальном режиме
                 if (this._isRealMode && string.Equals(tweak.id, "steam-disable-game-overlay", StringComparison.OrdinalIgnoreCase))
@@ -728,43 +809,6 @@ namespace WinTweaker.Engine
             {
                 this._journalManager.Log("ERROR", tweak.id, "Ошибка отката: " + ex.Message);
                 return false;
-            }
-        }
-
-        private void ExecuteNvcplAction(string action)
-        {
-            try
-            {
-                string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-                string scriptPath = Path.Combine(baseDir, @"scripts\nvcpl.ps1");
-                if (!File.Exists(scriptPath))
-                {
-                    string rootDir = Directory.GetParent(baseDir) != null ? Directory.GetParent(baseDir).FullName : baseDir;
-                    scriptPath = Path.Combine(rootDir, @"scripts\nvcpl.ps1");
-                }
-
-                if (File.Exists(scriptPath))
-                {
-                    ProcessStartInfo psi = new ProcessStartInfo();
-                    psi.FileName = "powershell.exe";
-                    psi.Arguments = string.Format("-NoProfile -ExecutionPolicy Bypass -File \"{0}\" -Action {1}", scriptPath, action);
-                    psi.UseShellExecute = false;
-                    psi.CreateNoWindow = true;
-                    using (Process p = Process.Start(psi))
-                    {
-                        if (p != null)
-                        {
-                            p.WaitForExit(15000);
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                if (this._journalManager != null)
-                {
-                    this._journalManager.Log("WARN", "nvidia-on-demand-nvcpl", "Предупреждение при выполнении nvcpl.ps1: " + ex.Message);
-                }
             }
         }
     }

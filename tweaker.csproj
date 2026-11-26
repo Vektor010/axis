@@ -86,6 +86,8 @@
     <Compile Include="src\Engine\GpuHwschService.cs" />
     <Compile Include="src\Engine\MmcssTaskService.cs" />
     <Compile Include="src\Engine\SteamConfigHelper.cs" />
+    <Compile Include="src\Engine\NvDrsService.cs" />
+    <Compile Include="src\Engine\SpecialTweakExecutor.cs" />
     <Compile Include="src\Engine\TemperatureSource.cs" />
     <Compile Include="src\ViewModels\CategoryItemViewModel.cs" />
     <Compile Include="src\ViewModels\TweakCardViewModel.cs" />

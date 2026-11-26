@@ -1130,10 +1130,10 @@ namespace WinTweaker.ViewModels
             this._settingsManager = new SettingsManager(settingsPath, isTestMode: !this._isRealMode);
             this._pingCustomHost = this._settingsManager.Settings != null ? this._settingsManager.Settings.PingCustomHost : "";
 
-            string logPath = Path.Combine(Path.GetTempPath(), "tweaker_session.log");
+            string logPath = this._isRealMode ? null : Path.Combine(Path.GetTempPath(), "tweaker_session.log");
             this._journalManager = new JournalManager(logPath, isTestMode: !this._isRealMode);
 
-            string statePath = Path.Combine(Path.GetTempPath(), "tweaker_state.json");
+            string statePath = this._isRealMode ? null : Path.Combine(Path.GetTempPath(), "tweaker_state.json");
             this._stateManager = new StateManager(statePath, isTestMode: !this._isRealMode);
 
             IRegistryStore realStore = new RealRegistryStore();
@@ -1157,10 +1157,6 @@ namespace WinTweaker.ViewModels
 
             this._engine = new TweakEngine(store, this._stateManager, this._journalManager, this._isRealMode, this._restorePointManager);
             this._systemInfoService = new SystemInfoService();
-            this._gameModeWnfService = new GameModeWnfService();
-            this._gameModeState = new GameModeState();
-            this._gameModeWnfService = new GameModeWnfService();
-            this._gameModeState = new GameModeState();
             this._gameModeWnfService = new GameModeWnfService();
             this._gameModeState = new GameModeState();
 
@@ -2097,27 +2093,18 @@ namespace WinTweaker.ViewModels
                 return;
             }
 
-            // Находим все рекомендуемые твики с низким риском, которые ещё не включены
+            // Находим все рекомендуемые безопасные переключатели (исключая разовые cleanup/action, NVIDIA и высокорисковые)
+            int currentBuild = Environment.OSVersion.Version.Build;
             List<TweakCardViewModel> targets = new List<TweakCardViewModel>();
             for (int i = 0; i < this._allTweaks.Count; i++)
             {
                 TweakCardViewModel tw = this._allTweaks[i];
-                if (tw.IsRecommended && tw.Risk == TweakRisk.Low && tw.Status != TweakStatus.Enabled)
+                if (!tw.IsActionTweak &&
+                    tw.IsRecommended &&
+                    tw.Risk == TweakRisk.Low &&
+                    TweakEngine.IsEligibleForBatchApply(tw.Model, currentBuild, tw.Status))
                 {
                     targets.Add(tw);
-                }
-            }
-
-            // Если по пресету 'recommended' все уже применены или список пуст, берем безопасные с низким риском
-            if (targets.Count == 0)
-            {
-                for (int i = 0; i < this._allTweaks.Count; i++)
-                {
-                    TweakCardViewModel tw = this._allTweaks[i];
-                    if (tw.Risk == TweakRisk.Low && tw.Status != TweakStatus.Enabled)
-                    {
-                        targets.Add(tw);
-                    }
                 }
             }
 

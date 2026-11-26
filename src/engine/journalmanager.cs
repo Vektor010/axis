@@ -182,6 +182,27 @@ namespace WinTweaker.Engine
                     uint val = Convert.ToUInt32(currentValue);
                     sb.AppendLine(string.Format("\"{0}\"=dword:{1:x8}", valueName, val));
                 }
+                else if (kind == "REG_QWORD" || kind == "QWord")
+                {
+                    ulong val64 = Convert.ToUInt64(currentValue);
+                    byte[] qBytes = BitConverter.GetBytes(val64);
+                    sb.AppendLine(string.Format("\"{0}\"=hex(b):{1}", valueName, FormatRegHexList(qBytes)));
+                }
+                else if (kind == "REG_BINARY" || kind == "Binary" || currentValue is byte[])
+                {
+                    byte[] binBytes = currentValue as byte[];
+                    if (binBytes == null)
+                    {
+                        binBytes = SpecialTweakExecutor.ParseHexBytes(currentValue.ToString());
+                    }
+                    sb.AppendLine(string.Format("\"{0}\"=hex:{1}", valueName, FormatRegHexList(binBytes)));
+                }
+                else if (kind == "REG_MULTI_SZ" || kind == "MultiString" || currentValue is string[])
+                {
+                    string[] lines = currentValue as string[];
+                    string joined = lines != null ? string.Join(" ", lines) : currentValue.ToString();
+                    sb.AppendLine(string.Format("\"{0}\"=\"{1}\"", valueName, joined.Replace("\\", "\\\\").Replace("\"", "\\\"")));
+                }
                 else
                 {
                     sb.AppendLine(string.Format("\"{0}\"=\"{1}\"", valueName, currentValue.ToString().Replace("\\", "\\\\").Replace("\"", "\\\"")));
@@ -196,6 +217,18 @@ namespace WinTweaker.Engine
                 this.Log("WARN", tweakId, "Ошибка при создании .reg резервной копии: " + ex.Message);
                 return null;
             }
+        }
+
+        private static string FormatRegHexList(byte[] bytes)
+        {
+            if (bytes == null || bytes.Length == 0) return "";
+            StringBuilder sb = new StringBuilder(bytes.Length * 3);
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                if (i > 0) sb.Append(",");
+                sb.Append(bytes[i].ToString("x2"));
+            }
+            return sb.ToString();
         }
     }
 }

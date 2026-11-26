@@ -332,19 +332,9 @@ namespace WinTweaker.ViewModels
                     return "Не задано (по умолчанию Steam)";
                 }
 
-                if (this._engine != null && this._engine.Store != null && this._model != null && this._model.registry != null && this._model.registry.Count > 0)
+                if (this._engine != null && this._model != null)
                 {
-                    var act = this._model.registry[0];
-                    if (this._engine.Store.ValueExists(act.hive, act.path, act.name))
-                    {
-                        object val = this._engine.Store.GetValue(act.hive, act.path, act.name);
-                        return val != null ? val.ToString() : "null";
-                    }
-                    if (string.Equals(this._category, "steam", StringComparison.OrdinalIgnoreCase))
-                    {
-                        return "Не задано (по умолчанию Steam)";
-                    }
-                    return "Не задано (по умолчанию Windows)";
+                    return SpecialTweakExecutor.GetLiveDisplayValue(this._model, this._engine.Store, this._engine.IsRealMode);
                 }
                 return (this._status == TweakStatus.Enabled) ? "1 (Активно)" : "0 (Выключено)";
             }
@@ -776,12 +766,6 @@ namespace WinTweaker.ViewModels
             }
         }
 
-        [System.Runtime.InteropServices.DllImport("dnsapi.dll", EntryPoint = "DnsFlushResolverCache")]
-        private static extern int DnsFlushResolverCache();
-
-        [System.Runtime.InteropServices.DllImport("shell32.dll")]
-        private static extern int SHEmptyRecycleBin(IntPtr hwnd, string pszRootPath, uint dwFlags);
-
         private async void OnExecuteAction(object obj)
         {
             if (this._isBusy) return;
@@ -791,19 +775,14 @@ namespace WinTweaker.ViewModels
 
             try
             {
-                await Task.Delay(120);
-
-                this.PerformActualCleanup();
-
-                bool ok = false;
-                if (this._engine != null && this._model != null)
+                bool ok = await Task.Run(() =>
                 {
-                    ok = this._engine.Apply(this._model);
-                }
-                else
-                {
-                    ok = true;
-                }
+                    if (this._engine != null && this._model != null)
+                    {
+                        return this._engine.Apply(this._model);
+                    }
+                    return true;
+                });
 
                 if (ok)
                 {
@@ -826,76 +805,15 @@ namespace WinTweaker.ViewModels
                 this.IsBusy = false;
                 this.OnPropertyChanged("ActionButtonText");
                 this.OnPropertyChanged("StatusBadgeText");
+                this.OnPropertyChanged("LiveSystemValueText");
+                this.OnPropertyChanged("OptimizationStatusText");
+                this.OnPropertyChanged("OptimizationStatusColor");
             }
 
             if (this._onStateChanged != null)
             {
                 this._onStateChanged();
             }
-        }
-
-        private void PerformActualCleanup()
-        {
-            if (this._id == null) return;
-
-            try
-            {
-                if (this._id.Contains("dns-cache"))
-                {
-                    try { DnsFlushResolverCache(); } catch { }
-                    try
-                    {
-                        var psi = new ProcessStartInfo("ipconfig", "/flushdns") { CreateNoWindow = true, UseShellExecute = false };
-                        Process.Start(psi);
-                    }
-                    catch { }
-                }
-                else if (this._id.Contains("recycle-bin"))
-                {
-                    try { SHEmptyRecycleBin(IntPtr.Zero, null, 7); } catch { }
-                }
-                else if (this._id.Contains("temporary-files"))
-                {
-                    string tempPath = System.IO.Path.GetTempPath();
-                    CleanDirectorySafe(tempPath);
-                }
-                else if (this._id.Contains("temporary-internet-files"))
-                {
-                    string inetCache = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Microsoft\\Windows\\INetCache");
-                    CleanDirectorySafe(inetCache);
-                }
-                else if (this._id.Contains("directx-shader-cache"))
-                {
-                    string d3d = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "D3DSCache");
-                    CleanDirectorySafe(d3d);
-                    string nvidia = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "NVIDIA\\DXCache");
-                    CleanDirectorySafe(nvidia);
-                }
-                else if (this._id.Contains("bsod-dumps"))
-                {
-                    string minidump = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "Minidump");
-                    CleanDirectorySafe(minidump);
-                }
-            }
-            catch { }
-        }
-
-        private static void CleanDirectorySafe(string dir)
-        {
-            try
-            {
-                if (!System.IO.Directory.Exists(dir)) return;
-                var dirInfo = new System.IO.DirectoryInfo(dir);
-                foreach (var file in dirInfo.GetFiles())
-                {
-                    try { file.Delete(); } catch { }
-                }
-                foreach (var sub in dirInfo.GetDirectories())
-                {
-                    try { sub.Delete(true); } catch { }
-                }
-            }
-            catch { }
         }
     }
 }
