@@ -17,8 +17,8 @@
         RenderOptions.ClearTypeHint="Enabled">
 
     <Border Background="{DynamicResource SidebarBg}"
-            BorderBrush="{DynamicResource AccentBorder}"
-            BorderThickness="1.2"
+            BorderBrush="{DynamicResource CardBorder}"
+            BorderThickness="1"
             CornerRadius="14"
             Margin="10">
         <Border.Effect>

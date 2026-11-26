@@ -2,8 +2,8 @@
 
 [English](README.md) | [Русский](README.ru.md)
 
-[![Release: v3.2.2](https://img.shields.io/badge/Release-v3.2.2-2563eb.svg)](https://github.com/Vektor010/axis/releases)
-[![Tests: 8037 PASS](https://img.shields.io/badge/Tests-8037%20PASS-22c55e.svg)](tests/)
+[![Release: v3.2.3](https://img.shields.io/badge/Release-v3.2.3-2563eb.svg)](https://github.com/Vektor010/axis/releases)
+[![Tests: 8038 PASS](https://img.shields.io/badge/Tests-8038%20PASS-22c55e.svg)](tests/)
 [![Tweaks: 888](https://img.shields.io/badge/Tweaks-888-3b82f6.svg)](data/tweaks.json)
 [![Binary: Clean 1.39 MB](https://img.shields.io/badge/Binary-1.39%20MB-38bdf8.svg)](dist/Axis.exe)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)

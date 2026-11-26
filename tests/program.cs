@@ -2152,6 +2152,15 @@ namespace WinTweaker.Tests
                 Assert(memTweak != null && eng.CheckStatus(memTweak) == TweakStatus.Enabled && eng.Apply(memTweak, true),
                     "SysMain_Disabled_MemCompression: Отключенный SysMain корректно трактуется как отключенное сжатие памяти без exit=1",
                     memTweak != null ? eng.CheckStatus(memTweak).ToString() : "null");
+
+                TweakItem ntfsTweak = list.Find(delegate(TweakItem x) { return x.id == "system-ntfs-disable-last-access"; });
+                memStore.SetValue("HKLM", @"SYSTEM\CurrentControlSet\Control\FileSystem", "NtfsDisableLastAccessUpdate", unchecked((int)0x80000001), Microsoft.Win32.RegistryValueKind.DWord);
+                bool ntfsDisOk = ntfsTweak != null && eng.CheckStatus(ntfsTweak) == TweakStatus.Enabled;
+                memStore.SetValue("HKLM", @"SYSTEM\CurrentControlSet\Control\FileSystem", "NtfsDisableLastAccessUpdate", unchecked((int)0x80000002), Microsoft.Win32.RegistryValueKind.DWord);
+                bool ntfsEnOk = ntfsTweak != null && eng.CheckStatus(ntfsTweak) == TweakStatus.Disabled;
+                Assert(ntfsDisOk && ntfsEnOk,
+                    "NTFS_LastAccess_Bitmask: Битовая маска 0x80000001/0x80000002 корректно распознаётся как Disabled/Enabled",
+                    string.Format("dis={0}, en={1}", ntfsDisOk, ntfsEnOk));
             }
             finally
             {

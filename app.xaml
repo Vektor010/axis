@@ -609,7 +609,7 @@
             <ControlTemplate.Triggers>
                 <Trigger Property="IsChecked" Value="True">
                     <Setter TargetName="SegBorder" Property="Background" Value="{DynamicResource NavSelectedBg}" />
-                    <Setter TargetName="SegBorder" Property="BorderBrush" Value="{DynamicResource AccentBorder}" />
+                    <Setter TargetName="SegBorder" Property="BorderBrush" Value="{DynamicResource CardBorder}" />
                     <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />
                     <Setter Property="FontWeight" Value="SemiBold" />
                 </Trigger>
@@ -727,7 +727,7 @@
             <Style.Triggers>
                 <Trigger Property="IsSelected" Value="True">
                     <Setter Property="Background" Value="{DynamicResource NavSelectedBg}" />
-                    <Setter Property="BorderBrush" Value="{DynamicResource AccentBorder}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource CardBorder}" />
                 </Trigger>
                 <MultiTrigger>
                     <MultiTrigger.Conditions>

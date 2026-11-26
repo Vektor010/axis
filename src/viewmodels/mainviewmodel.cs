@@ -629,9 +629,9 @@ namespace WinTweaker.ViewModels
         {
             get { return this.RevertableCount > 0 ? string.Format("Откатить все ({0})", this.RevertableCount) : "Откатить все"; }
         }
-        public string AppVersionDisplay { get { return "v3.2.2 • 2026"; } }
+        public string AppVersionDisplay { get { return "v3.2.3 • 2026"; } }
         public string DatabaseStatsDisplay { get { return string.Format("{0} твиков • 12 категорий", this.TotalTweaksCount); } }
-        public string EngineSummaryFooterText { get { return string.Format("AXIS Engine v3.2.2 • {0} твиков, изолированные снимки state.json и прямой WinAPI без внешних зависимостей.", this.TotalTweaksCount); } }
+        public string EngineSummaryFooterText { get { return string.Format("AXIS Engine v3.2.3 • {0} твиков, изолированные снимки state.json и прямой WinAPI без внешних зависимостей.", this.TotalTweaksCount); } }
 
         public bool CanApplyRecommended
         {

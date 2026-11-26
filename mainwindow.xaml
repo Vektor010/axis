@@ -2040,7 +2040,7 @@
                     <StackPanel Margin="0,0,4,12">
                         <!-- Hero Brand Card -->
                         <Border Background="{DynamicResource HeroCardBg}"
-                                BorderBrush="{DynamicResource AccentBorder}"
+                                BorderBrush="{DynamicResource CardBorder}"
                                 BorderThickness="1"
                                 CornerRadius="14"
                                 Padding="24,22"

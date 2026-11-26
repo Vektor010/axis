@@ -1,8 +1,8 @@
 # PROJECT_STATE.md — Current Operational State
 
 **Last Updated**: 2026-11-26  
-**Version**: v3.2.2 (Keep Stock Square Taskbar Icons by Default; Manual-Only Taskbar Layout Preferences)  
-**Binary Output**: `dist/Axis.exe` (1.39 MB, standalone x64, 888 tweaks, 216 curated recommended, 8,037 PASS)
+**Version**: v3.2.3 (Fixed 4 Stuck Tweak Checks & Removed Blue Window/Dialog Borders)  
+**Binary Output**: `dist/Axis.exe` (1.39 MB, standalone x64, 888 tweaks, 216 curated recommended, 8,038 PASS)
 
 ---
 

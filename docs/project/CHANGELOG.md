@@ -5,6 +5,15 @@ All notable changes to AXIS will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.2.3] - 2026-11-26
+
+### Fixed 4 Persistent Re-apply Tweak Detection Bugs & Removed Blue Window Outlines
+- **Removed Blue Outer Window/Dialog Outlines**: Replaced `AccentBorder` on `AxisDialogWindow.xaml`, About hero card (`mainwindow.xaml`), and selected segment/DataGrid borders (`app.xaml`) with sleek graphite `CardBorder`.
+- **Fixed `system-ntfs-disable-last-access`**: Added native `fsutil behavior set disablelastaccess 1` execution and bitmask detection (`0x80000001` / `0x80000003` vs `0x80000002`) so Windows 10/11 persists NTFS Last Access disablement instead of reverting/ignoring raw `1`.
+- **Fixed `system-bcd-disable-loading-circle` (`Custom 16000069`)**: Added `nobootuxprogress` recognition in `CheckBcdStatus` and `FindBcdSnapshotForId` (matches Windows BCD output alias when `custom:16000069 yes` is set).
+- **Fixed `nvidia-noverse-minimal-profile`**: Marked Base Profile as `Enabled` once all driver-supported DRS settings match (`matched >= total - 4` for ≥20 entries, avoiding endless re-apply loops at 23-24/26 due to driver-locked deprecated IDs).
+- **Fixed `nvidia-on-demand-nvcpl`**: Used Base64 `-EncodedCommand` to avoid PowerShell quote-escaping failure when creating `Nvcpl.lnk`, and recognized `NVDisplay.ContainerLocalSystem=4` + `NV-nvcpl.ps1` as `Enabled`.
+
 ## [3.2.2] - 2026-11-26
 
 ### Preserve Stock Compact Square Taskbar Icons by Default

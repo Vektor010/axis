@@ -236,6 +236,7 @@ namespace WinTweaker.Engine
             if (string.Equals(id, "system-timer-watchdog-disable", StringComparison.OrdinalIgnoreCase)) return true;
             if (string.Equals(id, "system-timer-disable-dynamic-tick", StringComparison.OrdinalIgnoreCase)) return true;
             if (string.Equals(id, "system-disable-memory-compression", StringComparison.OrdinalIgnoreCase)) return true;
+            if (string.Equals(id, "system-ntfs-disable-last-access", StringComparison.OrdinalIgnoreCase)) return true;
             if (string.Equals(id, "network-congestion-provider-bbr", StringComparison.OrdinalIgnoreCase)) return true;
             if (string.Equals(id, "network-disable-ipv6-components", StringComparison.OrdinalIgnoreCase)) return true;
             if (string.Equals(id, "network-interrupt-moderation-low", StringComparison.OrdinalIgnoreCase)) return true;
@@ -792,7 +793,20 @@ namespace WinTweaker.Engine
                 return enabledCount > 0 ? TweakStatus.PartiallyEnabled : TweakStatus.Disabled;
             }
 
-            // NVIDIA DRS Minimal Profile
+            // NTFS Last Access Update (Windows 10/11 stores 0x80000000 flags alongside mode bits)
+            if (string.Equals(id, "system-ntfs-disable-last-access", StringComparison.OrdinalIgnoreCase))
+            {
+                object val = store.GetValue("HKLM", @"SYSTEM\CurrentControlSet\Control\FileSystem", "NtfsDisableLastAccessUpdate");
+                if (val == null) return TweakStatus.Unknown;
+                try
+                {
+                    long raw = Convert.ToInt64(val) & 0x3L;
+                    return (raw == 1L || raw == 3L) ? TweakStatus.Enabled : TweakStatus.Disabled;
+                }
+                catch { return TweakStatus.Unknown; }
+            }
+
+            // NVIDIA DRS Minimal Profile (some deprecated IDs may be unsupported by specific driver versions)
             if (string.Equals(id, "nvidia-noverse-minimal-profile", StringComparison.OrdinalIgnoreCase))
             {
                 int matched, total;
@@ -801,7 +815,7 @@ namespace WinTweaker.Engine
                 {
                     return TweakStatus.Unavailable;
                 }
-                if (matched == total) return TweakStatus.Enabled;
+                if (matched == total || (total >= 20 && matched >= total - 4)) return TweakStatus.Enabled;
                 if (matched > 0) return TweakStatus.PartiallyEnabled;
                 return TweakStatus.Disabled;
             }
@@ -813,7 +827,8 @@ namespace WinTweaker.Engine
                 object startVal = store.GetValue("HKLM", @"System\CurrentControlSet\Services\NVDisplay.ContainerLocalSystem", "Start");
                 bool svcDisabled = startVal != null && Convert.ToInt64(startVal) == 4;
                 string desktopShortcut = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "Nvcpl.lnk");
-                if (svcDisabled && File.Exists(desktopShortcut)) return TweakStatus.Enabled;
+                string wrapperPs1 = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"Optimizer\NV-nvcpl.ps1");
+                if (svcDisabled && (File.Exists(desktopShortcut) || File.Exists(wrapperPs1))) return TweakStatus.Enabled;
                 if (svcDisabled) return TweakStatus.PartiallyEnabled;
                 return TweakStatus.Disabled;
             }
@@ -924,6 +939,23 @@ namespace WinTweaker.Engine
                 SaveCustomSnapshot(stateManager, id, "MemCompression", "Enabled");
                 journal.Log(rc == 0 ? "APPLY" : "ERROR", id, "Выполнен Disable-MMAgent -MemoryCompression (exit=" + rc + ")");
                 return rc == 0;
+            }
+
+            // 2b2) NTFS DisableLastAccessUpdate via fsutil (sets 0x80000001 persistently across Windows 10/11)
+            if (string.Equals(id, "system-ntfs-disable-last-access", StringComparison.OrdinalIgnoreCase))
+            {
+                const string fsPath = @"SYSTEM\CurrentControlSet\Control\FileSystem";
+                object prev = store.ValueExists("HKLM", fsPath, "NtfsDisableLastAccessUpdate")
+                    ? store.GetValue("HKLM", fsPath, "NtfsDisableLastAccessUpdate")
+                    : null;
+                SaveCustomSnapshot(stateManager, id, "PrevNtfsLastAccess", prev != null ? prev.ToString() : "0");
+                int rc = RunProcess("fsutil.exe", "behavior set disablelastaccess 1", 6000);
+                if (rc != 0)
+                {
+                    store.SetValue("HKLM", fsPath, "NtfsDisableLastAccessUpdate", 1, RegistryValueKind.DWord);
+                }
+                journal.Log("APPLY", id, string.Format("Отключено обновление времени последнего доступа NTFS (fsutil exit={0})", rc));
+                return true;
             }
 
             // 2c) Steam localconfig.vdf settings
@@ -1232,6 +1264,20 @@ namespace WinTweaker.Engine
                 return rc == 0;
             }
 
+            if (string.Equals(id, "system-ntfs-disable-last-access", StringComparison.OrdinalIgnoreCase))
+            {
+                string prevStr = GetCustomSnapshotValue(stateManager, id, "PrevNtfsLastAccess");
+                long prevVal = 0;
+                if (!long.TryParse(prevStr, out prevVal)) prevVal = 0;
+                int fsutilMode = (int)(prevVal & 0x3L);
+                if (fsutilMode == 1 || fsutilMode == 3) fsutilMode = 0;
+                RunProcess("fsutil.exe", "behavior set disablelastaccess " + fsutilMode, 6000);
+                store.SetValue("HKLM", @"SYSTEM\CurrentControlSet\Control\FileSystem", "NtfsDisableLastAccessUpdate", unchecked((int)prevVal), RegistryValueKind.DWord);
+                stateManager.RemoveSnapshot(id);
+                journal.Log("REVERT", id, "Восстановлен режим NtfsDisableLastAccessUpdate: " + prevStr);
+                return true;
+            }
+
             SteamVdfSpec vdfSpec;
             if (TryGetSteamVdfSpec(id, out vdfSpec))
             {
@@ -1449,6 +1495,19 @@ namespace WinTweaker.Engine
                 return (mc == TweakStatus.Enabled) ? "Отключено (MMAgent)" : "Включено (Windows)";
             }
 
+            if (string.Equals(id, "system-ntfs-disable-last-access", StringComparison.OrdinalIgnoreCase))
+            {
+                object v = store != null ? store.GetValue("HKLM", @"SYSTEM\CurrentControlSet\Control\FileSystem", "NtfsDisableLastAccessUpdate") : null;
+                if (v == null) return "Не задано";
+                try
+                {
+                    long raw = Convert.ToInt64(v);
+                    long mode = raw & 0x3L;
+                    return (mode == 1L || mode == 3L) ? string.Format("Отключено (0x{0:X})", raw) : string.Format("Включено (0x{0:X})", raw);
+                }
+                catch { return v.ToString(); }
+            }
+
             SteamVdfSpec vdfSpec;
             if (TryGetSteamVdfSpec(id, out vdfSpec))
             {
@@ -1649,7 +1708,7 @@ namespace WinTweaker.Engine
             }
             if (id == "system-bcd-disable-loading-circle")
             {
-                string v = FindBcdLineValue(enumText, "custom:16000069", "custom:0x16000069");
+                string v = FindBcdLineValue(enumText, "nobootuxprogress", "custom:16000069", "custom:0x16000069");
                 if (v != null) liveDisplay = v;
                 return (v != null && (v.Equals("Yes", StringComparison.OrdinalIgnoreCase) || v.Equals("True", StringComparison.OrdinalIgnoreCase) || v == "1"))
                     ? TweakStatus.Enabled : TweakStatus.Disabled;
@@ -1804,6 +1863,7 @@ namespace WinTweaker.Engine
             if (id == "system-bcd-bootux-disabled") return FindBcdLineValue(enumText, "bootuxdisabled") ?? "";
             if (id == "system-bcd-bootmenupolicy-legacy") return FindBcdLineValue(enumText, "bootmenupolicy") ?? "Standard";
             if (id == "system-bcd-highestmode") return FindBcdLineValue(enumText, "highestmode") ?? "";
+            if (id == "system-bcd-disable-loading-circle") return FindBcdLineValue(enumText, "nobootuxprogress", "custom:16000069") ?? "";
             if (id == "system-timer-force-tsc") return FindBcdLineValue(enumText, "useplatformclock") ?? "";
             if (id == "system-timer-disable-dynamic-tick") return FindBcdLineValue(enumText, "disabledynamictick") ?? "";
             if (id == "system-timer-watchdog-disable") return FindBcdLineValue(enumText, "loadoptions") ?? "";
@@ -1907,7 +1967,8 @@ namespace WinTweaker.Engine
                             wrapperPs1.Replace("'", "''"),
                             nvcplDir.Replace("'", "''"),
                             exePath.Replace("'", "''"));
-                        RunProcess("powershell.exe", "-NoProfile -Command \"" + psCreateLnk.Replace("\"", "\\\"") + "\"", 10000);
+                        string encCmd = Convert.ToBase64String(Encoding.Unicode.GetBytes(psCreateLnk));
+                        RunProcess("powershell.exe", "-NoProfile -EncodedCommand " + encCmd, 10000);
                     }
                     SaveCustomSnapshot(stateManager, "nvidia-on-demand-nvcpl", "nvcpl_mode", "Disabled");
                     journal.Log("APPLY", "nvidia-on-demand-nvcpl", "Службы NVIDIA переведены в Disabled и создан ярлык Nvcpl.lnk");
