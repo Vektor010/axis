@@ -104,6 +104,9 @@ namespace WinTweaker.Tests
                 Console.WriteLine("\n--- ТЕСТ-СЮИТ 14: Верификация REG_BINARY, Cleanup action-изоляции, Affinity/Power путей и BatchApply ---");
                 RunEngineIntegrityAuditTests(tweaksPath);
 
+                Console.WriteLine("\n--- ТЕСТ-СЮИТ 15: Верификация Noverse Full Parity (IPv6 0xFF, Sleep Study, Spotify/VSC/LGHUB/Brave) ---");
+                RunNoverseFullParityTests(tweaksPath);
+
                 Console.WriteLine("\n==================================================================");
                 Console.WriteLine(string.Format("ИТОГО ТЕСТОВ: {0} | УСПЕШНО: {1} | ПРОВАЛЕНО: {2}", _totalTests, _passedTests, _failedTests));
                 Console.WriteLine("==================================================================");
@@ -1917,6 +1920,111 @@ namespace WinTweaker.Tests
                 Assert(fastStartupFixed, "TweaksAudit: power-disable-fast-startup указывает на Session Manager\\Power");
                 Assert(minAnimateFixed, "TweaksAudit: visibility-disable-min-animate использует REG_SZ");
                 Assert(audioIdleFixed, "TweaksAudit: power-usb-audio-idle-timeout использует REG_BINARY");
+            }
+        }
+
+        private static void RunNoverseFullParityTests(string tweaksPath)
+        {
+            // 1. Проверка tweaks.json: IPv6 = 255 (0xFF) + наличие всех новых Noverse/AppGuides твиков
+            string json = File.ReadAllText(tweaksPath, Encoding.UTF8);
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+            serializer.MaxJsonLength = int.MaxValue;
+            List<TweakItem> list = serializer.Deserialize<List<TweakItem>>(json);
+
+            TweakItem ipv6Tweak = null;
+            HashSet<string> ids = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            for (int i = 0; i < list.Count; i++)
+            {
+                ids.Add(list[i].id);
+                if (list[i].id == "network-disable-ipv6-components") ipv6Tweak = list[i];
+            }
+
+            Assert(ipv6Tweak != null && ipv6Tweak.registry != null && ipv6Tweak.registry.Count > 0 &&
+                Convert.ToInt64(ipv6Tweak.registry[0].apply) == 255,
+                "IPv6_FullDisable_Spec: network-disable-ipv6-components использует DisabledComponents = 255 (0xFF)");
+            Assert(ipv6Tweak != null && SpecialTweakExecutor.IsCustomRealExecutorTweak(ipv6Tweak),
+                "IPv6_FullDisable_CustomExecutor: network-disable-ipv6-components маршрутизируется через SpecialTweakExecutor");
+
+            string[] requiredNewIds = new string[]
+            {
+                "network-disable-wpad",
+                "network-encrypted-dns-global",
+                "power-nic-pnp-capabilities",
+                "power-nic-auto-power-save",
+                "power-disable-storage-d3-modern-standby",
+                "visibility-taskbar-end-task",
+                "visibility-taskbar-align-left",
+                "visibility-taskbar-hide-search",
+                "visibility-explorer-launch-this-pc",
+                "visibility-explorer-disable-graph-recent",
+                "visibility-disable-lockscreen-spotlight",
+                "privacy-disable-sleep-study",
+                "privacy-disable-cross-device-cdp",
+                "privacy-disable-phone-link-resume",
+                "privacy-disable-data-commercial-pipeline",
+                "peripheral-disable-autoplay",
+                "peripheral-storport-disable-telemetry",
+                "peripheral-steelseries-disable-sonar",
+                "misc-spotify-optimize",
+                "misc-vscode-disable-telemetry",
+                "misc-lghub-toggle-services",
+                "misc-brave-disable-bloat"
+            };
+            int missing = 0;
+            for (int i = 0; i < requiredNewIds.Length; i++)
+            {
+                if (!ids.Contains(requiredNewIds[i])) missing++;
+            }
+            Assert(missing == 0, "Noverse_Coverage: Все 22 новых твика Noverse и App Guides присутствуют в tweaks.json",
+                "missing=" + missing);
+
+            // 2. Изолированный тест Spotify prefs & VS Code settings.json во временной папке (безопасно для CI)
+            string tempAppRoot = Path.Combine(Path.GetTempPath(), "AxisAppGuideTest_" + Guid.NewGuid().ToString("N"));
+            try
+            {
+                string spotifyDir = Path.Combine(tempAppRoot, "Spotify");
+                string spotifyUser = Path.Combine(spotifyDir, @"Users\tester-user");
+                Directory.CreateDirectory(spotifyUser);
+                File.WriteAllText(Path.Combine(spotifyDir, "prefs"), "ui.hardware_acceleration=true\napp.autostart-mode=\"on\"\n", new UTF8Encoding(false));
+                File.WriteAllText(Path.Combine(spotifyUser, "prefs"), "audio.normalize_v2=true\n", new UTF8Encoding(false));
+
+                string spDetail;
+                bool spApplied = SpecialTweakExecutor.ApplySpotifyConfigToDir(spotifyDir, out spDetail);
+                string spUserUpdated = File.ReadAllText(Path.Combine(spotifyUser, "prefs"), Encoding.UTF8);
+                Assert(spApplied &&
+                    SpecialTweakExecutor.CheckSpotifyConfigInDir(spotifyDir) == TweakStatus.Enabled &&
+                    spUserUpdated.Contains("audio.normalize_v2=false") &&
+                    spUserUpdated.Contains("ui.system_media_controls_enabled=false"),
+                    "Spotify_Prefs_Apply: Spotify глобальные и пользовательские prefs настроены корректно", spDetail);
+
+                string spRevDetail;
+                bool spReverted = SpecialTweakExecutor.RevertSpotifyConfigInDir(spotifyDir, out spRevDetail);
+                string spRestoredGlobal = File.ReadAllText(Path.Combine(spotifyDir, "prefs"), Encoding.UTF8);
+                Assert(spReverted && spRestoredGlobal.Contains("ui.hardware_acceleration=true"),
+                    "Spotify_Prefs_Revert: Исходные Spotify prefs восстановлены из .axis.bak", spRevDetail);
+
+                string codeUserDir = Path.Combine(tempAppRoot, @"Code\User");
+                Directory.CreateDirectory(codeUserDir);
+                File.WriteAllText(Path.Combine(codeUserDir, "settings.json"), "{\n  \"editor.fontSize\": 14,\n  \"telemetry.telemetryLevel\": \"all\"\n}\n", new UTF8Encoding(false));
+
+                string vscDetail;
+                bool vscApplied = SpecialTweakExecutor.ApplyVSCodeConfigToDir(codeUserDir, out vscDetail);
+                string vscJson = File.ReadAllText(Path.Combine(codeUserDir, "settings.json"), Encoding.UTF8);
+                Assert(vscApplied &&
+                    SpecialTweakExecutor.CheckVSCodeConfigInDir(codeUserDir) == TweakStatus.Enabled &&
+                    vscJson.Contains("\"editor.fontSize\": 14") &&
+                    vscJson.Contains("\"telemetry.telemetryLevel\": \"off\""),
+                    "VSCode_Settings_Apply: settings.json отключает телеметрию и сохраняет пользовательские настройки", vscDetail);
+
+                string vscRevDetail;
+                bool vscReverted = SpecialTweakExecutor.RevertVSCodeConfigInDir(codeUserDir, out vscRevDetail);
+                string vscRestored = File.ReadAllText(Path.Combine(codeUserDir, "settings.json"), Encoding.UTF8);
+                Assert(vscReverted && vscRestored.Contains("\"telemetry.telemetryLevel\": \"all\""),
+                    "VSCode_Settings_Revert: settings.json восстановлен из .axis.bak", vscRevDetail);
+            }
+            finally
+            {
+                try { if (Directory.Exists(tempAppRoot)) Directory.Delete(tempAppRoot, true); } catch { }
             }
         }
     }

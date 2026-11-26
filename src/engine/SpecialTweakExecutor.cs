@@ -5,6 +5,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.ServiceProcess;
 using System.Text;
+using System.Web.Script.Serialization;
 using Microsoft.Win32;
 using WinTweaker.Models;
 
@@ -27,6 +28,8 @@ namespace WinTweaker.Engine
         private static DateTime _bcdCacheTime = DateTime.MinValue;
         private static string _tcpCacheProvider = null;
         private static DateTime _tcpCacheTime = DateTime.MinValue;
+        private static bool? _ipv6BindingAnyEnabledCache = null;
+        private static DateTime _ipv6BindingCacheTime = DateTime.MinValue;
 
         [DllImport("dnsapi.dll", EntryPoint = "DnsFlushResolverCache")]
         private static extern int DnsFlushResolverCache();
@@ -42,6 +45,8 @@ namespace WinTweaker.Engine
                 _bcdCacheTime = DateTime.MinValue;
                 _tcpCacheProvider = null;
                 _tcpCacheTime = DateTime.MinValue;
+                _ipv6BindingAnyEnabledCache = null;
+                _ipv6BindingCacheTime = DateTime.MinValue;
             }
         }
 
@@ -215,7 +220,13 @@ namespace WinTweaker.Engine
             if (string.Equals(id, "system-timer-disable-dynamic-tick", StringComparison.OrdinalIgnoreCase)) return true;
             if (string.Equals(id, "system-disable-memory-compression", StringComparison.OrdinalIgnoreCase)) return true;
             if (string.Equals(id, "network-congestion-provider-bbr", StringComparison.OrdinalIgnoreCase)) return true;
+            if (string.Equals(id, "network-disable-ipv6-components", StringComparison.OrdinalIgnoreCase)) return true;
             if (string.Equals(id, "network-interrupt-moderation-low", StringComparison.OrdinalIgnoreCase)) return true;
+            if (string.Equals(id, "privacy-disable-sleep-study", StringComparison.OrdinalIgnoreCase)) return true;
+            if (string.Equals(id, "misc-spotify-optimize", StringComparison.OrdinalIgnoreCase)) return true;
+            if (string.Equals(id, "misc-vscode-disable-telemetry", StringComparison.OrdinalIgnoreCase)) return true;
+            if (string.Equals(id, "misc-lghub-toggle-services", StringComparison.OrdinalIgnoreCase)) return true;
+            if (string.Equals(id, "peripheral-steelseries-disable-sonar", StringComparison.OrdinalIgnoreCase)) return true;
             if (string.Equals(id, "power-disable-hibernation", StringComparison.OrdinalIgnoreCase)) return true;
             if (string.Equals(id, "power-usb-audio-idle-timeout", StringComparison.OrdinalIgnoreCase)) return true;
             if (string.Equals(id, "power-noverse-high-performance-plan", StringComparison.OrdinalIgnoreCase)) return true;
@@ -731,6 +742,57 @@ namespace WinTweaker.Engine
                 return TweakStatus.Disabled;
             }
 
+            // IPv6 Full Disable (0xFF + ms_tcpip6)
+            if (string.Equals(id, "network-disable-ipv6-components", StringComparison.OrdinalIgnoreCase))
+            {
+                return CheckIpv6FullDisabledStatus(store);
+            }
+
+            // Sleep Study Full Disable
+            if (string.Equals(id, "privacy-disable-sleep-study", StringComparison.OrdinalIgnoreCase))
+            {
+                object ssDis = store.GetValue("HKLM", @"SYSTEM\CurrentControlSet\Control\Session Manager\Power", "SleepStudyDisabled");
+                object ssAcc = store.GetValue("HKLM", @"SYSTEM\CurrentControlSet\Control\Power", "SleepstudyAccountingEnabled");
+                bool disOk = ssDis != null && Convert.ToInt64(ssDis) == 1;
+                bool accOk = ssAcc != null && Convert.ToInt64(ssAcc) == 0;
+                if (disOk && accOk) return TweakStatus.Enabled;
+                if (disOk || accOk) return TweakStatus.PartiallyEnabled;
+                return TweakStatus.Disabled;
+            }
+
+            // App Guide: Spotify
+            if (string.Equals(id, "misc-spotify-optimize", StringComparison.OrdinalIgnoreCase))
+            {
+                if (!IsSpotifyInstalled()) return TweakStatus.Unavailable;
+                return CheckSpotifyConfigInDir(GetSpotifyAppDataDir());
+            }
+
+            // App Guide: VS Code / VSCodium
+            if (string.Equals(id, "misc-vscode-disable-telemetry", StringComparison.OrdinalIgnoreCase))
+            {
+                string[] dirs = GetInstalledVSCodeUserDirs();
+                if (dirs.Length == 0) return TweakStatus.Unavailable;
+                int enabledCount = 0;
+                for (int i = 0; i < dirs.Length; i++)
+                {
+                    if (CheckVSCodeConfigInDir(dirs[i]) == TweakStatus.Enabled) enabledCount++;
+                }
+                if (enabledCount == dirs.Length) return TweakStatus.Enabled;
+                return enabledCount > 0 ? TweakStatus.PartiallyEnabled : TweakStatus.Disabled;
+            }
+
+            // App Guide: Logitech G HUB Toggle
+            if (string.Equals(id, "misc-lghub-toggle-services", StringComparison.OrdinalIgnoreCase))
+            {
+                return CheckLghubToggleStatus(store);
+            }
+
+            // App Guide: SteelSeries GG / Sonar
+            if (string.Equals(id, "peripheral-steelseries-disable-sonar", StringComparison.OrdinalIgnoreCase))
+            {
+                return CheckSteelSeriesStatus(store);
+            }
+
             return TweakStatus.Unknown;
         }
 
@@ -988,6 +1050,42 @@ namespace WinTweaker.Engine
                 return ExecuteOnDemandNvcpl(true, store, stateManager, journal);
             }
 
+            // 8) IPv6 Full Disable (0xFF + ms_tcpip6)
+            if (string.Equals(id, "network-disable-ipv6-components", StringComparison.OrdinalIgnoreCase))
+            {
+                return ApplyIpv6FullDisable(store, stateManager, journal);
+            }
+
+            // 9) Sleep Study Full Disable
+            if (string.Equals(id, "privacy-disable-sleep-study", StringComparison.OrdinalIgnoreCase))
+            {
+                return ApplySleepStudyDisable(store, stateManager, journal);
+            }
+
+            // 10) App Guides (Spotify / VS Code / LGHUB / SteelSeries)
+            if (string.Equals(id, "misc-spotify-optimize", StringComparison.OrdinalIgnoreCase))
+            {
+                string detail;
+                bool ok = ApplySpotifyConfigToDir(GetSpotifyAppDataDir(), out detail);
+                journal.Log(ok ? "APPLY" : "WARN", id, detail);
+                return ok;
+            }
+
+            if (string.Equals(id, "misc-vscode-disable-telemetry", StringComparison.OrdinalIgnoreCase))
+            {
+                return ApplyVSCodeConfigAll(journal, id);
+            }
+
+            if (string.Equals(id, "misc-lghub-toggle-services", StringComparison.OrdinalIgnoreCase))
+            {
+                return ApplyLghubToggle(true, store, stateManager, journal, id);
+            }
+
+            if (string.Equals(id, "peripheral-steelseries-disable-sonar", StringComparison.OrdinalIgnoreCase))
+            {
+                return ApplySteelSeriesSonar(true, store, stateManager, journal, id);
+            }
+
             return false;
         }
 
@@ -1160,6 +1258,39 @@ namespace WinTweaker.Engine
                 return ExecuteOnDemandNvcpl(false, store, stateManager, journal);
             }
 
+            if (string.Equals(id, "network-disable-ipv6-components", StringComparison.OrdinalIgnoreCase))
+            {
+                return RevertIpv6FullDisable(store, stateManager, journal);
+            }
+
+            if (string.Equals(id, "privacy-disable-sleep-study", StringComparison.OrdinalIgnoreCase))
+            {
+                return RevertSleepStudyDisable(store, stateManager, journal);
+            }
+
+            if (string.Equals(id, "misc-spotify-optimize", StringComparison.OrdinalIgnoreCase))
+            {
+                string detail;
+                bool ok = RevertSpotifyConfigInDir(GetSpotifyAppDataDir(), out detail);
+                journal.Log(ok ? "REVERT" : "WARN", id, detail);
+                return ok;
+            }
+
+            if (string.Equals(id, "misc-vscode-disable-telemetry", StringComparison.OrdinalIgnoreCase))
+            {
+                return RevertVSCodeConfigAll(journal, id);
+            }
+
+            if (string.Equals(id, "misc-lghub-toggle-services", StringComparison.OrdinalIgnoreCase))
+            {
+                return ApplyLghubToggle(false, store, stateManager, journal, id);
+            }
+
+            if (string.Equals(id, "peripheral-steelseries-disable-sonar", StringComparison.OrdinalIgnoreCase))
+            {
+                return ApplySteelSeriesSonar(false, store, stateManager, journal, id);
+            }
+
             return false;
         }
 
@@ -1244,6 +1375,44 @@ namespace WinTweaker.Engine
                 string summary;
                 NvDrsService.TryQueryMinimalProfile(out matched, out total, out summary);
                 return summary;
+            }
+
+            if (string.Equals(id, "network-disable-ipv6-components", StringComparison.OrdinalIgnoreCase))
+            {
+                return GetIpv6LiveDisplayValue(store);
+            }
+
+            if (string.Equals(id, "privacy-disable-sleep-study", StringComparison.OrdinalIgnoreCase))
+            {
+                object v = store != null ? store.GetValue("HKLM", @"SYSTEM\CurrentControlSet\Control\Session Manager\Power", "SleepStudyDisabled") : null;
+                return (v != null && Convert.ToInt64(v) == 1) ? "Отключен (SleepStudyDisabled=1)" : "Активен (по умолчанию)";
+            }
+
+            if (string.Equals(id, "misc-spotify-optimize", StringComparison.OrdinalIgnoreCase))
+            {
+                if (!IsSpotifyInstalled()) return "Spotify не установлен";
+                return CheckSpotifyConfigInDir(GetSpotifyAppDataDir()) == TweakStatus.Enabled ? "Оптимизирован (prefs)" : "Стандартный профиль";
+            }
+
+            if (string.Equals(id, "misc-vscode-disable-telemetry", StringComparison.OrdinalIgnoreCase))
+            {
+                string[] dirs = GetInstalledVSCodeUserDirs();
+                if (dirs.Length == 0) return "VS Code / VSCodium не установлен";
+                return CheckVSCodeConfigInDir(dirs[0]) == TweakStatus.Enabled ? "Телеметрия отключена (settings.json)" : "Настройки по умолчанию";
+            }
+
+            if (string.Equals(id, "misc-lghub-toggle-services", StringComparison.OrdinalIgnoreCase))
+            {
+                TweakStatus s = CheckLghubToggleStatus(store);
+                if (s == TweakStatus.Unavailable) return "Logitech G HUB не установлен";
+                return s == TweakStatus.Enabled ? "Фоновые службы и драйверы отключены" : "Службы G HUB активны";
+            }
+
+            if (string.Equals(id, "peripheral-steelseries-disable-sonar", StringComparison.OrdinalIgnoreCase))
+            {
+                TweakStatus s = CheckSteelSeriesStatus(store);
+                if (s == TweakStatus.Unavailable) return "SteelSeries GG не установлен";
+                return s == TweakStatus.Enabled ? "Sonar и фоновые службы отключены" : "Службы Sonar активны";
             }
 
             if (tweak.registry != null && tweak.registry.Count > 0 && store != null)
@@ -2059,6 +2228,890 @@ namespace WinTweaker.Engine
                 if (s.IndexOf("ENABLED", StringComparison.OrdinalIgnoreCase) >= 0) return TweakStatus.Disabled;
             }
             return TweakStatus.Unknown;
+        }
+
+        // =====================================================================
+        // 6. IPv6 Full Disable (0xFF + ms_tcpip6 binding)
+        // =====================================================================
+        private static bool? IsAnyIpv6BindingEnabled()
+        {
+            lock (_cacheLock)
+            {
+                if ((DateTime.UtcNow - _ipv6BindingCacheTime).TotalSeconds < 5.0)
+                {
+                    return _ipv6BindingAnyEnabledCache;
+                }
+            }
+
+            bool? result = null;
+            string stdout;
+            int rc = RunProcessCapture("powershell.exe",
+                "-NoProfile -Command \"$b = Get-NetAdapterBinding -ComponentID ms_tcpip6 -ErrorAction SilentlyContinue; if (-not $b) { 'NONE' } elseif (($b | Where-Object { $_.Enabled }).Count -gt 0) { 'ENABLED' } else { 'DISABLED' }\"",
+                5000, out stdout);
+            if (rc == 0 && !string.IsNullOrEmpty(stdout))
+            {
+                string s = stdout.Trim();
+                if (s.IndexOf("ENABLED", StringComparison.OrdinalIgnoreCase) >= 0) result = true;
+                else if (s.IndexOf("DISABLED", StringComparison.OrdinalIgnoreCase) >= 0) result = false;
+            }
+
+            lock (_cacheLock)
+            {
+                _ipv6BindingAnyEnabledCache = result;
+                _ipv6BindingCacheTime = DateTime.UtcNow;
+            }
+            return result;
+        }
+
+        private static TweakStatus CheckIpv6FullDisabledStatus(IRegistryStore store)
+        {
+            const string path = @"SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters";
+            object val = store != null ? store.GetValue("HKLM", path, "DisabledComponents") : null;
+            bool regDisabled = (val != null && Convert.ToInt64(val) == 255);
+            bool? anyBinding = IsAnyIpv6BindingEnabled();
+
+            if (regDisabled && (!anyBinding.HasValue || !anyBinding.Value)) return TweakStatus.Enabled;
+            if (regDisabled || (anyBinding.HasValue && !anyBinding.Value)) return TweakStatus.PartiallyEnabled;
+            return TweakStatus.Disabled;
+        }
+
+        private static string GetIpv6LiveDisplayValue(IRegistryStore store)
+        {
+            const string path = @"SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters";
+            object val = store != null ? store.GetValue("HKLM", path, "DisabledComponents") : null;
+            long num = val != null ? Convert.ToInt64(val) : -1;
+            string regText = num == 255 ? "0xFF (отключен)" : (num == 32 ? "0x20 (Prefer IPv4)" : (num >= 0 ? num.ToString() : "Не задано"));
+            bool? anyBinding = IsAnyIpv6BindingEnabled();
+            string bindText = !anyBinding.HasValue ? "адаптеры н/д" : (anyBinding.Value ? "ms_tcpip6: вкл." : "ms_tcpip6: откл.");
+            return regText + " | " + bindText;
+        }
+
+        private static bool ApplyIpv6FullDisable(IRegistryStore store, StateManager stateManager, JournalManager journal)
+        {
+            const string regPath = @"SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters";
+            TweakSnapshot snap = new TweakSnapshot();
+            snap.TweakId = "network-disable-ipv6-components";
+
+            bool existed = store.ValueExists("HKLM", regPath, "DisabledComponents");
+            object prev = existed ? store.GetValue("HKLM", regPath, "DisabledComponents") : null;
+            snap.Values.Add(new RegistryValueSnapshot
+            {
+                Hive = "HKLM",
+                Path = regPath,
+                Name = "DisabledComponents",
+                Existed = existed,
+                Kind = "REG_DWORD",
+                Value = prev != null ? prev.ToString() : null
+            });
+
+            string enabledList;
+            int qRc = RunProcessCapture("powershell.exe",
+                "-NoProfile -Command \"((Get-NetAdapterBinding -ComponentID ms_tcpip6 -ErrorAction SilentlyContinue | Where-Object { $_.Enabled } | ForEach-Object { $_.Name }) -join '|')\"",
+                5000, out enabledList);
+            if (qRc == 0 && !string.IsNullOrEmpty(enabledList))
+            {
+                snap.Values.Add(new RegistryValueSnapshot
+                {
+                    Hive = "CUSTOM",
+                    Path = "network-disable-ipv6-components",
+                    Name = "Ipv6EnabledAdapters",
+                    Existed = true,
+                    Kind = "REG_SZ",
+                    Value = enabledList.Trim()
+                });
+            }
+
+            stateManager.SaveSnapshot("network-disable-ipv6-components", snap);
+            store.SetValue("HKLM", regPath, "DisabledComponents", 255, RegistryValueKind.DWord);
+            RunProcess("powershell.exe",
+                "-NoProfile -Command \"Disable-NetAdapterBinding -Name '*' -ComponentID ms_tcpip6 -Confirm:$false -ErrorAction SilentlyContinue\"",
+                8000);
+            InvalidateCaches();
+            if (journal != null)
+            {
+                journal.Log("APPLY", "network-disable-ipv6-components", "IPv6 полностью отключен: DisabledComponents=0xFF + ms_tcpip6 отключен на адаптерах");
+            }
+            return true;
+        }
+
+        private static bool RevertIpv6FullDisable(IRegistryStore store, StateManager stateManager, JournalManager journal)
+        {
+            const string regPath = @"SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters";
+            TweakSnapshot snap = stateManager.GetSnapshot("network-disable-ipv6-components");
+            string savedAdapters = null;
+            bool restoredReg = false;
+
+            if (snap != null && snap.Values != null)
+            {
+                for (int i = 0; i < snap.Values.Count; i++)
+                {
+                    RegistryValueSnapshot v = snap.Values[i];
+                    if (string.Equals(v.Hive, "CUSTOM", StringComparison.OrdinalIgnoreCase) &&
+                        string.Equals(v.Name, "Ipv6EnabledAdapters", StringComparison.OrdinalIgnoreCase))
+                    {
+                        savedAdapters = v.Value != null ? v.Value.ToString() : null;
+                    }
+                    else if (string.Equals(v.Name, "DisabledComponents", StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (v.Existed && v.Value != null)
+                        {
+                            int prevVal;
+                            if (int.TryParse(v.Value.ToString(), out prevVal))
+                            {
+                                store.SetValue("HKLM", regPath, "DisabledComponents", prevVal, RegistryValueKind.DWord);
+                            }
+                            else
+                            {
+                                store.SetValue("HKLM", regPath, "DisabledComponents", 0, RegistryValueKind.DWord);
+                            }
+                        }
+                        else
+                        {
+                            store.SetValue("HKLM", regPath, "DisabledComponents", 0, RegistryValueKind.DWord);
+                        }
+                        restoredReg = true;
+                    }
+                }
+            }
+
+            if (!restoredReg)
+            {
+                store.SetValue("HKLM", regPath, "DisabledComponents", 0, RegistryValueKind.DWord);
+            }
+
+            if (!string.IsNullOrEmpty(savedAdapters))
+            {
+                string[] names = savedAdapters.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+                for (int i = 0; i < names.Length; i++)
+                {
+                    string safeName = names[i].Replace("'", "''");
+                    RunProcess("powershell.exe",
+                        "-NoProfile -Command \"Enable-NetAdapterBinding -Name '" + safeName + "' -ComponentID ms_tcpip6 -Confirm:$false -ErrorAction SilentlyContinue\"",
+                        6000);
+                }
+            }
+            else
+            {
+                RunProcess("powershell.exe",
+                    "-NoProfile -Command \"Enable-NetAdapterBinding -Name '*' -ComponentID ms_tcpip6 -Confirm:$false -ErrorAction SilentlyContinue\"",
+                    8000);
+            }
+
+            stateManager.RemoveSnapshot("network-disable-ipv6-components");
+            InvalidateCaches();
+            if (journal != null)
+            {
+                journal.Log("REVERT", "network-disable-ipv6-components", "Настройки IPv6 (DisabledComponents и привязка ms_tcpip6) восстановлены");
+            }
+            return true;
+        }
+
+        // =====================================================================
+        // 7. Sleep Study Full Disable (Registry + Diagnostic Channels + Task)
+        // =====================================================================
+        private static readonly string[] SleepStudyChannels = new string[]
+        {
+            "Microsoft-Windows-SleepStudy/Diagnostic",
+            "Microsoft-Windows-Kernel-Processor-Power/Diagnostic",
+            "Microsoft-Windows-UserModePowerService/Diagnostic"
+        };
+
+        private static bool ApplySleepStudyDisable(IRegistryStore store, StateManager stateManager, JournalManager journal)
+        {
+            const string smPower = @"SYSTEM\CurrentControlSet\Control\Session Manager\Power";
+            const string ctrlPower = @"SYSTEM\CurrentControlSet\Control\Power";
+            const string id = "privacy-disable-sleep-study";
+
+            TweakSnapshot snap = new TweakSnapshot();
+            snap.TweakId = id;
+            SaveRegDwordToSnap(snap, store, "HKLM", smPower, "SleepStudyDisabled");
+            SaveRegDwordToSnap(snap, store, "HKLM", ctrlPower, "SleepstudyAccountingEnabled");
+            stateManager.SaveSnapshot(id, snap);
+
+            store.SetValue("HKLM", smPower, "SleepStudyDisabled", 1, RegistryValueKind.DWord);
+            store.SetValue("HKLM", ctrlPower, "SleepstudyAccountingEnabled", 0, RegistryValueKind.DWord);
+
+            for (int i = 0; i < SleepStudyChannels.Length; i++)
+            {
+                RunProcess("wevtutil.exe", "sl \"" + SleepStudyChannels[i] + "\" /e:false", 4000);
+            }
+            RunProcess("schtasks.exe", "/Change /TN \"\\Microsoft\\Windows\\Power Efficiency Diagnostics\\AnalyzeSystem\" /DISABLE", 4000);
+
+            if (journal != null)
+            {
+                journal.Log("APPLY", id, "Sleep Study отключен (SleepStudyDisabled=1, каналы WINEVT и AnalyzeSystem)");
+            }
+            return true;
+        }
+
+        private static bool RevertSleepStudyDisable(IRegistryStore store, StateManager stateManager, JournalManager journal)
+        {
+            const string id = "privacy-disable-sleep-study";
+            TweakSnapshot snap = stateManager.GetSnapshot(id);
+            if (snap != null && snap.Values != null && snap.Values.Count > 0)
+            {
+                for (int i = 0; i < snap.Values.Count; i++)
+                {
+                    RestoreSnapshotEntry(store, snap.Values[i]);
+                }
+            }
+            else
+            {
+                store.SetValue("HKLM", @"SYSTEM\CurrentControlSet\Control\Session Manager\Power", "SleepStudyDisabled", 0, RegistryValueKind.DWord);
+                store.SetValue("HKLM", @"SYSTEM\CurrentControlSet\Control\Power", "SleepstudyAccountingEnabled", 1, RegistryValueKind.DWord);
+            }
+            RunProcess("schtasks.exe", "/Change /TN \"\\Microsoft\\Windows\\Power Efficiency Diagnostics\\AnalyzeSystem\" /ENABLE", 4000);
+            stateManager.RemoveSnapshot(id);
+            if (journal != null)
+            {
+                journal.Log("REVERT", id, "Учёт Sleep Study возвращён к состоянию до применения");
+            }
+            return true;
+        }
+
+        private static void SaveRegDwordToSnap(TweakSnapshot snap, IRegistryStore store, string hive, string path, string name)
+        {
+            bool exists = store.ValueExists(hive, path, name);
+            object val = exists ? store.GetValue(hive, path, name) : null;
+            snap.Values.Add(new RegistryValueSnapshot
+            {
+                Hive = hive,
+                Path = path,
+                Name = name,
+                Existed = exists,
+                Kind = "REG_DWORD",
+                Value = val != null ? val.ToString() : null
+            });
+        }
+
+        private static void RestoreSnapshotEntry(IRegistryStore store, RegistryValueSnapshot v)
+        {
+            if (v == null || string.Equals(v.Hive, "CUSTOM", StringComparison.OrdinalIgnoreCase)) return;
+            if (!v.Existed)
+            {
+                store.DeleteValue(v.Hive, v.Path, v.Name);
+                return;
+            }
+            if (string.Equals(v.Kind, "REG_SZ", StringComparison.OrdinalIgnoreCase))
+            {
+                store.SetValue(v.Hive, v.Path, v.Name, v.Value != null ? v.Value.ToString() : "", RegistryValueKind.String);
+            }
+            else
+            {
+                int num;
+                if (v.Value != null && int.TryParse(v.Value.ToString(), out num))
+                {
+                    store.SetValue(v.Hive, v.Path, v.Name, num, RegistryValueKind.DWord);
+                }
+            }
+        }
+
+        // =====================================================================
+        // 8. Noverse App Guides: Spotify / VS Code / LGHUB / SteelSeries
+        // =====================================================================
+        private static string GetSpotifyAppDataDir()
+        {
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Spotify");
+        }
+
+        public static bool IsSpotifyInstalled()
+        {
+            try
+            {
+                string pf = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+                string pf86 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+                string localApp = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                return Directory.Exists(GetSpotifyAppDataDir())
+                    || Directory.Exists(Path.Combine(pf, "Spotify"))
+                    || (!string.IsNullOrEmpty(pf86) && Directory.Exists(Path.Combine(pf86, "Spotify")))
+                    || File.Exists(Path.Combine(localApp, @"Microsoft\WindowsApps\Spotify.exe"));
+            }
+            catch { return false; }
+        }
+
+        private static readonly string[,] SpotifyGlobalPrefs = new string[,]
+        {
+            { "app.autostart-configured", "true" },
+            { "app.autostart-mode", "\"off\"" },
+            { "network.proxy.mode", "1" },
+            { "ui.hardware_acceleration", "false" }
+        };
+
+        private static readonly string[,] SpotifyUserPrefs = new string[,]
+        {
+            { "audio.play_bitrate_non_metered_enumeration", "0" },
+            { "audio.play_bitrate_enumeration", "0" },
+            { "audio.sync_bitrate_enumeration", "0" },
+            { "audio.allow_downgrade", "true" },
+            { "audio.normalize_v2", "false" },
+            { "ui.hide_hpto", "true" },
+            { "ui.system_media_controls_enabled", "false" },
+            { "ui.right_panel_content", "0" },
+            { "audio.crossfade_v2", "false" },
+            { "audio.automix", "true" },
+            { "audio.downmixer_v2", "false" },
+            { "audio.silence_trimmer_v2", "false" },
+            { "ui.minimize_to_tray", "false" }
+        };
+
+        public static TweakStatus CheckSpotifyConfigInDir(string spotifyDir)
+        {
+            if (string.IsNullOrEmpty(spotifyDir) || !Directory.Exists(spotifyDir)) return TweakStatus.Disabled;
+            string globalPrefs = Path.Combine(spotifyDir, "prefs");
+            if (!File.Exists(globalPrefs)) return TweakStatus.Disabled;
+
+            Dictionary<string, string> parsed = ReadPrefsMap(globalPrefs);
+            int matched = 0;
+            int total = SpotifyGlobalPrefs.GetLength(0);
+            for (int i = 0; i < total; i++)
+            {
+                string val;
+                if (parsed.TryGetValue(SpotifyGlobalPrefs[i, 0], out val) &&
+                    string.Equals(val, SpotifyGlobalPrefs[i, 1], StringComparison.OrdinalIgnoreCase))
+                {
+                    matched++;
+                }
+            }
+            if (matched == total) return TweakStatus.Enabled;
+            return matched > 0 ? TweakStatus.PartiallyEnabled : TweakStatus.Disabled;
+        }
+
+        public static bool ApplySpotifyConfigToDir(string spotifyDir, out string detail)
+        {
+            detail = "";
+            if (string.IsNullOrEmpty(spotifyDir))
+            {
+                detail = "Не указан каталог Spotify";
+                return false;
+            }
+            try
+            {
+                StopProcessesSafe(new string[] { "Spotify" });
+                Directory.CreateDirectory(spotifyDir);
+
+                string globalPrefs = Path.Combine(spotifyDir, "prefs");
+                WritePrefsWithBackup(globalPrefs, SpotifyGlobalPrefs);
+
+                string usersDir = Path.Combine(spotifyDir, "Users");
+                int userProfilesUpdated = 0;
+                if (Directory.Exists(usersDir))
+                {
+                    string[] subdirs = Directory.GetDirectories(usersDir);
+                    for (int i = 0; i < subdirs.Length; i++)
+                    {
+                        string userPrefs = Path.Combine(subdirs[i], "prefs");
+                        if (File.Exists(userPrefs))
+                        {
+                            WritePrefsWithBackup(userPrefs, SpotifyUserPrefs);
+                            userProfilesUpdated++;
+                        }
+                    }
+                }
+                detail = string.Format("Spotify prefs обновлены (профилей: {0})", userProfilesUpdated);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                detail = "Ошибка настройки Spotify prefs: " + ex.Message;
+                return false;
+            }
+        }
+
+        public static bool RevertSpotifyConfigInDir(string spotifyDir, out string detail)
+        {
+            detail = "";
+            if (string.IsNullOrEmpty(spotifyDir) || !Directory.Exists(spotifyDir))
+            {
+                detail = "Каталог Spotify не найден";
+                return false;
+            }
+            try
+            {
+                StopProcessesSafe(new string[] { "Spotify" });
+                int restoredCount = 0;
+                if (RestoreFromAxisBackup(Path.Combine(spotifyDir, "prefs"))) restoredCount++;
+
+                string usersDir = Path.Combine(spotifyDir, "Users");
+                if (Directory.Exists(usersDir))
+                {
+                    string[] subdirs = Directory.GetDirectories(usersDir);
+                    for (int i = 0; i < subdirs.Length; i++)
+                    {
+                        if (RestoreFromAxisBackup(Path.Combine(subdirs[i], "prefs"))) restoredCount++;
+                    }
+                }
+                detail = string.Format("Конфигурация Spotify prefs восстановлена ({0} файл(ов))", restoredCount);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                detail = "Ошибка отката Spotify prefs: " + ex.Message;
+                return false;
+            }
+        }
+
+        private static Dictionary<string, string> ReadPrefsMap(string path)
+        {
+            Dictionary<string, string> map = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            if (!File.Exists(path)) return map;
+            string[] lines = File.ReadAllLines(path, Encoding.UTF8);
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string line = lines[i];
+                if (string.IsNullOrWhiteSpace(line)) continue;
+                int eq = line.IndexOf('=');
+                if (eq <= 0) continue;
+                string k = line.Substring(0, eq).Trim();
+                string v = line.Substring(eq + 1).Trim();
+                map[k] = v;
+            }
+            return map;
+        }
+
+        private static void WritePrefsWithBackup(string path, string[,] pairs)
+        {
+            string bak = path + ".axis.bak";
+            if (!File.Exists(bak) && File.Exists(path))
+            {
+                File.Copy(path, bak, true);
+            }
+
+            List<string> lines = new List<string>();
+            if (File.Exists(path))
+            {
+                string[] existing = File.ReadAllLines(path, Encoding.UTF8);
+                for (int i = 0; i < existing.Length; i++)
+                {
+                    if (!string.IsNullOrEmpty(existing[i])) lines.Add(existing[i]);
+                }
+            }
+
+            int count = pairs.GetLength(0);
+            for (int i = 0; i < count; i++)
+            {
+                string key = pairs[i, 0];
+                string val = pairs[i, 1];
+                string entry = key + "=" + val;
+                int foundIdx = -1;
+                for (int j = 0; j < lines.Count; j++)
+                {
+                    if (lines[j].StartsWith(key + "=", StringComparison.OrdinalIgnoreCase))
+                    {
+                        foundIdx = j;
+                        break;
+                    }
+                }
+                if (foundIdx >= 0) lines[foundIdx] = entry;
+                else lines.Add(entry);
+            }
+            File.WriteAllLines(path, lines.ToArray(), new UTF8Encoding(false));
+        }
+
+        private static bool RestoreFromAxisBackup(string targetPath)
+        {
+            string bak = targetPath + ".axis.bak";
+            if (!File.Exists(bak)) return false;
+            File.Copy(bak, targetPath, true);
+            try { File.Delete(bak); } catch { }
+            return true;
+        }
+
+        public static string[] GetInstalledVSCodeUserDirs()
+        {
+            List<string> dirs = new List<string>();
+            try
+            {
+                string appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                string localApp = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                string pf = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+                string pf86 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+
+                string codeUser = Path.Combine(appData, @"Code\User");
+                bool hasCode = Directory.Exists(Path.Combine(appData, "Code"))
+                    || Directory.Exists(Path.Combine(localApp, @"Programs\Microsoft VS Code"))
+                    || Directory.Exists(Path.Combine(pf, "Microsoft VS Code"))
+                    || (!string.IsNullOrEmpty(pf86) && Directory.Exists(Path.Combine(pf86, "Microsoft VS Code")));
+                if (hasCode) dirs.Add(codeUser);
+
+                string codiumUser = Path.Combine(appData, @"VSCodium\User");
+                if (Directory.Exists(Path.Combine(appData, "VSCodium"))) dirs.Add(codiumUser);
+
+                string insidersUser = Path.Combine(appData, @"Code - Insiders\User");
+                if (Directory.Exists(Path.Combine(appData, "Code - Insiders"))) dirs.Add(insidersUser);
+            }
+            catch { }
+            return dirs.ToArray();
+        }
+
+        private static readonly KeyValuePair<string, object>[] VSCodeTelemetrySettings = new KeyValuePair<string, object>[]
+        {
+            new KeyValuePair<string, object>("telemetry.telemetryLevel", "off"),
+            new KeyValuePair<string, object>("telemetry.enableCrashReporter", false),
+            new KeyValuePair<string, object>("telemetry.enableTelemetry", false),
+            new KeyValuePair<string, object>("telemetry.feedback.enabled", false),
+            new KeyValuePair<string, object>("workbench.enableExperiments", false),
+            new KeyValuePair<string, object>("update.mode", "manual"),
+            new KeyValuePair<string, object>("update.showReleaseNotes", false),
+            new KeyValuePair<string, object>("extensions.ignoreRecommendations", true),
+            new KeyValuePair<string, object>("git.autofetch", false),
+            new KeyValuePair<string, object>("npm.fetchOnlinePackageInfo", false)
+        };
+
+        public static TweakStatus CheckVSCodeConfigInDir(string userDir)
+        {
+            if (string.IsNullOrEmpty(userDir)) return TweakStatus.Disabled;
+            string settingsPath = Path.Combine(userDir, "settings.json");
+            if (!File.Exists(settingsPath)) return TweakStatus.Disabled;
+
+            try
+            {
+                string raw = File.ReadAllText(settingsPath, Encoding.UTF8);
+                if (string.IsNullOrWhiteSpace(raw)) return TweakStatus.Disabled;
+                JavaScriptSerializer js = new JavaScriptSerializer();
+                Dictionary<string, object> dict = js.Deserialize<Dictionary<string, object>>(raw);
+                if (dict == null) return TweakStatus.Disabled;
+
+                int matched = 0;
+                for (int i = 0; i < VSCodeTelemetrySettings.Length; i++)
+                {
+                    object cur;
+                    if (dict.TryGetValue(VSCodeTelemetrySettings[i].Key, out cur) && cur != null &&
+                        string.Equals(cur.ToString(), VSCodeTelemetrySettings[i].Value.ToString(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        matched++;
+                    }
+                }
+                if (matched == VSCodeTelemetrySettings.Length) return TweakStatus.Enabled;
+                return matched > 0 ? TweakStatus.PartiallyEnabled : TweakStatus.Disabled;
+            }
+            catch
+            {
+                return TweakStatus.Unknown;
+            }
+        }
+
+        public static bool ApplyVSCodeConfigToDir(string userDir, out string detail)
+        {
+            detail = "";
+            if (string.IsNullOrEmpty(userDir))
+            {
+                detail = "Не указан путь профиля VS Code";
+                return false;
+            }
+            try
+            {
+                Directory.CreateDirectory(userDir);
+                string settingsPath = Path.Combine(userDir, "settings.json");
+                string bakPath = settingsPath + ".axis.bak";
+                if (!File.Exists(bakPath) && File.Exists(settingsPath))
+                {
+                    File.Copy(settingsPath, bakPath, true);
+                }
+
+                Dictionary<string, object> dict = new Dictionary<string, object>(StringComparer.Ordinal);
+                if (File.Exists(settingsPath))
+                {
+                    string raw = File.ReadAllText(settingsPath, Encoding.UTF8);
+                    if (!string.IsNullOrWhiteSpace(raw))
+                    {
+                        JavaScriptSerializer js = new JavaScriptSerializer();
+                        Dictionary<string, object> existing = js.Deserialize<Dictionary<string, object>>(raw);
+                        if (existing != null) dict = existing;
+                    }
+                }
+
+                for (int i = 0; i < VSCodeTelemetrySettings.Length; i++)
+                {
+                    dict[VSCodeTelemetrySettings[i].Key] = VSCodeTelemetrySettings[i].Value;
+                }
+
+                string serialized = FormatJsonDictionary(dict);
+                File.WriteAllText(settingsPath, serialized, new UTF8Encoding(false));
+                detail = "Обновлён файл " + settingsPath;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                detail = "Ошибка записи settings.json: " + ex.Message;
+                return false;
+            }
+        }
+
+        public static bool RevertVSCodeConfigInDir(string userDir, out string detail)
+        {
+            detail = "";
+            if (string.IsNullOrEmpty(userDir))
+            {
+                detail = "Не указан путь профиля VS Code";
+                return false;
+            }
+            try
+            {
+                string settingsPath = Path.Combine(userDir, "settings.json");
+                if (RestoreFromAxisBackup(settingsPath))
+                {
+                    detail = "Восстановлен settings.json из резервной копии";
+                    return true;
+                }
+                if (File.Exists(settingsPath))
+                {
+                    JavaScriptSerializer js = new JavaScriptSerializer();
+                    Dictionary<string, object> dict = js.Deserialize<Dictionary<string, object>>(File.ReadAllText(settingsPath, Encoding.UTF8));
+                    if (dict != null)
+                    {
+                        for (int i = 0; i < VSCodeTelemetrySettings.Length; i++)
+                        {
+                            dict.Remove(VSCodeTelemetrySettings[i].Key);
+                        }
+                        File.WriteAllText(settingsPath, FormatJsonDictionary(dict), new UTF8Encoding(false));
+                    }
+                }
+                detail = "Удалены добавленные параметры телеметрии VS Code";
+                return true;
+            }
+            catch (Exception ex)
+            {
+                detail = "Ошибка отката settings.json: " + ex.Message;
+                return false;
+            }
+        }
+
+        private static bool ApplyVSCodeConfigAll(JournalManager journal, string id)
+        {
+            string[] dirs = GetInstalledVSCodeUserDirs();
+            if (dirs.Length == 0)
+            {
+                if (journal != null) journal.Log("WARN", id, "VS Code / VSCodium не установлен");
+                return false;
+            }
+            bool anyOk = false;
+            for (int i = 0; i < dirs.Length; i++)
+            {
+                string detail;
+                if (ApplyVSCodeConfigToDir(dirs[i], out detail)) anyOk = true;
+                if (journal != null) journal.Log(anyOk ? "APPLY" : "WARN", id, detail);
+            }
+            return anyOk;
+        }
+
+        private static bool RevertVSCodeConfigAll(JournalManager journal, string id)
+        {
+            string[] dirs = GetInstalledVSCodeUserDirs();
+            if (dirs.Length == 0) return false;
+            bool anyOk = false;
+            for (int i = 0; i < dirs.Length; i++)
+            {
+                string detail;
+                if (RevertVSCodeConfigInDir(dirs[i], out detail)) anyOk = true;
+                if (journal != null) journal.Log("REVERT", id, detail);
+            }
+            return anyOk;
+        }
+
+        private static string FormatJsonDictionary(Dictionary<string, object> dict)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("{");
+            int idx = 0;
+            int total = dict.Count;
+            JavaScriptSerializer js = new JavaScriptSerializer();
+            foreach (KeyValuePair<string, object> kv in dict)
+            {
+                idx++;
+                string comma = (idx < total) ? "," : "";
+                sb.AppendLine("  " + js.Serialize(kv.Key) + ": " + js.Serialize(kv.Value) + comma);
+            }
+            sb.Append("}");
+            return sb.ToString();
+        }
+
+        private static readonly string[] LghubServices = new string[] { "LGHUBUpdaterService", "logi_joy_bus_enum", "logi_joy_vir_hid" };
+        private static readonly string[] SteelSeriesServices = new string[] { "SteelSeriesSonar", "SteelSeriesGGClient", "SteelSeriesAudioService" };
+
+        private static bool IsAppInstalledByDirsOrServices(string[] services, string[] dirs, IRegistryStore store)
+        {
+            for (int i = 0; i < services.Length; i++)
+            {
+                if (store != null && store.ValueExists("HKLM", @"SYSTEM\CurrentControlSet\Services\" + services[i], "Start"))
+                {
+                    return true;
+                }
+            }
+            for (int i = 0; i < dirs.Length; i++)
+            {
+                if (!string.IsNullOrEmpty(dirs[i]) && Directory.Exists(dirs[i])) return true;
+            }
+            return false;
+        }
+
+        private static TweakStatus CheckLghubToggleStatus(IRegistryStore store)
+        {
+            string pf = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+            string pf86 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+            string localApp = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string[] dirs = new string[]
+            {
+                Path.Combine(pf, "LGHUB"),
+                !string.IsNullOrEmpty(pf86) ? Path.Combine(pf86, "LGHUB") : "",
+                Path.Combine(localApp, "LGHUB")
+            };
+            if (!IsAppInstalledByDirsOrServices(LghubServices, dirs, store)) return TweakStatus.Unavailable;
+            return CheckServicesDisabledStatus(LghubServices, "LGHUB", store);
+        }
+
+        private static TweakStatus CheckSteelSeriesStatus(IRegistryStore store)
+        {
+            string pf = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+            string pf86 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+            string localApp = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string progData = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+            string[] dirs = new string[]
+            {
+                Path.Combine(pf, "SteelSeries"),
+                !string.IsNullOrEmpty(pf86) ? Path.Combine(pf86, "SteelSeries") : "",
+                Path.Combine(localApp, "SteelSeries"),
+                Path.Combine(progData, "SteelSeries")
+            };
+            if (!IsAppInstalledByDirsOrServices(SteelSeriesServices, dirs, store)) return TweakStatus.Unavailable;
+            return CheckServicesDisabledStatus(SteelSeriesServices, "SteelSeriesGG", store);
+        }
+
+        private static TweakStatus CheckServicesDisabledStatus(string[] services, string runKeyName, IRegistryStore store)
+        {
+            int found = 0;
+            int disabled = 0;
+            for (int i = 0; i < services.Length; i++)
+            {
+                string svcPath = @"SYSTEM\CurrentControlSet\Services\" + services[i];
+                if (store.ValueExists("HKLM", svcPath, "Start"))
+                {
+                    found++;
+                    object st = store.GetValue("HKLM", svcPath, "Start");
+                    if (st != null && Convert.ToInt64(st) == 4) disabled++;
+                }
+            }
+            bool hasAutostart = store.ValueExists("HKCU", @"Software\Microsoft\Windows\CurrentVersion\Run", runKeyName);
+            if (found > 0 && disabled == found && !hasAutostart) return TweakStatus.Enabled;
+            if (disabled > 0) return TweakStatus.PartiallyEnabled;
+            return TweakStatus.Disabled;
+        }
+
+        private static bool ApplyLghubToggle(bool disable, IRegistryStore store, StateManager stateManager, JournalManager journal, string id)
+        {
+            return ApplyOrRevertAppServices(
+                disable,
+                LghubServices,
+                new string[] { "lghub", "lghub_agent", "lghub_updater", "logi_lamparray_service" },
+                new string[] { "LGHUB" },
+                new int[] { 3, 1, 3 },
+                store, stateManager, journal, id, "Logitech G HUB");
+        }
+
+        private static bool ApplySteelSeriesSonar(bool disable, IRegistryStore store, StateManager stateManager, JournalManager journal, string id)
+        {
+            return ApplyOrRevertAppServices(
+                disable,
+                SteelSeriesServices,
+                new string[] { "SteelSeriesGG", "SteelSeriesGGClient", "SteelSeriesSonar", "SteelSeriesEngine" },
+                new string[] { "SteelSeriesGG", "SteelSeriesGGClient", "SteelSeries Sonar" },
+                new int[] { 2, 2, 2 },
+                store, stateManager, journal, id, "SteelSeries GG / Sonar");
+        }
+
+        private static bool ApplyOrRevertAppServices(
+            bool disable,
+            string[] services,
+            string[] procNames,
+            string[] runNames,
+            int[] fallbackStartModes,
+            IRegistryStore store,
+            StateManager stateManager,
+            JournalManager journal,
+            string id,
+            string appLabel)
+        {
+            const string hkcuRun = @"Software\Microsoft\Windows\CurrentVersion\Run";
+            if (disable)
+            {
+                StopProcessesSafe(procNames);
+                TweakSnapshot snap = new TweakSnapshot();
+                snap.TweakId = id;
+
+                for (int i = 0; i < services.Length; i++)
+                {
+                    string svcPath = @"SYSTEM\CurrentControlSet\Services\" + services[i];
+                    if (store.ValueExists("HKLM", svcPath, "Start"))
+                    {
+                        SaveRegDwordToSnap(snap, store, "HKLM", svcPath, "Start");
+                        TryStopServiceForCleanup(services[i]);
+                        store.SetValue("HKLM", svcPath, "Start", 4, RegistryValueKind.DWord);
+                    }
+                }
+                for (int i = 0; i < runNames.Length; i++)
+                {
+                    if (store.ValueExists("HKCU", hkcuRun, runNames[i]))
+                    {
+                        object runVal = store.GetValue("HKCU", hkcuRun, runNames[i]);
+                        snap.Values.Add(new RegistryValueSnapshot
+                        {
+                            Hive = "HKCU",
+                            Path = hkcuRun,
+                            Name = runNames[i],
+                            Existed = true,
+                            Kind = "REG_SZ",
+                            Value = runVal != null ? runVal.ToString() : ""
+                        });
+                        store.DeleteValue("HKCU", hkcuRun, runNames[i]);
+                    }
+                }
+                stateManager.SaveSnapshot(id, snap);
+                if (journal != null) journal.Log("APPLY", id, appLabel + ": службы отключены (Start=4) и автозапуск удалён");
+                return true;
+            }
+            else
+            {
+                TweakSnapshot snap = stateManager.GetSnapshot(id);
+                if (snap != null && snap.Values != null && snap.Values.Count > 0)
+                {
+                    for (int i = 0; i < snap.Values.Count; i++)
+                    {
+                        RestoreSnapshotEntry(store, snap.Values[i]);
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < services.Length; i++)
+                    {
+                        string svcPath = @"SYSTEM\CurrentControlSet\Services\" + services[i];
+                        if (store.ValueExists("HKLM", svcPath, "Start"))
+                        {
+                            int mode = i < fallbackStartModes.Length ? fallbackStartModes[i] : 3;
+                            store.SetValue("HKLM", svcPath, "Start", mode, RegistryValueKind.DWord);
+                        }
+                    }
+                }
+                stateManager.RemoveSnapshot(id);
+                if (journal != null) journal.Log("REVERT", id, appLabel + ": параметры служб и автозапуска восстановлены");
+                return true;
+            }
+        }
+
+        private static void StopProcessesSafe(string[] procNames)
+        {
+            if (procNames == null) return;
+            for (int i = 0; i < procNames.Length; i++)
+            {
+                try
+                {
+                    Process[] procs = Process.GetProcessesByName(procNames[i]);
+                    for (int j = 0; j < procs.Length; j++)
+                    {
+                        try { procs[j].Kill(); procs[j].WaitForExit(1500); } catch { }
+                        try { procs[j].Dispose(); } catch { }
+                    }
+                }
+                catch { }
+            }
         }
     }
 }

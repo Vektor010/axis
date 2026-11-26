@@ -1,8 +1,8 @@
 # PROJECT_STATE.md — Current Operational State
 
 **Last Updated**: 2026-11-26  
-**Version**: v2.1.0 (Full Noverse 2026 1:1 Engine & Hardware Execution Overhaul)  
-**Binary Output**: `dist/Axis.exe` (1.27 MB, standalone x64, 875 tweaks)
+**Version**: v2.2.0 (Complete Noverse Docs & App Guides 1:1 Sync + Full IPv6 Disable)  
+**Binary Output**: `dist/Axis.exe` (1.34 MB, standalone x64, 897 tweaks, 8,153 PASS)
 
 ---
 

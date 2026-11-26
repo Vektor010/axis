@@ -5,6 +5,17 @@ All notable changes to AXIS will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2026-11-26
+
+### Complete Noverse Docs & App Guides 1:1 Sync + Full IPv6 Disable
+- **Complete IPv6 Disable (`0xFF` + `ms_tcpip6` unbind)**: Upgraded `network-disable-ipv6-components` to apply `DisabledComponents = 255` (`0xFF`) AND automatically unbind `ms_tcpip6` across network adapters (`Disable-NetAdapterBinding`) with snapshot revert to prevent real IP leaks behind VPNs.
+- **22 New Curated Noverse `win-config` & `app-guides` Tweaks (897 total)**:
+  - **Network & Power**: `network-disable-wpad` (`DisableWpad` + `WpadOverride`), `network-encrypted-dns-global` (`EnableAutoDoh`, `EnableDot`, `EnableDdr`), `power-nic-pnp-capabilities` (`PnPCapabilities=24` across physical NICs), `power-nic-auto-power-save` (`AutoPowerSaveModeEnabled`, `EnableGreenEthernet`, `GigaLite`), `power-disable-storage-d3-modern-standby`.
+  - **Visibility & Explorer**: `visibility-taskbar-end-task`, `visibility-taskbar-align-left`, `visibility-taskbar-hide-search`, `visibility-taskbar-never-combine`, `visibility-explorer-launch-this-pc`, `visibility-explorer-disable-graph-recent`, `visibility-disable-lockscreen-spotlight`.
+  - **Privacy & Storage**: `privacy-disable-sleep-study` (`SleepStudyDisabled=1` + `wevtutil` Analytic channels + `AnalyzeSystem` task), `privacy-disable-cross-device-cdp`, `privacy-disable-phone-link-resume`, `privacy-disable-data-commercial-pipeline`, `peripheral-disable-autoplay`, `peripheral-storport-disable-telemetry`.
+  - **App Guides (`misc` / `peripheral`)**: C# live executors for Spotify (`prefs` + `Users\*\prefs`), VS Code / VSCodium (`settings.json` with `.axis.bak` rollback), Logitech G HUB (`LGHUB-Toggle` services + virtual HID + `Run`), SteelSeries GG / Sonar, and Brave Browser Group Policies (`BraveRewardsDisabled`, `BraveWalletDisabled`, `BraveVPNDisabled`, `BraveAIChatEnabled`).
+- **Verification**: Suite 15 added (`8,153` total assertions, 100% PASS, 0 FAIL, `dist/Axis.exe` 1.34 MB).
+
 ## [2.1.0] - 2026-11-26
 
 ### Major Engine Overhaul & Noverse 2026 1:1 Alignment

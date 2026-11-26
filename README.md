@@ -2,10 +2,10 @@
 
 [English](README.md) | [Русский](README.ru.md)
 
-[![Release: v2.1.0](https://img.shields.io/badge/Release-v2.1.0-8b5cf6.svg)](https://github.com/Vektor010/axis/releases)
-[![Tests: 7956 PASS](https://img.shields.io/badge/Tests-7956%20PASS-22c55e.svg)](tests/)
-[![Tweaks: 875](https://img.shields.io/badge/Tweaks-875-06b6d4.svg)](data/tweaks.json)
-[![Binary: Clean 1.27 MB](https://img.shields.io/badge/Binary-1.27%20MB-purple.svg)](dist/Axis.exe)
+[![Release: v2.2.0](https://img.shields.io/badge/Release-v2.2.0-8b5cf6.svg)](https://github.com/Vektor010/axis/releases)
+[![Tests: 8153 PASS](https://img.shields.io/badge/Tests-8153%20PASS-22c55e.svg)](tests/)
+[![Tweaks: 897](https://img.shields.io/badge/Tweaks-897-06b6d4.svg)](data/tweaks.json)
+[![Binary: Clean 1.34 MB](https://img.shields.io/badge/Binary-1.34%20MB-purple.svg)](dist/Axis.exe)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 > **AXIS** is a high-performance, standalone Windows 10/11 optimization suite designed for competitive esports players, system engineers, and enthusiasts.

@@ -3797,8 +3797,8 @@
   },
   {
     "id": "network-disable-ipv6-components",
-    "name_ru": "Приоритет IPv4 над IPv6 (DisabledComponents = 0x20)",
-    "description_ru": "Переключает сетевой стек на предпочтение IPv4 (0x20 / 32) согласно рекомендациям Noverse и Microsoft без 5-секундной задержки загрузки.",
+    "name_ru": "Полностью отключить IPv6 (0xFF + ms_tcpip6)",
+    "description_ru": "Полностью отключает IPv6 на всех интерфейсах (DisabledComponents = 0xFF) и снимает привязку компонента ms_tcpip6 на сетевых адаптерах. Исключает утечку реального IP-адреса провайдеру при использовании VPN (рекомендуется перезагрузка).",
     "group": "Сетевой стек",
     "category": "network",
     "type": "toggle",
@@ -3809,9 +3809,9 @@
     "min_build": null,
     "needs_review": true,
     "source": {
-      "file": "network/desc.md",
-      "line_from": 1161,
-      "line_to": 1171
+      "file": "network/docs/ipv6.md",
+      "line_from": 1,
+      "line_to": 12
     },
     "registry": [
       {
@@ -3819,7 +3819,7 @@
         "path": "SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
         "name": "DisabledComponents",
         "type": "REG_DWORD",
-        "apply": 32,
+        "apply": 255,
         "revert": {
           "mode": "set",
           "value": 0
@@ -28350,6 +28350,855 @@
         "revert": {
           "mode": "set",
           "value": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "network-disable-wpad",
+    "name_ru": "Отключить автоопределение прокси WPAD (DisableWpad)",
+    "description_ru": "Блокирует протокол автообнаружения прокси WPAD и кэш SWPAD в WinHTTP, снижая сетевые задержки и закрывая вектор атак LLMNR/WPAD.",
+    "group": "Сетевой стек",
+    "category": "network",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "network/docs/disable-wpad.md",
+      "line_from": 16,
+      "line_to": 26
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\\WinHttp",
+        "name": "DisableWpad",
+        "type": "REG_DWORD",
+        "apply": 1,
+        "revert": {
+          "mode": "delete",
+          "value": null
+        }
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\\Wpad",
+        "name": "WpadOverride",
+        "type": "REG_DWORD",
+        "apply": 1,
+        "revert": {
+          "mode": "delete",
+          "value": null
+        }
+      }
+    ]
+  },
+  {
+    "id": "network-encrypted-dns-global",
+    "name_ru": "Разрешить глобальный шифрованный DNS (DoH / DoT / DDR)",
+    "description_ru": "Глобально разрешает DNS-over-HTTPS (EnableAutoDoh=1), DNS-over-TLS и DDR на клиенте DNS Windows для шифрования DNS-запросов.",
+    "group": "Сетевой стек",
+    "category": "network",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": 22000,
+    "needs_review": false,
+    "source": {
+      "file": "network/docs/encrypted-dns.md",
+      "line_from": 27,
+      "line_to": 32
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\Dnscache\\Parameters",
+        "name": "EnableAutoDoh",
+        "type": "REG_DWORD",
+        "apply": 1,
+        "revert": {
+          "mode": "delete",
+          "value": null
+        }
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\Dnscache\\Parameters",
+        "name": "EnableDot",
+        "type": "REG_DWORD",
+        "apply": 1,
+        "revert": {
+          "mode": "delete",
+          "value": null
+        }
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\Dnscache\\Parameters",
+        "name": "EnableDdr",
+        "type": "REG_DWORD",
+        "apply": 1,
+        "revert": {
+          "mode": "delete",
+          "value": null
+        }
+      }
+    ]
+  },
+  {
+    "id": "power-nic-pnp-capabilities",
+    "name_ru": "Запретить отключение сетевой карты для экономии питания (PnPCapabilities)",
+    "description_ru": "Устанавливает PnPCapabilities=24 (0x18) для всех физических сетевых адаптеров, отключая спящий режим и Wake-on-LAN в диспетчере устройств.",
+    "group": "Сетевые адаптеры и USB",
+    "category": "power",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended",
+      "gaming"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "power/docs/disable-nic-power-savings.md",
+      "line_from": 12,
+      "line_to": 16
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Control\\Class\\{4D36E972-E325-11CE-BFC1-08002bE10318}\\00XX",
+        "name": "PnPCapabilities",
+        "type": "REG_DWORD",
+        "apply": 24,
+        "revert": {
+          "mode": "delete",
+          "value": null
+        }
+      }
+    ]
+  },
+  {
+    "id": "power-nic-auto-power-save",
+    "name_ru": "Отключить Green Ethernet / AutoPowerSave / GigaLite на NIC",
+    "description_ru": "Отключает аппаратное энергосбережение AutoPowerSaveModeEnabled, EnableGreenEthernet и GigaLite у физических сетевых контроллеров.",
+    "group": "Сетевые адаптеры и USB",
+    "category": "power",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "gaming"
+    ],
+    "min_build": null,
+    "needs_review": false,
+    "source": {
+      "file": "power/docs/disable-nic-power-savings.md",
+      "line_from": 132,
+      "line_to": 148
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Control\\Class\\{4D36E972-E325-11CE-BFC1-08002bE10318}\\00XX",
+        "name": "AutoPowerSaveModeEnabled",
+        "type": "REG_SZ",
+        "apply": "0",
+        "revert": {
+          "mode": "delete",
+          "value": null
+        }
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Control\\Class\\{4D36E972-E325-11CE-BFC1-08002bE10318}\\00XX",
+        "name": "EnableGreenEthernet",
+        "type": "REG_SZ",
+        "apply": "0",
+        "revert": {
+          "mode": "delete",
+          "value": null
+        }
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Control\\Class\\{4D36E972-E325-11CE-BFC1-08002bE10318}\\00XX",
+        "name": "GigaLite",
+        "type": "REG_SZ",
+        "apply": "0",
+        "revert": {
+          "mode": "delete",
+          "value": null
+        }
+      }
+    ]
+  },
+  {
+    "id": "power-disable-storage-d3-modern-standby",
+    "name_ru": "Отключить состояние сна D3 для накопителей в Modern Standby",
+    "description_ru": "Устанавливает StorageD3InModernStandby = 0, запрещая перевод NVMe/SATA дисков в глубокое энергосбережение D3.",
+    "group": "Энергосбережение дисков и памяти",
+    "category": "power",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "gaming"
+    ],
+    "min_build": 19041,
+    "needs_review": false,
+    "source": {
+      "file": "peripheral/docs/storport-values.md",
+      "line_from": 59,
+      "line_to": 61
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Control\\Storage",
+        "name": "StorageD3InModernStandby",
+        "type": "REG_DWORD",
+        "apply": 0,
+        "revert": {
+          "mode": "delete",
+          "value": null
+        }
+      }
+    ]
+  },
+  {
+    "id": "visibility-taskbar-end-task",
+    "name_ru": "Добавить кнопку «Завершить задачу» в контекстное меню панели задач",
+    "description_ru": "Включает системную опцию разработчика Windows 11 TaskbarEndTask для быстрого завершения зависших окон по ПКМ на панели задач.",
+    "group": "Панель задач Windows 11",
+    "category": "visibility",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": 22621,
+    "needs_review": true,
+    "source": {
+      "file": "visibility/docs/taskbar-settings.md",
+      "line_from": 147,
+      "line_to": 152
+    },
+    "registry": [
+      {
+        "hive": "HKCU",
+        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings",
+        "name": "TaskbarEndTask",
+        "type": "REG_DWORD",
+        "apply": 1,
+        "revert": {
+          "mode": "set",
+          "value": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "visibility-taskbar-align-left",
+    "name_ru": "Выровнять панель задач Windows 11 по левому краю (TaskbarAl)",
+    "description_ru": "Перемещает значки панели задач и меню «Пуск» в классическое левое положение (TaskbarAl = 0).",
+    "group": "Панель задач Windows 11",
+    "category": "visibility",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [],
+    "min_build": 22000,
+    "needs_review": true,
+    "source": {
+      "file": "visibility/docs/taskbar-settings.md",
+      "line_from": 76,
+      "line_to": 81
+    },
+    "registry": [
+      {
+        "hive": "HKCU",
+        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "name": "TaskbarAl",
+        "type": "REG_DWORD",
+        "apply": 0,
+        "revert": {
+          "mode": "set",
+          "value": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "visibility-taskbar-hide-search",
+    "name_ru": "Скрыть кнопку поиска на панели задач (SearchboxTaskbarMode)",
+    "description_ru": "Полностью убирает поле и иконку поиска Bing с панели задач (SearchboxTaskbarMode = 0).",
+    "group": "Панель задач Windows 11",
+    "category": "visibility",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "visibility/desc.md",
+      "line_from": 1100,
+      "line_to": 1108
+    },
+    "registry": [
+      {
+        "hive": "HKCU",
+        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\Search",
+        "name": "SearchboxTaskbarMode",
+        "type": "REG_DWORD",
+        "apply": 0,
+        "revert": {
+          "mode": "set",
+          "value": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "visibility-taskbar-never-combine",
+    "name_ru": "Никогда не группировать кнопки панели задач (TaskbarGlomLevel)",
+    "description_ru": "Отображает каждое открытое окно отдельной кнопкой с заголовком на панели задач (TaskbarGlomLevel = 2).",
+    "group": "Панель задач Windows 11",
+    "category": "visibility",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "visibility/docs/taskbar-settings.md",
+      "line_from": 107,
+      "line_to": 113
+    },
+    "registry": [
+      {
+        "hive": "HKCU",
+        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "name": "TaskbarGlomLevel",
+        "type": "REG_DWORD",
+        "apply": 2,
+        "revert": {
+          "mode": "set",
+          "value": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "visibility-explorer-launch-this-pc",
+    "name_ru": "Открывать Проводник в разделе «Этот компьютер» (LaunchTo)",
+    "description_ru": "Настраивает запуск Проводника сразу на раздел «Этот компьютер» вместо «Главной» с недавними и облачными файлами.",
+    "group": "Проводник Windows",
+    "category": "visibility",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "visibility/docs/explorer-options.md",
+      "line_from": 111,
+      "line_to": 116
+    },
+    "registry": [
+      {
+        "hive": "HKCU",
+        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "name": "LaunchTo",
+        "type": "REG_DWORD",
+        "apply": 1,
+        "revert": {
+          "mode": "set",
+          "value": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "visibility-explorer-disable-graph-recent",
+    "name_ru": "Отключить рекомендации и облачные файлы Microsoft 365 в Проводнике",
+    "description_ru": "Применяет политику DisableGraphRecentItems = 1, скрывая недавние, рекомендуемые и избранные файлы из учётной записи в Проводнике.",
+    "group": "Проводник Windows",
+    "category": "visibility",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": 22000,
+    "needs_review": false,
+    "source": {
+      "file": "visibility/docs/explorer-options.md",
+      "line_from": 334,
+      "line_to": 340
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "Software\\Policies\\Microsoft\\Windows\\Explorer",
+        "name": "DisableGraphRecentItems",
+        "type": "REG_DWORD",
+        "apply": 1,
+        "revert": {
+          "mode": "delete",
+          "value": null
+        }
+      }
+    ]
+  },
+  {
+    "id": "visibility-disable-lockscreen-spotlight",
+    "name_ru": "Отключить «Интересное» и подсказки на экране блокировки (Spotlight)",
+    "description_ru": "Отключает загрузку фоновых сцен Windows Spotlight и рекламных фактов/подсказок на экране блокировки.",
+    "group": "Экран блокировки",
+    "category": "visibility",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "visibility/desc.md",
+      "line_from": 1714,
+      "line_to": 1762
+    },
+    "registry": [
+      {
+        "hive": "HKCU",
+        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "name": "RotatingLockScreenEnabled",
+        "type": "REG_DWORD",
+        "apply": 0,
+        "revert": {
+          "mode": "set",
+          "value": 1
+        }
+      },
+      {
+        "hive": "HKCU",
+        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "name": "RotatingLockScreenOverlayEnabled",
+        "type": "REG_DWORD",
+        "apply": 0,
+        "revert": {
+          "mode": "set",
+          "value": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "privacy-disable-sleep-study",
+    "name_ru": "Полностью отключить телеметрию Sleep Study (ядро + ETW каналы)",
+    "description_ru": "Отключает учёт состояний сна Sleep Study (SleepStudyDisabled=1, SleepstudyAccountingEnabled=0), аналитические журналы wevtutil и задачу AnalyzeSystem.",
+    "group": "Диагностика и журналы событий",
+    "category": "privacy",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": false,
+    "source": {
+      "file": "privacy/docs/disable-sleep-study.md",
+      "line_from": 27,
+      "line_to": 37
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Power",
+        "name": "SleepStudyDisabled",
+        "type": "REG_DWORD",
+        "apply": 1,
+        "revert": {
+          "mode": "set",
+          "value": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "privacy-disable-phone-link-resume",
+    "name_ru": "Отключить функцию Resume / Связь со смартфоном (IsResumeAllowed)",
+    "description_ru": "Запрещает фоновую передачу состояния приложений и документов с телефона на ПК (CrossDeviceResume IsResumeAllowed = 0).",
+    "group": "Учётная запись и облако",
+    "category": "privacy",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": 22000,
+    "needs_review": true,
+    "source": {
+      "file": "privacy/docs/disable-phone-linking.md",
+      "line_from": 9,
+      "line_to": 15
+    },
+    "registry": [
+      {
+        "hive": "HKCU",
+        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\CrossDeviceResume\\Configuration",
+        "name": "IsResumeAllowed",
+        "type": "REG_DWORD",
+        "apply": 0,
+        "revert": {
+          "mode": "set",
+          "value": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "privacy-disable-data-commercial-pipeline",
+    "name_ru": "Запретить передачу имени устройства и коммерческого канала диагностики",
+    "description_ru": "Устанавливает AllowCommercialDataPipeline = 0 и AllowDeviceNameInDiagnosticData = 0 в политиках DataCollection.",
+    "group": "Телеметрия и сбор данных",
+    "category": "privacy",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": false,
+    "source": {
+      "file": "privacy/docs/disable-general-telemetry.md",
+      "line_from": 30,
+      "line_to": 43
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "Software\\Policies\\Microsoft\\Windows\\DataCollection",
+        "name": "AllowCommercialDataPipeline",
+        "type": "REG_DWORD",
+        "apply": 0,
+        "revert": {
+          "mode": "delete",
+          "value": null
+        }
+      },
+      {
+        "hive": "HKLM",
+        "path": "Software\\Policies\\Microsoft\\Windows\\DataCollection",
+        "name": "AllowDeviceNameInDiagnosticData",
+        "type": "REG_DWORD",
+        "apply": 0,
+        "revert": {
+          "mode": "delete",
+          "value": null
+        }
+      }
+    ]
+  },
+  {
+    "id": "peripheral-disable-autoplay",
+    "name_ru": "Отключить автозапуск AutoPlay для съёмных носителей и USB",
+    "description_ru": "Устанавливает DisableAutoplay = 1, предотвращая всплывающие окна и автоматическое сканирование подключаемых флешек и дисков.",
+    "group": "Устройства и накопители",
+    "category": "peripheral",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "peripheral/docs/disable-autoplay-autorun.md",
+      "line_from": 22,
+      "line_to": 25
+    },
+    "registry": [
+      {
+        "hive": "HKCU",
+        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\AutoplayHandlers",
+        "name": "DisableAutoplay",
+        "type": "REG_DWORD",
+        "apply": 1,
+        "revert": {
+          "mode": "set",
+          "value": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "peripheral-storport-disable-telemetry",
+    "name_ru": "Отключить телеметрию драйвера хранилища StorPort",
+    "description_ru": "Отключает сбор телеметрии производительности, ошибок и здоровья накопителей в драйвере storport.sys (сокращает фоновые прерывания и I/O).",
+    "group": "Устройства и накопители",
+    "category": "peripheral",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": false,
+    "source": {
+      "file": "peripheral/docs/storport-values.md",
+      "line_from": 17,
+      "line_to": 24
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Control\\StorPort",
+        "name": "TelemetryPerformanceEnabled",
+        "type": "REG_DWORD",
+        "apply": 0,
+        "revert": {
+          "mode": "delete",
+          "value": null
+        }
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Control\\StorPort",
+        "name": "TelemetryErrorDataEnabled",
+        "type": "REG_DWORD",
+        "apply": 0,
+        "revert": {
+          "mode": "delete",
+          "value": null
+        }
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Control\\StorPort",
+        "name": "TelemetryDeviceHealthEnabled",
+        "type": "REG_DWORD",
+        "apply": 0,
+        "revert": {
+          "mode": "delete",
+          "value": null
+        }
+      }
+    ]
+  },
+  {
+    "id": "peripheral-steelseries-disable-sonar",
+    "name_ru": "Отключить SteelSeries Sonar и фоновые службы GG (App Guide)",
+    "description_ru": "Останавливает и отключает SteelSeriesSonar, SteelSeriesGGClient и SteelSeriesAudioService (+ автозапуск), устраняя виртуальный аудиослой и задержки звука.",
+    "group": "Игровая периферия (SteelSeries)",
+    "category": "peripheral",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "gaming"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "misc/docs/app-guides-steelseries.md",
+      "line_from": 1,
+      "line_to": 9
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\SteelSeriesSonar",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "set",
+          "value": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "misc-spotify-optimize",
+    "name_ru": "Оптимизация Spotify Desktop по стандарту Noverse (prefs)",
+    "description_ru": "Настраивает %APPDATA%\\Spotify\\prefs и профили пользователей: отключает аппаратное ускорение UI, автозапуск, автопрокси, нормализацию громкости, оверлей клавиш и сворачивание в трей.",
+    "group": "Приложения (App Guides)",
+    "category": "misc",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "misc/docs/app-guides-spotify.md",
+      "line_from": 1,
+      "line_to": 22
+    },
+    "registry": [
+      {
+        "hive": "HKCU",
+        "path": "Software\\Axis\\AppGuides\\Spotify",
+        "name": "ui.hardware_acceleration",
+        "type": "REG_SZ",
+        "apply": "false",
+        "revert": {
+          "mode": "delete",
+          "value": null
+        }
+      }
+    ]
+  },
+  {
+    "id": "misc-vscode-disable-telemetry",
+    "name_ru": "Отключить телеметрию и эксперименты VS Code / VSCodium (App Guide)",
+    "description_ru": "Обновляет settings.json: telemetryLevel=off, enableCrashReporter=false, enableTelemetry=false, workbench.enableExperiments=false, update.mode=manual, git.autofetch=false.",
+    "group": "Приложения (App Guides)",
+    "category": "misc",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "misc/docs/app-guides-vsc.md",
+      "line_from": 1,
+      "line_to": 15
+    },
+    "registry": [
+      {
+        "hive": "HKCU",
+        "path": "Software\\Axis\\AppGuides\\VSCode",
+        "name": "telemetry.telemetryLevel",
+        "type": "REG_SZ",
+        "apply": "off",
+        "revert": {
+          "mode": "delete",
+          "value": null
+        }
+      }
+    ]
+  },
+  {
+    "id": "misc-lghub-toggle-services",
+    "name_ru": "Переключатель Logitech G HUB: отключить службы и виртуальный HID (LGHUB-Toggle)",
+    "description_ru": "Отключает LGHUBUpdaterService, виртуальную шину logi_joy_bus_enum, logi_joy_vir_hid и удаляет автозапуск Run\\LGHUB по скрипту Noverse LGHUB-Toggle.",
+    "group": "Приложения (App Guides)",
+    "category": "misc",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "gaming"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "misc/docs/app-guides-lghub.md",
+      "line_from": 1,
+      "line_to": 9
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\LGHUBUpdaterService",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "set",
+          "value": 3
+        }
+      }
+    ]
+  },
+  {
+    "id": "misc-brave-disable-bloat",
+    "name_ru": "Оптимизация браузера Brave: отключить телеметрию, Rewards, Wallet, Leo AI и VPN",
+    "description_ru": "Применяет официальные политики BraveSoftware\\Brave: запрещает фоновую работу после закрытия, сбор метрик, криптокошелёк, Brave Rewards, Leo AI и встроенный VPN.",
+    "group": "Приложения (App Guides)",
+    "category": "misc",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [],
+    "min_build": null,
+    "needs_review": false,
+    "source": {
+      "file": "misc/docs/app-guides-brave.md",
+      "line_from": 1,
+      "line_to": 13
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\BraveSoftware\\Brave",
+        "name": "BackgroundModeEnabled",
+        "type": "REG_DWORD",
+        "apply": 0,
+        "revert": {
+          "mode": "delete",
+          "value": null
+        }
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\BraveSoftware\\Brave",
+        "name": "MetricsReportingEnabled",
+        "type": "REG_DWORD",
+        "apply": 0,
+        "revert": {
+          "mode": "delete",
+          "value": null
+        }
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\BraveSoftware\\Brave",
+        "name": "BraveRewardsDisabled",
+        "type": "REG_DWORD",
+        "apply": 1,
+        "revert": {
+          "mode": "delete",
+          "value": null
+        }
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\BraveSoftware\\Brave",
+        "name": "BraveWalletDisabled",
+        "type": "REG_DWORD",
+        "apply": 1,
+        "revert": {
+          "mode": "delete",
+          "value": null
+        }
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\BraveSoftware\\Brave",
+        "name": "BraveVPNDisabled",
+        "type": "REG_DWORD",
+        "apply": 1,
+        "revert": {
+          "mode": "delete",
+          "value": null
+        }
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\BraveSoftware\\Brave",
+        "name": "BraveAIChatEnabled",
+        "type": "REG_DWORD",
+        "apply": 0,
+        "revert": {
+          "mode": "delete",
+          "value": null
         }
       }
     ]
