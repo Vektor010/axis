@@ -2194,13 +2194,26 @@ namespace WinTweaker.Tests
                     "Journal_ParseHistory: Исторические строки журнала сохраняют реальный timestamp, уровень и ID твика",
                     jmParsed.Entries.Count > 0 ? jmParsed.Entries[0].ToString() : "empty");
 
-                // Проверка защиты от OverflowException при экспорте REG_DWORD >= 0x80000000 (NtfsDisableLastAccessUpdate)
+                // Проверка защиты от OverflowException при экспорте REG_DWORD >= 0x80000000 (NtfsDisableLastAccessUpdate) и полного имени куста [HKEY_LOCAL_MACHINE\...]
                 JournalManager jmNeg = new JournalManager(Path.Combine(tempDir, "neg_dword.log"), true);
                 string negRegPath = jmNeg.ExportRegBackup("test-neg-dword", "HKLM", @"SYSTEM\Test", "Bitmask", unchecked((int)0x80000002), "DWord");
                 string negRegText = (!string.IsNullOrEmpty(negRegPath) && File.Exists(negRegPath)) ? File.ReadAllText(negRegPath, Encoding.Unicode) : "";
-                Assert(!string.IsNullOrEmpty(negRegPath) && negRegText.Contains("dword:80000002"),
-                    "Journal_NegativeDwordBackup: Отрицательный signed Int32 DWORD (0x80000002) корректно экспортируется без OverflowException",
+                Assert(!string.IsNullOrEmpty(negRegPath) && negRegText.Contains("dword:80000002") && negRegText.Contains(@"[HKEY_LOCAL_MACHINE\SYSTEM\Test]"),
+                    "Journal_NegativeDwordBackup: Отрицательный signed Int32 DWORD (0x80000002) и полный заголовок HKEY_LOCAL_MACHINE экспортируются корректно",
                     negRegText);
+
+                // Проверка иммутабельности оригинального снимка (SaveSnapshotIfAbsent не перезаписывает первый снимок при повторном Apply)
+                StateManager smImmut = new StateManager(Path.Combine(tempDir, "immut_state.json"), true);
+                TweakSnapshot origSnap = new TweakSnapshot();
+                origSnap.Values.Add(new RegistryValueSnapshot { Hive = "HKLM", Path = @"SYSTEM\Test", Name = "Val", Existed = true, Value = 777, Kind = "DWord" });
+                bool firstSaved = smImmut.SaveSnapshotIfAbsent("immut-test", origSnap);
+                TweakSnapshot overwriteSnap = new TweakSnapshot();
+                overwriteSnap.Values.Add(new RegistryValueSnapshot { Hive = "HKLM", Path = @"SYSTEM\Test", Name = "Val", Existed = true, Value = 999, Kind = "DWord" });
+                bool secondSaved = smImmut.SaveSnapshotIfAbsent("immut-test", overwriteSnap);
+                TweakSnapshot loadedSnap = smImmut.GetSnapshot("immut-test");
+                Assert(firstSaved && !secondSaved && loadedSnap != null && loadedSnap.Values.Count == 1 && Convert.ToInt32(loadedSnap.Values[0].Value) == 777,
+                    "State_SaveSnapshotIfAbsent: Повторный вызов Apply не перетирает сохранённый до твика оригинал 777 значением 999",
+                    string.Format("first={0}, second={1}, stored={2}", firstSaved, secondSaved, loadedSnap != null && loadedSnap.Values.Count > 0 ? loadedSnap.Values[0].Value : "null"));
 
                 // Проверка блокировки экспериментальных apply_block и опасных DWM/DXG/Kernel твиков в контекстном батче
                 TweakItem tdrDbg = list.Find(delegate(TweakItem x) { return x.id == "system-tdr-debug-mode"; });

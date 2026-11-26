@@ -258,7 +258,14 @@ namespace WinTweaker.Engine
                 sb.AppendLine("Windows Registry Editor Version 5.00");
                 sb.AppendLine();
 
-                string fullKey = string.Format("[{0}\\{1}]", hive.ToUpperInvariant(), subkey);
+                string normHive = (hive ?? "").Trim().ToUpperInvariant();
+                if (normHive == "HKLM") normHive = "HKEY_LOCAL_MACHINE";
+                else if (normHive == "HKCU") normHive = "HKEY_CURRENT_USER";
+                else if (normHive == "HKCR") normHive = "HKEY_CLASSES_ROOT";
+                else if (normHive == "HKU") normHive = "HKEY_USERS";
+                else if (normHive == "HKCC") normHive = "HKEY_CURRENT_CONFIG";
+
+                string fullKey = string.Format("[{0}\\{1}]", normHive, subkey);
                 sb.AppendLine(fullKey);
 
                 if (currentValue == null)

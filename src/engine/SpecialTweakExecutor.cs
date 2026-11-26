@@ -1078,7 +1078,7 @@ namespace WinTweaker.Engine
                 TweakSnapshot snap = new TweakSnapshot();
                 snap.TweakId = id;
                 snap.AppliedAt = DateTime.UtcNow.ToString("o");
-                stateManager.SaveSnapshot(id, snap);
+                stateManager.SaveSnapshotIfAbsent(id, snap);
                 return true;
             }
 
@@ -1160,7 +1160,7 @@ namespace WinTweaker.Engine
                         store.SetValue("HKLM", path, keys[k], "0", RegistryValueKind.String);
                     }
                 }
-                stateManager.SaveSnapshot(id, snap);
+                stateManager.SaveSnapshotIfAbsent(id, snap);
                 journal.Log("APPLY", id, string.Format("Отключена модерация прерываний (*InterruptModeration=0) для {0} NIC", nics.Count));
                 return true;
             }
@@ -1249,7 +1249,7 @@ namespace WinTweaker.Engine
                     snap.Values.Add(new RegistryValueSnapshot { Hive = hives[i], Path = clientPath, Name = "OptInOrOutPreference", Existed = ex, Kind = "REG_DWORD", Value = cur });
                     store.SetValue(hives[i], clientPath, "OptInOrOutPreference", 0, RegistryValueKind.DWord);
                 }
-                stateManager.SaveSnapshot(id, snap);
+                stateManager.SaveSnapshotIfAbsent(id, snap);
                 journal.Log("APPLY", id, "Отключена телеметрия NVCPL (OptInOrOutPreference=0 в HKLM и HKCU)");
                 return true;
             }
@@ -1273,7 +1273,7 @@ namespace WinTweaker.Engine
                         store.SetValue("HKLM", path, names[n], 1, RegistryValueKind.DWord);
                     }
                 }
-                stateManager.SaveSnapshot(id, snap);
+                stateManager.SaveSnapshotIfAbsent(id, snap);
                 journal.Log("APPLY", id, "Включен режим PowerMizer Max Performance (Enable/Level/LevelAC=1)");
                 return true;
             }
@@ -1345,7 +1345,7 @@ namespace WinTweaker.Engine
                     }
                 }
                 DeleteSubkeyIfBogus(AudioClassPrefix + @"\00xx");
-                stateManager.SaveSnapshot(id, snap);
+                stateManager.SaveSnapshotIfAbsent(id, snap);
                 journal.Log("APPLY", id, string.Format("Отключен idle timeout (REG_BINARY 00000000) для {0} аудиоустройств", audioKeys.Count));
                 return true;
             }
@@ -1683,9 +1683,9 @@ namespace WinTweaker.Engine
                 if (v == null) return "Не задано";
                 try
                 {
-                    long raw = Convert.ToInt64(v);
-                    long mode = raw & 0x3L;
-                    return (mode == 1L || mode == 3L) ? string.Format("Отключено (0x{0:X})", raw) : string.Format("Включено (0x{0:X})", raw);
+                    uint raw = unchecked((uint)Convert.ToInt32(v));
+                    uint mode = raw & 0x3U;
+                    return (mode == 1U || mode == 3U) ? string.Format("Отключено (0x{0:X})", raw) : string.Format("Включено (0x{0:X})", raw);
                 }
                 catch { return v.ToString(); }
             }
@@ -2539,7 +2539,7 @@ namespace WinTweaker.Engine
                 Kind = "REG_SZ",
                 Value = val
             });
-            stateManager.SaveSnapshot(tweakId, snap);
+            stateManager.SaveSnapshotIfAbsent(tweakId, snap);
         }
 
         private static string GetCustomSnapshotValue(StateManager stateManager, string tweakId, string name)
@@ -2888,7 +2888,7 @@ namespace WinTweaker.Engine
                 return false;
             }
 
-            if (stateManager != null) stateManager.SaveSnapshot(id, snap);
+            if (stateManager != null) stateManager.SaveSnapshotIfAbsent(id, snap);
             InvalidateCaches();
             if (journal != null)
             {
@@ -3044,7 +3044,7 @@ namespace WinTweaker.Engine
                 });
             }
 
-            stateManager.SaveSnapshot("network-disable-ipv6-components", snap);
+            stateManager.SaveSnapshotIfAbsent("network-disable-ipv6-components", snap);
             store.SetValue("HKLM", regPath, "DisabledComponents", 255, RegistryValueKind.DWord);
             RunProcess("powershell.exe",
                 "-NoProfile -Command \"Disable-NetAdapterBinding -Name '*' -ComponentID ms_tcpip6 -Confirm:$false -ErrorAction SilentlyContinue\"",
@@ -3149,7 +3149,7 @@ namespace WinTweaker.Engine
             snap.TweakId = id;
             SaveRegDwordToSnap(snap, store, "HKLM", smPower, "SleepStudyDisabled");
             SaveRegDwordToSnap(snap, store, "HKLM", ctrlPower, "SleepstudyAccountingEnabled");
-            stateManager.SaveSnapshot(id, snap);
+            stateManager.SaveSnapshotIfAbsent(id, snap);
 
             store.SetValue("HKLM", smPower, "SleepStudyDisabled", 1, RegistryValueKind.DWord);
             store.SetValue("HKLM", ctrlPower, "SleepstudyAccountingEnabled", 0, RegistryValueKind.DWord);
@@ -3787,7 +3787,7 @@ namespace WinTweaker.Engine
                         store.DeleteValue("HKCU", hkcuRun, runNames[i]);
                     }
                 }
-                stateManager.SaveSnapshot(id, snap);
+                stateManager.SaveSnapshotIfAbsent(id, snap);
                 if (journal != null) journal.Log("APPLY", id, appLabel + ": службы отключены (Start=4) и автозапуск удалён");
                 return true;
             }

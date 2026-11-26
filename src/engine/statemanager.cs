@@ -212,6 +212,14 @@ namespace WinTweaker.Engine
             this.Save();
         }
 
+        public bool SaveSnapshotIfAbsent(string tweakId, TweakSnapshot snapshot)
+        {
+            if (string.IsNullOrEmpty(tweakId) || snapshot == null) return false;
+            if (this.HasSnapshot(tweakId)) return false;
+            this.SaveSnapshot(tweakId, snapshot);
+            return true;
+        }
+
         public void RemoveSnapshot(string tweakId)
         {
             if (this._data != null && this._data.Snapshots.ContainsKey(tweakId))

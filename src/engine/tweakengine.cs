@@ -735,6 +735,7 @@ namespace WinTweaker.Engine
                 }
 
                 TweakSnapshot snapshot = this._stateManager.GetSnapshot(tweak.id);
+                int revertedCount = 0;
 
                 for (int i = 0; i < tweak.registry.Count; i++)
                 {
@@ -752,6 +753,12 @@ namespace WinTweaker.Engine
                         {
                             RegistryValueSnapshot valSnap = snapshot.Values[s];
                             if (!string.Equals(valSnap.Name, action.name, StringComparison.OrdinalIgnoreCase)) continue;
+                            if (!string.IsNullOrEmpty(valSnap.Hive) && !string.Equals(valSnap.Hive, action.hive, StringComparison.OrdinalIgnoreCase)) continue;
+                            if (!string.IsNullOrEmpty(valSnap.Path) && targets.Count > 0 &&
+                                !targets.Exists(delegate(string tp) { return string.Equals(tp, valSnap.Path, StringComparison.OrdinalIgnoreCase); }))
+                            {
+                                continue;
+                            }
 
                             if (valSnap.Existed && valSnap.Value != null)
                             {
@@ -766,6 +773,7 @@ namespace WinTweaker.Engine
                                 object valToWrite = SpecialTweakExecutor.ConvertToRegistryValue(snapType, valSnap.Value, out k);
                                 string writePath = !string.IsNullOrEmpty(valSnap.Path) ? valSnap.Path : (targets.Count > 0 ? targets[0] : action.path);
                                 this._store.SetValue(valSnap.Hive ?? action.hive, writePath, action.name, valToWrite, k);
+                                revertedCount++;
                                 if (this._isRealMode)
                                 {
                                     NativeMethods.ApplyLiveOsRefresh(valSnap.Hive ?? action.hive, writePath, action.name, valToWrite);
@@ -779,6 +787,7 @@ namespace WinTweaker.Engine
                             {
                                 string delPath = !string.IsNullOrEmpty(valSnap.Path) ? valSnap.Path : (targets.Count > 0 ? targets[0] : action.path);
                                 this._store.DeleteValue(valSnap.Hive ?? action.hive, delPath, action.name);
+                                revertedCount++;
                                 if (this._isRealMode)
                                 {
                                     NativeMethods.ApplyLiveOsRefresh(valSnap.Hive ?? action.hive, delPath, action.name, null);
@@ -788,10 +797,15 @@ namespace WinTweaker.Engine
                     }
                     else
                     {
+                        if (mode == "snapshot" && (action.revert == null || action.revert.value == null))
+                        {
+                            this._journalManager.Log("WARN", tweak.id, "Снимок исходного значения отсутствует — откат этого параметра пропущен.");
+                            continue;
+                        }
                         for (int p = 0; p < targets.Count; p++)
                         {
                             string targetPath = targets[p];
-                            if (mode == "set")
+                            if (mode == "set" || (mode == "snapshot" && action.revert != null && action.revert.value != null))
                             {
                                 string effectiveType = action.type;
                                 object val = action.revert != null ? action.revert.value : 0;
@@ -804,6 +818,7 @@ namespace WinTweaker.Engine
                                 RegistryValueKind k;
                                 object valToWrite = SpecialTweakExecutor.ConvertToRegistryValue(effectiveType, val, out k);
                                 this._store.SetValue(action.hive, targetPath, action.name, valToWrite, k);
+                                revertedCount++;
                                 if (this._isRealMode)
                                 {
                                     NativeMethods.ApplyLiveOsRefresh(action.hive, targetPath, action.name, valToWrite);
@@ -816,6 +831,7 @@ namespace WinTweaker.Engine
                             else if (mode == "delete")
                             {
                                 this._store.DeleteValue(action.hive, targetPath, action.name);
+                                revertedCount++;
                                 if (this._isRealMode)
                                 {
                                     NativeMethods.ApplyLiveOsRefresh(action.hive, targetPath, action.name, null);
@@ -835,6 +851,12 @@ namespace WinTweaker.Engine
                 if (this._isRealMode && string.Equals(tweak.id, "steam-disable-autorun", StringComparison.OrdinalIgnoreCase))
                 {
                     SteamConfigHelper.SetSteamAutoRunDisabled(false);
+                }
+
+                if (revertedCount == 0 && tweak.registry.Count > 0)
+                {
+                    this._journalManager.Log("WARN", tweak.id, "Нечего откатывать: снимок отсутствует и нет безопасного значения по умолчанию.");
+                    return false;
                 }
 
                 string modeStr = this._isRealMode ? "РЕАЛЬНЫЙ РЕЖИМ" : "ТЕСТОВЫЙ РЕЖИМ (оверлей)";
