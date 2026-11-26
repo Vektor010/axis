@@ -677,12 +677,12 @@
                                             <!-- Translucent Area Fills under curves -->
                                             <Polygon Points="{Binding CpuChartAreaPoints}" Fill="{DynamicResource AccentBrush}" Opacity="0.16" />
                                             <Polygon Points="{Binding RamChartAreaPoints}" Fill="{DynamicResource SuccessBrush}" Opacity="0.12" />
-                                            <Polygon Points="{Binding GpuChartAreaPoints}" Fill="{DynamicResource CyanAccentBrush}" Opacity="0.12" />
+                                            <Polygon Points="{Binding GpuChartAreaPoints}" Fill="{DynamicResource WarningBrush}" Opacity="0.14" />
 
                                             <!-- Crisp Smooth Curves (padded so 0% is always cleanly visible above bottom edge) -->
                                             <Polyline Points="{Binding CpuChartPoints}" Stroke="{DynamicResource AccentBrush}" StrokeThickness="2.2" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
                                             <Polyline Points="{Binding RamChartPoints}" Stroke="{DynamicResource SuccessBrush}" StrokeThickness="2" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
-                                            <Polyline Points="{Binding GpuChartPoints}" Stroke="{DynamicResource CyanAccentBrush}" StrokeThickness="1.8" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+                                            <Polyline Points="{Binding GpuChartPoints}" Stroke="{DynamicResource WarningBrush}" StrokeThickness="2" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
                                             <Border Visibility="{Binding IsCollectingData, Converter={StaticResource BoolToVis}}"
                                                     HorizontalAlignment="Center" VerticalAlignment="Center">
                                                 <StackPanel Orientation="Horizontal">
@@ -702,7 +702,7 @@
                                             <Rectangle Width="10" Height="10" Fill="{DynamicResource SuccessBrush}" RadiusX="2" RadiusY="2" VerticalAlignment="Center" Margin="0,0,4,0" />
                                             <TextBlock Text="Память (RAM)" FontSize="11" Foreground="{DynamicResource TextSecondary}" Margin="0,0,12,0" />
 
-                                            <Rectangle Width="10" Height="10" Fill="{DynamicResource CyanAccentBrush}" RadiusX="2" RadiusY="2" VerticalAlignment="Center" Margin="0,0,4,0" />
+                                            <Rectangle Width="10" Height="10" Fill="{DynamicResource WarningBrush}" RadiusX="2" RadiusY="2" VerticalAlignment="Center" Margin="0,0,4,0" />
                                             <TextBlock Text="Видеокарта (GPU)" FontSize="11" Foreground="{DynamicResource TextSecondary}" />
                                         </StackPanel>
                                         <TextBlock Text="{Binding LastUpdatedDisplay}" FontFamily="{StaticResource FontMono}" FontSize="10" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Right" VerticalAlignment="Center" />
