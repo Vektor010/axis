@@ -2161,6 +2161,17 @@ namespace WinTweaker.Tests
                 Assert(ntfsDisOk && ntfsEnOk,
                     "NTFS_LastAccess_Bitmask: Битовая маска 0x80000001/0x80000002 корректно распознаётся как Disabled/Enabled",
                     string.Format("dis={0}, en={1}", ntfsDisOk, ntfsEnOk));
+
+                // Проверка разбора исторических строк JournalManager (сохранение исходного времени и Level)
+                string parsedLogPath = Path.Combine(tempDir, "parsed_journal.log");
+                File.WriteAllText(parsedLogPath, "[2026-11-26 21:15:30] [APPLY] [network-disable-ipv6-components] OK\r\n", new UTF8Encoding(false));
+                JournalManager jmParsed = new JournalManager(parsedLogPath, true);
+                Assert(jmParsed.Entries.Count == 1 &&
+                       jmParsed.Entries[0].FormattedTime == "2026-11-26 21:15:30" &&
+                       jmParsed.Entries[0].Level == "APPLY" &&
+                       jmParsed.Entries[0].TweakId == "network-disable-ipv6-components",
+                    "Journal_ParseHistory: Исторические строки журнала сохраняют реальный timestamp, уровень и ID твика",
+                    jmParsed.Entries.Count > 0 ? jmParsed.Entries[0].ToString() : "empty");
             }
             finally
             {

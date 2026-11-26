@@ -26,7 +26,7 @@ namespace WinTweaker.Engine
             this.WindowHeight = 700;
             this.PingCustomHost = "";
             this.TextRenderingMode = "ClearType";
-            this.PollingIntervalSeconds = 2;
+            this.PollingIntervalSeconds = 1;
             this.IsGrouped = true;
             this.SortMode = 0;
             this.GroupExpandedStates = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);

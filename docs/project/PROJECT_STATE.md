@@ -1,8 +1,8 @@
 # PROJECT_STATE.md — Current Operational State
 
 **Last Updated**: 2026-11-26  
-**Version**: v3.2.3 (Fixed 4 Stuck Tweak Checks & Removed Blue Window/Dialog Borders)  
-**Binary Output**: `dist/Axis.exe` (1.39 MB, standalone x64, 888 tweaks, 216 curated recommended, 8,038 PASS)
+**Version**: v3.3.0 (Responsive 1s Dashboard Telemetry, GetIPStatistics Network Rate, Area Charts & Historical Journal Fix)  
+**Binary Output**: `dist/Axis.exe` (1.40 MB, standalone x64, 888 tweaks, 216 curated recommended, 8,039 PASS)
 
 ---
 

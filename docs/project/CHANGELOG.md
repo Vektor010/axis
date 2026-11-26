@@ -5,6 +5,14 @@ All notable changes to AXIS will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.3.0] - 2026-11-26
+
+### Responsive 1s Dashboard Telemetry, Accurate Network RX/TX, Smooth Area Charts & Journal Fixes
+- **Network Throughput (`QueryNetworkThroughput` in `SystemInfoService.cs`)**: Switched from `GetIPv4Statistics()` to per-adapter fault-tolerant `GetIPStatistics()` (IPv4+IPv6), added automatic stale-baseline reset (`sec > 5.0`), and dual-sample warmup (`160ms`) so real download/upload speeds (`МБ/с` / `КБ/с`) show immediately even right after switching tabs.
+- **Fast Non-Blocking 1s Live Chart**: Reduced default polling interval to `1s` (`SettingsManager`), cached gateway discovery (`30s`) and ICMP ping (`3s` TTL, `400ms` timeout) so chart updates run in milliseconds, and added 2-point fast initialization (`IsCollectingData` clears immediately instead of waiting 10s).
+- **Zero-Clipping Area Charts & Missing Sparkline**: Added vertical `5px` padding (`0%` CPU/GPU always visible above the bottom axis), horizontal dashed reference grid (`25/50/75%`), translucent gradient `Polygon` fills underneath all 3 chart curves, and populated `TempSparkline`.
+- **Journal & Overview Accuracy**: Parsed historical `[yyyy-MM-dd HH:mm:ss] [LEVEL] [id]` lines in `JournalManager.LoadExistingEntries()` and fixed `JournalCountDisplay` to show real journal entry counts instead of `0 записей`.
+
 ## [3.2.3] - 2026-11-26
 
 ### Fixed 4 Persistent Re-apply Tweak Detection Bugs & Removed Blue Window Outlines

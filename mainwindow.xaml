@@ -124,7 +124,7 @@
                                         Padding="4,0.5"
                                         Margin="6,0,0,0"
                                         VerticalAlignment="Center">
-                                    <TextBlock Text="3.2"
+                                    <TextBlock Text="3.3"
                                                FontFamily="{StaticResource FontMono}"
                                                FontSize="9"
                                                FontWeight="Bold"
@@ -672,10 +672,21 @@
 
                                     <!-- Chart Canvas Area -->
                                     <Border Background="{DynamicResource SearchBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="8" Height="130" Padding="6" SizeChanged="ChartAreaBorder_SizeChanged">
-                                        <Grid>
-                                            <Polyline Points="{Binding CpuChartPoints}" Stroke="{DynamicResource AccentBrush}" StrokeThickness="2.5" />
-                                            <Polyline Points="{Binding RamChartPoints}" Stroke="{DynamicResource SuccessBrush}" StrokeThickness="2.5" />
-                                            <Polyline Points="{Binding GpuChartPoints}" Stroke="{DynamicResource CyanAccentBrush}" StrokeThickness="2" />
+                                        <Grid ClipToBounds="True">
+                                            <!-- Subtle 25 / 50 / 75% horizontal dashed reference grid -->
+                                            <Line X1="0" Y1="32" X2="1200" Y2="32" Stroke="{DynamicResource CardBorder}" StrokeThickness="0.8" StrokeDashArray="3,3" Opacity="0.6" />
+                                            <Line X1="0" Y1="59" X2="1200" Y2="59" Stroke="{DynamicResource CardBorder}" StrokeThickness="0.8" StrokeDashArray="3,3" Opacity="0.6" />
+                                            <Line X1="0" Y1="86" X2="1200" Y2="86" Stroke="{DynamicResource CardBorder}" StrokeThickness="0.8" StrokeDashArray="3,3" Opacity="0.6" />
+
+                                            <!-- Translucent Area Fills under curves -->
+                                            <Polygon Points="{Binding CpuChartAreaPoints}" Fill="{DynamicResource AccentBrush}" Opacity="0.16" />
+                                            <Polygon Points="{Binding RamChartAreaPoints}" Fill="{DynamicResource SuccessBrush}" Opacity="0.12" />
+                                            <Polygon Points="{Binding GpuChartAreaPoints}" Fill="{DynamicResource CyanAccentBrush}" Opacity="0.12" />
+
+                                            <!-- Crisp Smooth Curves (padded so 0% is always cleanly visible above bottom edge) -->
+                                            <Polyline Points="{Binding CpuChartPoints}" Stroke="{DynamicResource AccentBrush}" StrokeThickness="2.2" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+                                            <Polyline Points="{Binding RamChartPoints}" Stroke="{DynamicResource SuccessBrush}" StrokeThickness="2" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+                                            <Polyline Points="{Binding GpuChartPoints}" Stroke="{DynamicResource CyanAccentBrush}" StrokeThickness="1.8" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
                                             <Border Visibility="{Binding IsCollectingData, Converter={StaticResource BoolToVis}}"
                                                     HorizontalAlignment="Center" VerticalAlignment="Center">
                                                 <StackPanel Orientation="Horizontal">
@@ -791,7 +802,7 @@
                                 <StackPanel>
                                     <TextBlock Text="СЕТЬ RX / TX" FontSize="9.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" />
                                     <TextBlock Text="{Binding NetworkRateDisplay}" FontFamily="{StaticResource FontMono}" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource SuccessBrush}" Margin="0,4,0,2" TextTrimming="CharacterEllipsis" />
-                                    <TextBlock Text="{Binding PingStatus, StringFormat='Шлюз/пинги: {0}'}" FontSize="10" Foreground="{DynamicResource TextSecondary}" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Text="{Binding PingDisplay, StringFormat='Пинг: {0}'}" FontSize="10" Foreground="{DynamicResource TextSecondary}" TextTrimming="CharacterEllipsis" />
                                 </StackPanel>
                             </Border>
 

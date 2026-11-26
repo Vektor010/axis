@@ -100,6 +100,39 @@ namespace WinTweaker.Engine
                         entry.Timestamp = DateTime.Now;
                         entry.Level = "INFO";
                         entry.Message = line;
+
+                        // Разбираем формат [yyyy-MM-dd HH:mm:ss] [LEVEL] [optionalId] Message
+                        if (line.Length >= 21 && line[0] == '[' && line[20] == ']')
+                        {
+                            DateTime parsedTs;
+                            if (DateTime.TryParseExact(line.Substring(1, 19), "yyyy-MM-dd HH:mm:ss",
+                                System.Globalization.CultureInfo.InvariantCulture,
+                                System.Globalization.DateTimeStyles.None, out parsedTs))
+                            {
+                                entry.Timestamp = parsedTs;
+                                string rest = line.Substring(21).TrimStart();
+                                if (rest.StartsWith("["))
+                                {
+                                    int lvlEnd = rest.IndexOf(']');
+                                    if (lvlEnd > 1)
+                                    {
+                                        entry.Level = rest.Substring(1, lvlEnd - 1);
+                                        rest = rest.Substring(lvlEnd + 1).TrimStart();
+                                        if (rest.StartsWith("["))
+                                        {
+                                            int idEnd = rest.IndexOf(']');
+                                            if (idEnd > 1)
+                                            {
+                                                entry.TweakId = rest.Substring(1, idEnd - 1);
+                                                rest = rest.Substring(idEnd + 1).TrimStart();
+                                            }
+                                        }
+                                        entry.Message = rest;
+                                    }
+                                }
+                            }
+                        }
+
                         this._entries.Add(entry);
                     }
                 }

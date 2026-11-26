@@ -136,6 +136,7 @@ namespace WinTweaker.ViewModels
         private readonly List<double> _ramHistory;
         private readonly List<double> _gpuHistory;
         private readonly List<double> _pingHistory;
+        private readonly List<double> _tempHistory;
 
         // Metric Card properties
         private string _cpuDisplay;
@@ -163,6 +164,9 @@ namespace WinTweaker.ViewModels
         private PointCollection _cpuChartPoints;
         private PointCollection _ramChartPoints;
         private PointCollection _gpuChartPoints;
+        private PointCollection _cpuChartAreaPoints;
+        private PointCollection _ramChartAreaPoints;
+        private PointCollection _gpuChartAreaPoints;
 
         // Extended Real Hardware Telemetry (CPU Temp, GPU Load, Disk, Net, Uptime, Processes)
         private string _cpuTempDisplay;
@@ -463,7 +467,7 @@ namespace WinTweaker.ViewModels
 
         public bool HasAtLeast5Points
         {
-            get { return this._cpuHistory != null && this._cpuHistory.Count >= 5; }
+            get { return this._cpuHistory != null && this._cpuHistory.Count >= 2; }
         }
 
         public bool IsClearTypeRendering
@@ -545,13 +549,13 @@ namespace WinTweaker.ViewModels
 
         public bool IsPolling1Sec
         {
-            get { return this._settingsManager != null && this._settingsManager.Settings.PollingIntervalSeconds == 1; }
+            get { return this._settingsManager == null || this._settingsManager.Settings.PollingIntervalSeconds == 1 || this._settingsManager.Settings.PollingIntervalSeconds == 0; }
             set { if (value) this.SetPollingInterval(1); }
         }
 
         public bool IsPolling2Sec
         {
-            get { return this._settingsManager == null || this._settingsManager.Settings.PollingIntervalSeconds == 2 || this._settingsManager.Settings.PollingIntervalSeconds == 0; }
+            get { return this._settingsManager != null && this._settingsManager.Settings.PollingIntervalSeconds == 2; }
             set { if (value) this.SetPollingInterval(2); }
         }
 
@@ -629,9 +633,9 @@ namespace WinTweaker.ViewModels
         {
             get { return this.RevertableCount > 0 ? string.Format("Откатить все ({0})", this.RevertableCount) : "Откатить все"; }
         }
-        public string AppVersionDisplay { get { return "v3.2.3 • 2026"; } }
+        public string AppVersionDisplay { get { return "v3.3.0 • 2026"; } }
         public string DatabaseStatsDisplay { get { return string.Format("{0} твиков • 12 категорий", this.TotalTweaksCount); } }
-        public string EngineSummaryFooterText { get { return string.Format("AXIS Engine v3.2.3 • {0} твиков, изолированные снимки state.json и прямой WinAPI без внешних зависимостей.", this.TotalTweaksCount); } }
+        public string EngineSummaryFooterText { get { return string.Format("AXIS Engine v3.3 • {0} твиков, изолированные снимки state.json и прямой WinAPI без внешних зависимостей.", this.TotalTweaksCount); } }
 
         public bool CanApplyRecommended
         {
@@ -866,6 +870,24 @@ namespace WinTweaker.ViewModels
             set { this._gpuChartPoints = value; this.OnPropertyChanged("GpuChartPoints"); }
         }
 
+        public PointCollection CpuChartAreaPoints
+        {
+            get { return this._cpuChartAreaPoints; }
+            set { this._cpuChartAreaPoints = value; this.OnPropertyChanged("CpuChartAreaPoints"); }
+        }
+
+        public PointCollection RamChartAreaPoints
+        {
+            get { return this._ramChartAreaPoints; }
+            set { this._ramChartAreaPoints = value; this.OnPropertyChanged("RamChartAreaPoints"); }
+        }
+
+        public PointCollection GpuChartAreaPoints
+        {
+            get { return this._gpuChartAreaPoints; }
+            set { this._gpuChartAreaPoints = value; this.OnPropertyChanged("GpuChartAreaPoints"); }
+        }
+
         public string CpuTempDisplay
         {
             get { return this._cpuTempDisplay; }
@@ -983,7 +1005,11 @@ namespace WinTweaker.ViewModels
 
         public string JournalCountDisplay
         {
-            get { return string.Format("{0} записей", this._journalEntries.Count); }
+            get
+            {
+                int cnt = this._journalManager != null ? this._journalManager.Entries.Count : this._journalEntries.Count;
+                return string.Format("{0} записей", cnt);
+            }
         }
 
         // Game Mode & WNF Properties (Noverse gm_effects)
@@ -1192,6 +1218,7 @@ namespace WinTweaker.ViewModels
             this._ramHistory = new List<double>();
             this._gpuHistory = new List<double>();
             this._pingHistory = new List<double>();
+            this._tempHistory = new List<double>();
 
             this._cpuTempDisplay = "Опрос...";
             this._gpuLoadDisplay = "Опрос...";
@@ -1240,10 +1267,10 @@ namespace WinTweaker.ViewModels
             this.UpdateRecentJournal();
             this.RefreshHistory();
 
-            // Setup live update timer with configurable polling interval
+            // Setup live update timer with configurable polling interval (default 1s responsive live graph)
             this._liveTimer = new DispatcherTimer();
-            int pollSec = (this._settingsManager != null && this._settingsManager.Settings != null) ? this._settingsManager.Settings.PollingIntervalSeconds : 2;
-            if (pollSec == 0) pollSec = 2;
+            int pollSec = (this._settingsManager != null && this._settingsManager.Settings != null) ? this._settingsManager.Settings.PollingIntervalSeconds : 1;
+            if (pollSec == 0) pollSec = 1;
             if (pollSec > 0)
             {
                 this._liveTimer.Interval = TimeSpan.FromSeconds(pollSec);
@@ -1252,7 +1279,7 @@ namespace WinTweaker.ViewModels
             }
             else
             {
-                this._liveTimer.Interval = TimeSpan.FromSeconds(2);
+                this._liveTimer.Interval = TimeSpan.FromSeconds(1);
                 this._liveTimer.Tick += this.OnLiveTimerTick;
             }
 
@@ -1328,10 +1355,11 @@ namespace WinTweaker.ViewModels
 
         private void InitializeNavItems()
         {
+            int jCount = this._journalManager != null ? this._journalManager.Entries.Count : this._journalEntries.Count;
             this._navItems.Clear();
             this._navItems.Add(new NavigationItemViewModel("overview", "Обзор", "\uE80F"));
             this._navItems.Add(new NavigationItemViewModel("tweaks", "Твики", "\uE74C", 0));
-            this._navItems.Add(new NavigationItemViewModel("journal", "Журнал", "\uE7C3", this._journalEntries.Count));
+            this._navItems.Add(new NavigationItemViewModel("journal", "Журнал", "\uE7C3", jCount));
             this._navItems.Add(new NavigationItemViewModel("history", "История", "\uE81C", this._historyItems.Count));
             this._navItems.Add(new NavigationItemViewModel("settings", "Настройки", "\uE713"));
             this._navItems.Add(new NavigationItemViewModel("about", "О программе", "\uE946"));
@@ -1566,18 +1594,26 @@ namespace WinTweaker.ViewModels
             }
 
             string host = this._pingCustomHost;
+            bool needTwoPoints = (this._cpuHistory.Count == 0 && this._isRealMode);
             Task.Run(() =>
             {
                 try
                 {
                     if (this._isDisposed) return;
                     SystemMetrics m = this._systemInfoService.CollectLiveMetrics(host);
+                    SystemMetrics m2 = null;
+                    if (needTwoPoints && !this._isDisposed)
+                    {
+                        System.Threading.Thread.Sleep(180);
+                        if (!this._isDisposed) m2 = this._systemInfoService.CollectLiveMetrics(host);
+                    }
                     if (this._isDisposed || Application.Current == null) return;
                     Application.Current.Dispatcher.BeginInvoke(new Action(() =>
                     {
                         if (!this._isDisposed)
                         {
                             this.UpdateLiveMetricsUI(m);
+                            if (m2 != null) this.UpdateLiveMetricsUI(m2);
                         }
                     }));
                 }
@@ -1620,6 +1656,15 @@ namespace WinTweaker.ViewModels
             this.TempStatus = m.IsGpuLoadAvailable
                 ? string.Format("{0} • Нагрузка: {1}", m.TempStatus, m.GpuLoadDisplay)
                 : m.TempStatus;
+            double tempVal = 0.0;
+            if (!string.IsNullOrEmpty(m.TempDisplay) && m.TempDisplay != "Нет данных")
+            {
+                string digits = m.TempDisplay.Replace("°C", "").Trim();
+                double.TryParse(digits, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out tempVal);
+            }
+            this._tempHistory.Add(tempVal);
+            if (this._tempHistory.Count > 60) this._tempHistory.RemoveAt(0);
+            this.TempSparkline = this.CreateSparklinePoints(this._tempHistory);
             this.CpuTempDisplay = m.CpuTempDisplay;
             this.GpuLoadPercent = m.GpuLoadPercent;
             this.GpuLoadDisplay = m.GpuLoadDisplay;
@@ -1642,7 +1687,10 @@ namespace WinTweaker.ViewModels
             this.CpuChartPoints = this.CreateChartPoints(this._cpuHistory);
             this.RamChartPoints = this.CreateChartPoints(this._ramHistory);
             this.GpuChartPoints = this.CreateChartPoints(this._gpuHistory);
-            this.IsCollectingData = this._cpuHistory.Count < 3;
+            this.CpuChartAreaPoints = this.CreateChartAreaPoints(this._cpuHistory);
+            this.RamChartAreaPoints = this.CreateChartAreaPoints(this._ramHistory);
+            this.GpuChartAreaPoints = this.CreateChartAreaPoints(this._gpuHistory);
+            this.IsCollectingData = this._cpuHistory.Count < 2;
             this.OnPropertyChanged("HasAtLeast5Points");
             this.OnPropertyChanged("IsCollectingData");
 
@@ -1659,14 +1707,16 @@ namespace WinTweaker.ViewModels
             PointCollection pts = new PointCollection();
             double w = 90.0;
             double h = 26.0;
+            double padY = 3.0;
+            double usableH = h - padY * 2.0;
             int count = history.Count;
-            if (count < 5) return pts;
+            if (count < 2) return pts;
 
             for (int i = 0; i < count; i++)
             {
                 double x = i * (w / (count - 1));
                 double val = Math.Max(0.0, Math.Min(100.0, history[i]));
-                double y = h - (val / 100.0 * h);
+                double y = (h - padY) - (val / 100.0 * usableH);
                 pts.Add(new Point(x, y));
             }
             return pts;
@@ -1676,18 +1726,33 @@ namespace WinTweaker.ViewModels
         {
             PointCollection pts = new PointCollection();
             double w = this._chartWidth > 50 ? this._chartWidth : 480.0;
-            double h = 130.0;
+            double h = 118.0;
+            double padY = 5.0;
+            double usableH = Math.Max(10.0, h - padY * 2.0);
             int count = history.Count;
-            if (count < 5) return pts;
+            if (count < 2) return pts;
 
             for (int i = 0; i < count; i++)
             {
                 double x = i * (w / (count - 1));
                 double val = Math.Max(0.0, Math.Min(100.0, history[i]));
-                double y = h - (val / 100.0 * h);
+                double y = (h - padY) - (val / 100.0 * usableH);
                 pts.Add(new Point(x, y));
             }
             return pts;
+        }
+
+        private PointCollection CreateChartAreaPoints(List<double> history)
+        {
+            PointCollection pts = this.CreateChartPoints(history);
+            if (pts.Count < 2) return new PointCollection();
+            double w = this._chartWidth > 50 ? this._chartWidth : 480.0;
+            double baselineY = 113.0;
+            PointCollection area = new PointCollection(pts.Count + 2);
+            area.Add(new Point(0.0, baselineY));
+            for (int i = 0; i < pts.Count; i++) area.Add(pts[i]);
+            area.Add(new Point(w, baselineY));
+            return area;
         }
 
         private PointCollection CreateFlatSparkline()
@@ -2014,10 +2079,14 @@ namespace WinTweaker.ViewModels
         public void SetChartDimensions(double width, double height)
         {
             this._chartWidth = width;
-            if (this._cpuHistory.Count >= 5)
+            if (this._cpuHistory.Count >= 2)
             {
                 this.CpuChartPoints = this.CreateChartPoints(this._cpuHistory);
                 this.RamChartPoints = this.CreateChartPoints(this._ramHistory);
+                this.GpuChartPoints = this.CreateChartPoints(this._gpuHistory);
+                this.CpuChartAreaPoints = this.CreateChartAreaPoints(this._cpuHistory);
+                this.RamChartAreaPoints = this.CreateChartAreaPoints(this._ramHistory);
+                this.GpuChartAreaPoints = this.CreateChartAreaPoints(this._gpuHistory);
             }
         }
 
@@ -2050,14 +2119,21 @@ namespace WinTweaker.ViewModels
             {
                 this._cpuHistory.Add(cpuSamples[i]);
                 this._ramHistory.Add(ramSamples[i]);
+                this._gpuHistory.Add(10.0 + (i % 6) * 2.0);
                 this._pingHistory.Add(1.2 + (i % 3) * 0.4);
+                this._tempHistory.Add(48.0 + (i % 4));
             }
 
             this.CpuChartPoints = this.CreateChartPoints(this._cpuHistory);
             this.RamChartPoints = this.CreateChartPoints(this._ramHistory);
+            this.GpuChartPoints = this.CreateChartPoints(this._gpuHistory);
+            this.CpuChartAreaPoints = this.CreateChartAreaPoints(this._cpuHistory);
+            this.RamChartAreaPoints = this.CreateChartAreaPoints(this._ramHistory);
+            this.GpuChartAreaPoints = this.CreateChartAreaPoints(this._gpuHistory);
             this.CpuSparkline = this.CreateSparklinePoints(this._cpuHistory);
             this.RamSparkline = this.CreateSparklinePoints(this._ramHistory);
             this.PingSparkline = this.CreateSparklinePoints(this._pingHistory);
+            this.TempSparkline = this.CreateSparklinePoints(this._tempHistory);
             this.IsCollectingData = false;
             this.OnPropertyChanged("HasAtLeast5Points");
             this.OnPropertyChanged("IsCollectingData");

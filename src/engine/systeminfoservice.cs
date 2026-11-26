@@ -118,6 +118,12 @@ namespace WinTweaker.Engine
         private long _prevNetBytesTx;
         private DateTime _prevNetSampleUtc = DateTime.MinValue;
 
+        private string _cachedGateway = null;
+        private DateTime _gatewayCacheUtc = DateTime.MinValue;
+        private long _cachedPingMs = -1;
+        private string _cachedPingDisplay = "Нет данных";
+        private DateTime _pingCacheUtc = DateTime.MinValue;
+
         private bool _cpuTempProbed = false;
         private bool _cpuTempSupported = false;
         private PerformanceCounter _diskCounter = null;
@@ -398,6 +404,39 @@ namespace WinTweaker.Engine
         {
             SystemMetrics m = new SystemMetrics();
 
+            // Если нет предыдущего замера ЦП или сети (первый кадр / возврат на вкладку), делаем быстрый двойной сэмпл 160 мс на фоне
+            bool needWarmup = !this._hasPrevTimes ||
+                              this._prevNetSampleUtc == DateTime.MinValue ||
+                              (DateTime.UtcNow - this._prevNetSampleUtc).TotalSeconds > 5.0;
+            if (needWarmup)
+            {
+                long wIdle, wKernel, wUser;
+                if (!this._hasPrevTimes && GetSystemTimes(out wIdle, out wKernel, out wUser))
+                {
+                    this._prevIdleTime = wIdle;
+                    this._prevKernelTime = wKernel;
+                    this._prevUserTime = wUser;
+                    this._hasPrevTimes = true;
+                }
+                long wRx, wTx;
+                if (TrySumActiveNetworkBytes(out wRx, out wTx))
+                {
+                    this._prevNetBytesRx = wRx;
+                    this._prevNetBytesTx = wTx;
+                    this._prevNetSampleUtc = DateTime.UtcNow;
+                }
+                if (this._diskCounter == null && !this._diskCounterFailed)
+                {
+                    try
+                    {
+                        this._diskCounter = new PerformanceCounter("PhysicalDisk", "% Disk Time", "_Total", true);
+                        this._diskCounter.NextValue();
+                    }
+                    catch { this._diskCounterFailed = true; }
+                }
+                System.Threading.Thread.Sleep(160);
+            }
+
             // 1. Нагрузка ЦП через GetSystemTimes
             try
             {
@@ -441,57 +480,63 @@ namespace WinTweaker.Engine
             }
             catch { }
 
-            // 3. Задержка Ping
+            // 3. Задержка Ping (кэшируется на 3 сек с таймаутом 400 мс, чтобы не тормозить секундный график)
             string hostToPing = customPingHost;
             bool isAutoGateway = false;
             if (string.IsNullOrEmpty(hostToPing))
             {
-                hostToPing = this.GetDefaultGatewayAddress();
+                if (this._cachedGateway == null || (DateTime.UtcNow - this._gatewayCacheUtc).TotalSeconds > 30.0)
+                {
+                    this._cachedGateway = this.GetDefaultGatewayAddress();
+                    this._gatewayCacheUtc = DateTime.UtcNow;
+                }
+                hostToPing = this._cachedGateway;
                 isAutoGateway = true;
             }
 
-            if (!string.IsNullOrEmpty(hostToPing) && hostToPing != "Нет данных")
+            if ((DateTime.UtcNow - this._pingCacheUtc).TotalSeconds >= 2.8)
             {
-                try
+                if (!string.IsNullOrEmpty(hostToPing) && hostToPing != "Нет данных")
                 {
-                    using (Ping pinger = new Ping())
+                    try
                     {
-                        PingReply reply = null;
-                        try { reply = pinger.Send(hostToPing, 1000); } catch { }
-
-                        if ((reply == null || reply.Status != IPStatus.Success) && isAutoGateway)
+                        using (Ping pinger = new Ping())
                         {
-                            // Fallback to fast public DNS resolver if gateway drops ICMP
-                            try { reply = pinger.Send("1.1.1.1", 800); } catch { }
-                            if (reply == null || reply.Status != IPStatus.Success)
+                            PingReply reply = null;
+                            try { reply = pinger.Send(hostToPing, 400); } catch { }
+
+                            if ((reply == null || reply.Status != IPStatus.Success) && isAutoGateway)
                             {
-                                try { reply = pinger.Send("8.8.8.8", 800); } catch { }
+                                try { reply = pinger.Send("1.1.1.1", 400); } catch { }
+                            }
+
+                            if (reply != null && reply.Status == IPStatus.Success)
+                            {
+                                this._cachedPingMs = reply.RoundtripTime;
+                                this._cachedPingDisplay = reply.RoundtripTime == 0 ? "< 1 мс" : string.Format("{0} мс", reply.RoundtripTime);
+                            }
+                            else
+                            {
+                                this._cachedPingMs = -1;
+                                this._cachedPingDisplay = "Нет данных";
                             }
                         }
-
-                        if (reply != null && reply.Status == IPStatus.Success)
-                        {
-                            m.PingMs = reply.RoundtripTime;
-                            m.PingDisplay = reply.RoundtripTime == 0 ? "< 1 мс" : string.Format("{0} мс", reply.RoundtripTime);
-                        }
-                        else
-                        {
-                            m.PingMs = -1;
-                            m.PingDisplay = "Нет данных";
-                        }
+                    }
+                    catch
+                    {
+                        this._cachedPingMs = -1;
+                        this._cachedPingDisplay = "Нет данных";
                     }
                 }
-                catch
+                else
                 {
-                    m.PingMs = -1;
-                    m.PingDisplay = "Нет данных";
+                    this._cachedPingMs = -1;
+                    this._cachedPingDisplay = "Нет данных";
                 }
+                this._pingCacheUtc = DateTime.UtcNow;
             }
-            else
-            {
-                m.PingMs = -1;
-                m.PingDisplay = "Нет данных";
-            }
+            m.PingMs = this._cachedPingMs;
+            m.PingDisplay = this._cachedPingDisplay;
 
             // 4. Температура GPU и загрузка GPU через NVML (если установлен драйвер NVIDIA)
             try
@@ -648,30 +693,69 @@ namespace WinTweaker.Engine
             return "Нет данных";
         }
 
-        private void QueryNetworkThroughput(SystemMetrics metrics)
+        private static bool TrySumActiveNetworkBytes(out long totalRx, out long totalTx)
         {
+            totalRx = 0;
+            totalTx = 0;
+            bool anyOk = false;
             try
             {
-                long totalRx = 0;
-                long totalTx = 0;
                 NetworkInterface[] ifaces = NetworkInterface.GetAllNetworkInterfaces();
                 for (int i = 0; i < ifaces.Length; i++)
                 {
                     NetworkInterface ni = ifaces[i];
-                    if (ni.OperationalStatus == OperationalStatus.Up &&
-                        ni.NetworkInterfaceType != NetworkInterfaceType.Loopback)
+                    if (ni.OperationalStatus != OperationalStatus.Up ||
+                        ni.NetworkInterfaceType == NetworkInterfaceType.Loopback ||
+                        ni.NetworkInterfaceType == NetworkInterfaceType.Tunnel)
                     {
-                        IPv4InterfaceStatistics stats = ni.GetIPv4Statistics();
-                        totalRx += stats.BytesReceived;
-                        totalTx += stats.BytesSent;
+                        continue;
                     }
+                    try
+                    {
+                        IPInterfaceStatistics stats = ni.GetIPStatistics();
+                        if (stats != null)
+                        {
+                            totalRx += stats.BytesReceived;
+                            totalTx += stats.BytesSent;
+                            anyOk = true;
+                        }
+                    }
+                    catch
+                    {
+                        try
+                        {
+                            IPv4InterfaceStatistics v4 = ni.GetIPv4Statistics();
+                            if (v4 != null)
+                            {
+                                totalRx += v4.BytesReceived;
+                                totalTx += v4.BytesSent;
+                                anyOk = true;
+                            }
+                        }
+                        catch { }
+                    }
+                }
+            }
+            catch { }
+            return anyOk;
+        }
+
+        private void QueryNetworkThroughput(SystemMetrics metrics)
+        {
+            try
+            {
+                long totalRx, totalTx;
+                if (!TrySumActiveNetworkBytes(out totalRx, out totalTx))
+                {
+                    metrics.NetworkRateDisplay = "Недоступно";
+                    return;
                 }
 
                 DateTime now = DateTime.UtcNow;
                 if (this._prevNetSampleUtc != DateTime.MinValue)
                 {
                     double sec = (now - this._prevNetSampleUtc).TotalSeconds;
-                    if (sec >= 0.25)
+                    if (sec >= 0.1 && sec <= 10.0)
                     {
                         double rxKb = Math.Max(0.0, (totalRx - this._prevNetBytesRx) / 1024.0 / sec);
                         double txKb = Math.Max(0.0, (totalTx - this._prevNetBytesTx) / 1024.0 / sec);
