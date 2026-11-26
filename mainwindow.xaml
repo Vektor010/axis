@@ -845,7 +845,7 @@
                             </Border>
                         </Grid>
 
-                        <!-- 2.22 Secondary Live Sensors Row (Disk I/O / Network Throughput / Ping Latency / Uptime — No Repeats) -->
+                        <!-- 2.22 Secondary Live Sensors Row (Uniform 3-Row Grid + Unified FontDisplay 15pt) -->
                         <Grid Margin="0,0,0,10">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
@@ -854,43 +854,63 @@
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
 
-                            <Border Grid.Column="0" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="10" Padding="12,9" Margin="0,0,6,0">
-                                <StackPanel>
-                                    <TextBlock Text="ДИСКИ (АКТИВНОСТЬ I/O)" FontSize="9.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" />
-                                    <TextBlock Text="{Binding DiskActivityDisplay}" FontFamily="{StaticResource FontDisplay}" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" Margin="0,3,0,1" />
-                                    <TextBlock Text="{Binding DiskSpaceDisplay}" ToolTip="{Binding DiskSpaceDisplay}" FontSize="10" Foreground="{DynamicResource TextSecondary}" TextTrimming="CharacterEllipsis" />
-                                </StackPanel>
+                            <Border Grid.Column="0" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="10" Padding="12,9" Margin="0,0,6,0" VerticalAlignment="Stretch">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="14" />
+                                        <RowDefinition Height="24" />
+                                        <RowDefinition Height="15" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0" Text="ДИСКИ (АКТИВНОСТЬ I/O)" FontSize="9.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Row="1" Text="{Binding DiskActivityDisplay}" FontFamily="{StaticResource FontDisplay}" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Row="2" Text="{Binding DiskSpaceDisplay}" ToolTip="{Binding DiskSpaceDisplay}" FontSize="10" Foreground="{DynamicResource TextSecondary}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                </Grid>
                             </Border>
 
-                            <Border Grid.Column="1" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="10" Padding="12,9" Margin="6,0,6,0">
-                                <StackPanel>
-                                    <TextBlock Text="СЕТЬ RX / TX" FontSize="9.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" />
-                                    <TextBlock Text="{Binding NetworkRateDisplay}" FontFamily="{StaticResource FontMono}" FontSize="12.5" FontWeight="SemiBold" Foreground="{DynamicResource SuccessBrush}" Margin="0,4,0,2" TextTrimming="CharacterEllipsis" />
-                                    <TextBlock Text="{Binding NetworkDetailDisplay}" ToolTip="{Binding NetworkDetailDisplay}" FontSize="10" Foreground="{DynamicResource TextSecondary}" TextTrimming="CharacterEllipsis" />
-                                </StackPanel>
+                            <Border Grid.Column="1" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="10" Padding="12,9" Margin="6,0,6,0" VerticalAlignment="Stretch">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="14" />
+                                        <RowDefinition Height="24" />
+                                        <RowDefinition Height="15" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0" Text="СЕТЬ RX / TX" FontSize="9.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Row="1" Text="{Binding NetworkRateDisplay}" FontFamily="{StaticResource FontDisplay}" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource SuccessBrush}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Grid.Row="2" Text="{Binding NetworkDetailDisplay}" ToolTip="{Binding NetworkDetailDisplay}" FontSize="10" Foreground="{DynamicResource TextSecondary}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                </Grid>
                             </Border>
 
-                            <Border Grid.Column="2" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="10" Padding="12,9" Margin="6,0,6,0">
-                                <StackPanel>
-                                    <TextBlock Text="ЗАДЕРЖКА ПИНГА" FontSize="9.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" />
-                                    <Grid Margin="0,3,0,1">
+                            <Border Grid.Column="2" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="10" Padding="12,9" Margin="6,0,6,0" VerticalAlignment="Stretch">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="14" />
+                                        <RowDefinition Height="24" />
+                                        <RowDefinition Height="15" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0" Text="ЗАДЕРЖКА ПИНГА" FontSize="9.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
+                                    <Grid Grid.Row="1">
                                         <TextBlock Text="{Binding PingDisplay}" FontFamily="{StaticResource FontDisplay}" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource SuccessBrush}" VerticalAlignment="Center" />
-                                        <Polyline Points="{Binding PingSparkline}" Stroke="{DynamicResource SuccessBrush}" StrokeThickness="1.6" HorizontalAlignment="Right" VerticalAlignment="Center" Width="70" Height="20" />
+                                        <Polyline Points="{Binding PingSparkline}" Stroke="{DynamicResource SuccessBrush}" StrokeThickness="1.6" HorizontalAlignment="Right" VerticalAlignment="Center" Width="70" Height="18" />
                                     </Grid>
-                                    <TextBlock Text="{Binding PingStatus}" FontSize="10" Foreground="{DynamicResource TextSecondary}" TextTrimming="CharacterEllipsis" />
-                                </StackPanel>
+                                    <TextBlock Grid.Row="2" Text="{Binding PingStatus}" FontSize="10" Foreground="{DynamicResource TextSecondary}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                </Grid>
                             </Border>
 
-                            <Border Grid.Column="3" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="10" Padding="12,9" Margin="6,0,0,0">
-                                <StackPanel>
-                                    <TextBlock Text="АПТАЙМ / ПРОЦЕССЫ" FontSize="9.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" />
-                                    <TextBlock Text="{Binding UptimeDisplay}" FontFamily="{StaticResource FontMono}" FontSize="14.5" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" Margin="0,3,0,1" />
-                                    <TextBlock Text="{Binding ProcessCountDisplay, StringFormat='Процессов: {0}'}" FontSize="10" Foreground="{DynamicResource TextSecondary}" />
-                                </StackPanel>
+                            <Border Grid.Column="3" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="10" Padding="12,9" Margin="6,0,0,0" VerticalAlignment="Stretch">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="14" />
+                                        <RowDefinition Height="24" />
+                                        <RowDefinition Height="15" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0" Text="АПТАЙМ / ПРОЦЕССЫ" FontSize="9.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Row="1" Text="{Binding UptimeDisplay}" FontFamily="{StaticResource FontDisplay}" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Row="2" Text="{Binding ProcessCountDisplay, StringFormat='Процессов: {0}'}" FontSize="10" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
+                                </Grid>
                             </Border>
                         </Grid>
 
-                        <!-- 2.25 Native Kernel Subsystems Bento Row (WDDM HAGS / Flip Queue / MMCSS / WNF Game Mode) -->
+                        <!-- 2.25 Native Kernel Subsystems Bento Row (Uniform 3-Row Grid + Equal Height) -->
                         <Grid Margin="0,0,0,10">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
@@ -899,40 +919,60 @@
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
 
-                            <Border Grid.Column="0" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="10" Padding="12,8" Margin="0,0,6,0">
-                                <StackPanel>
-                                    <TextBlock Text="GPU HAGS (WDDM 2.9)" FontSize="9.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" />
-                                    <TextBlock Text="{Binding HagsStatusText}" FontFamily="{StaticResource FontDisplay}" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource CyanAccentBrush}" Margin="0,4,0,1" TextTrimming="CharacterEllipsis" />
-                                    <TextBlock Text="Аппаратное планирование" FontSize="10" Foreground="{DynamicResource TextSecondary}" />
-                                </StackPanel>
+                            <Border Grid.Column="0" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="10" Padding="12,8" Margin="0,0,6,0" VerticalAlignment="Stretch">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="14" />
+                                        <RowDefinition Height="22" />
+                                        <RowDefinition Height="15" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0" Text="GPU HAGS (WDDM 2.9)" FontSize="9.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Row="1" Text="{Binding HagsStatusText}" FontFamily="{StaticResource FontDisplay}" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource CyanAccentBrush}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Grid.Row="2" Text="Аппаратное планирование" FontSize="10" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
+                                </Grid>
                             </Border>
 
-                            <Border Grid.Column="1" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="10" Padding="12,8" Margin="6,0,6,0">
-                                <StackPanel>
-                                    <TextBlock Text="FLIP QUEUE (WDDM 3.0)" FontSize="9.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" />
-                                    <TextBlock Text="{Binding FlipQueueStatusText}" FontFamily="{StaticResource FontDisplay}" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" Margin="0,4,0,1" TextTrimming="CharacterEllipsis" />
-                                    <TextBlock Text="Аппаратная очередь кадров" FontSize="10" Foreground="{DynamicResource TextSecondary}" />
-                                </StackPanel>
+                            <Border Grid.Column="1" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="10" Padding="12,8" Margin="6,0,6,0" VerticalAlignment="Stretch">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="14" />
+                                        <RowDefinition Height="22" />
+                                        <RowDefinition Height="15" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0" Text="FLIP QUEUE (WDDM 3.0)" FontSize="9.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Row="1" Text="{Binding FlipQueueStatusText}" FontFamily="{StaticResource FontDisplay}" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Grid.Row="2" Text="Аппаратная очередь кадров" FontSize="10" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
+                                </Grid>
                             </Border>
 
-                            <Border Grid.Column="2" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="10" Padding="12,8" Margin="6,0,6,0">
-                                <StackPanel>
-                                    <TextBlock Text="MMCSS • ПЛАНИРОВЩИК" FontSize="9.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" />
-                                    <StackPanel Orientation="Horizontal" Margin="0,4,0,1">
-                                        <TextBlock Text="{Binding MmcssRespText}" FontFamily="{StaticResource FontDisplay}" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" />
+                            <Border Grid.Column="2" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="10" Padding="12,8" Margin="6,0,6,0" VerticalAlignment="Stretch">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="14" />
+                                        <RowDefinition Height="22" />
+                                        <RowDefinition Height="15" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0" Text="MMCSS • ПЛАНИРОВЩИК" FontSize="9.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
+                                    <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding MmcssRespText}" FontFamily="{StaticResource FontDisplay}" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center" />
                                         <TextBlock Text=" • " FontSize="12" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
                                         <TextBlock Text="{Binding MmcssTasksText}" FontSize="11.5" FontWeight="Medium" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
                                     </StackPanel>
-                                    <TextBlock Text="{Binding MmcssThrottlingText}" ToolTip="{Binding MmcssThrottlingText}" FontSize="10" Foreground="{DynamicResource TextSecondary}" TextTrimming="CharacterEllipsis" />
-                                </StackPanel>
+                                    <TextBlock Grid.Row="2" Text="{Binding MmcssThrottlingText}" ToolTip="{Binding MmcssThrottlingText}" FontSize="10" Foreground="{DynamicResource TextSecondary}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                </Grid>
                             </Border>
 
-                            <Border Grid.Column="3" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="10" Padding="12,8" Margin="6,0,0,0">
-                                <StackPanel>
-                                    <TextBlock Text="GAME MODE (WNF)" FontSize="9.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" />
-                                    <TextBlock Text="{Binding GameModeShortStatus}" ToolTip="{Binding GameModeStatusSummary}" FontFamily="{StaticResource FontDisplay}" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource SuccessBrush}" Margin="0,4,0,1" TextTrimming="CharacterEllipsis" />
-                                    <TextBlock Text="{Binding GameModePowerProfileDisplay, StringFormat='Профиль WNF: {0}'}" FontSize="10" Foreground="{DynamicResource TextSecondary}" />
-                                </StackPanel>
+                            <Border Grid.Column="3" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="10" Padding="12,8" Margin="6,0,0,0" VerticalAlignment="Stretch">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="14" />
+                                        <RowDefinition Height="22" />
+                                        <RowDefinition Height="15" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0" Text="GAME MODE (WNF)" FontSize="9.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Row="1" Text="{Binding GameModeShortStatus}" ToolTip="{Binding GameModeStatusSummary}" FontFamily="{StaticResource FontDisplay}" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource SuccessBrush}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Grid.Row="2" Text="{Binding GameModePowerProfileDisplay, StringFormat='Профиль WNF: {0}'}" FontSize="10" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
+                                </Grid>
                             </Border>
                         </Grid>
 
