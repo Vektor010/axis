@@ -579,71 +579,91 @@
                             </Grid.ColumnDefinitions>
 
                             <!-- Metric 1: ПРОЦЕССОР (ЦП) -->
-                            <Border Grid.Column="0" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="12" Padding="14,12" Margin="0,0,6,0">
-                                <StackPanel>
-                                    <Grid>
+                            <Border Grid.Column="0" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="12" Padding="14,12" Margin="0,0,6,0" VerticalAlignment="Stretch">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="20" />
+                                        <RowDefinition Height="38" />
+                                        <RowDefinition Height="16" />
+                                    </Grid.RowDefinitions>
+                                    <Grid Grid.Row="0">
                                         <TextBlock Text="ПРОЦЕССОР (ЦП)" FontSize="10.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
-                                        <Border Width="22" Height="22" CornerRadius="6" Background="{DynamicResource AccentFill}" HorizontalAlignment="Right">
-                                            <TextBlock Text="&#xE950;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="11" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        <Border Width="20" Height="20" CornerRadius="6" Background="{DynamicResource AccentFill}" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                            <TextBlock Text="&#xE950;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="10.5" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                         </Border>
                                     </Grid>
-                                    <Grid Margin="0,6,0,6">
-                                        <TextBlock Text="{Binding CpuDisplay}" FontFamily="{StaticResource FontDisplay}" FontSize="25" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center" />
-                                        <Polyline Points="{Binding CpuSparkline}" Stroke="{DynamicResource AccentBrush}" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Center" Width="84" Height="26" />
+                                    <Grid Grid.Row="1" Margin="0,2,0,0">
+                                        <TextBlock Text="{Binding CpuDisplay}" FontFamily="{StaticResource FontDisplay}" FontSize="24" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center" />
+                                        <Polyline Points="{Binding CpuSparkline}" Stroke="{DynamicResource AccentBrush}" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Center" Width="80" Height="26" />
                                     </Grid>
-                                    <TextBlock Text="{Binding CpuStatus}" ToolTip="{Binding CpuStatus}" FontSize="11" Foreground="{DynamicResource TextSecondary}" TextTrimming="CharacterEllipsis" />
-                                </StackPanel>
+                                    <TextBlock Grid.Row="2" Text="{Binding CpuStatus}" ToolTip="{Binding CpuStatus}" FontSize="10.5" Foreground="{DynamicResource TextSecondary}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                </Grid>
                             </Border>
 
                             <!-- Metric 2: ВИДЕОКАРТА (GPU: Temp + Load + Clocks/Power/VRAM) -->
-                            <Border Grid.Column="1" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="12" Padding="14,12" Margin="6,0,6,0">
-                                <StackPanel>
-                                    <Grid>
+                            <Border Grid.Column="1" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="12" Padding="14,12" Margin="6,0,6,0" VerticalAlignment="Stretch">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="20" />
+                                        <RowDefinition Height="38" />
+                                        <RowDefinition Height="16" />
+                                    </Grid.RowDefinitions>
+                                    <Grid Grid.Row="0">
                                         <TextBlock Text="ВИДЕОКАРТА (GPU)" FontSize="10.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
-                                        <Border CornerRadius="6" Background="{DynamicResource WarningFill}" Padding="6,1.5" HorizontalAlignment="Right">
-                                            <TextBlock Text="{Binding GpuLoadDisplay}" FontFamily="{StaticResource FontMono}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource WarningBrush}" />
+                                        <Border Height="20" CornerRadius="6" Background="{DynamicResource WarningFill}" Padding="7,0" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding GpuLoadDisplay}" FontFamily="{StaticResource FontMono}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource WarningBrush}" VerticalAlignment="Center" />
                                         </Border>
                                     </Grid>
-                                    <Grid Margin="0,6,0,6">
-                                        <TextBlock Text="{Binding TempDisplay}" FontFamily="{StaticResource FontDisplay}" FontSize="25" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center" />
-                                        <Polyline Points="{Binding TempSparkline}" Stroke="{DynamicResource WarningBrush}" StrokeThickness="1.8" HorizontalAlignment="Right" VerticalAlignment="Center" Width="84" Height="26" />
+                                    <Grid Grid.Row="1" Margin="0,2,0,0">
+                                        <TextBlock Text="{Binding TempDisplay}" FontFamily="{StaticResource FontDisplay}" FontSize="24" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center" />
+                                        <Polyline Points="{Binding TempSparkline}" Stroke="{DynamicResource WarningBrush}" StrokeThickness="1.8" HorizontalAlignment="Right" VerticalAlignment="Center" Width="80" Height="26" />
                                     </Grid>
-                                    <TextBlock Text="{Binding GpuDetailDisplay}" ToolTip="{Binding GpuDetailDisplay}" FontSize="10.5" Foreground="{DynamicResource TextSecondary}" TextTrimming="CharacterEllipsis" />
-                                </StackPanel>
+                                    <TextBlock Grid.Row="2" Text="{Binding GpuDetailDisplay}" ToolTip="{Binding GpuDetailDisplay}" FontSize="10.5" Foreground="{DynamicResource TextSecondary}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                </Grid>
                             </Border>
 
                             <!-- Metric 3: ОПЕРАТИВНАЯ ПАМЯТЬ (ОЗУ) -->
-                            <Border Grid.Column="2" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="12" Padding="14,12" Margin="6,0,6,0">
-                                <StackPanel>
-                                    <Grid>
+                            <Border Grid.Column="2" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="12" Padding="14,12" Margin="6,0,6,0" VerticalAlignment="Stretch">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="20" />
+                                        <RowDefinition Height="38" />
+                                        <RowDefinition Height="16" />
+                                    </Grid.RowDefinitions>
+                                    <Grid Grid.Row="0">
                                         <TextBlock Text="ПАМЯТЬ (ОЗУ)" FontSize="10.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
-                                        <Border CornerRadius="6" Background="{DynamicResource SuccessFill}" Padding="6,1.5" HorizontalAlignment="Right">
-                                            <TextBlock Text="{Binding RamPercentBadge}" FontFamily="{StaticResource FontMono}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource SuccessBrush}" />
+                                        <Border Height="20" CornerRadius="6" Background="{DynamicResource SuccessFill}" Padding="7,0" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding RamPercentBadge}" FontFamily="{StaticResource FontMono}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource SuccessBrush}" VerticalAlignment="Center" />
                                         </Border>
                                     </Grid>
-                                    <Grid Margin="0,6,0,6">
-                                        <TextBlock Text="{Binding RamDisplay}" FontFamily="{StaticResource FontDisplay}" FontSize="23" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center" />
+                                    <Grid Grid.Row="1" Margin="0,2,0,0">
+                                        <TextBlock Text="{Binding RamDisplay}" FontFamily="{StaticResource FontDisplay}" FontSize="24" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center" />
                                         <Polyline Points="{Binding RamSparkline}" Stroke="{DynamicResource SuccessBrush}" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Center" Width="74" Height="26" />
                                     </Grid>
-                                    <TextBlock Text="{Binding RamStatus}" ToolTip="{Binding RamStatus}" FontSize="11" Foreground="{DynamicResource TextSecondary}" TextTrimming="CharacterEllipsis" />
-                                </StackPanel>
+                                    <TextBlock Grid.Row="2" Text="{Binding RamStatus}" ToolTip="{Binding RamStatus}" FontSize="10.5" Foreground="{DynamicResource TextSecondary}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                </Grid>
                             </Border>
 
                             <!-- Metric 4: ТВИКИ + Прогресс-бар оптимизации -->
-                            <Border Grid.Column="3" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="12" Padding="14,12" Margin="6,0,0,0">
-                                <StackPanel>
-                                    <Grid>
+                            <Border Grid.Column="3" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="12" Padding="14,12" Margin="6,0,0,0" VerticalAlignment="Stretch">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="20" />
+                                        <RowDefinition Height="38" />
+                                        <RowDefinition Height="16" />
+                                    </Grid.RowDefinitions>
+                                    <Grid Grid.Row="0">
                                         <TextBlock Text="АКТИВНЫЕ ТВИКИ" FontSize="10.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
-                                        <Border CornerRadius="6" Background="{DynamicResource CyanFill}" Padding="6,1.5" HorizontalAlignment="Right">
-                                            <TextBlock Text="{Binding OptimizationPercentText}" FontFamily="{StaticResource FontMono}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource CyanAccentBrush}" />
+                                        <Border Height="20" CornerRadius="6" Background="{DynamicResource CyanFill}" Padding="7,0" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding OptimizationPercentText}" FontFamily="{StaticResource FontMono}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource CyanAccentBrush}" VerticalAlignment="Center" />
                                         </Border>
                                     </Grid>
-                                    <StackPanel Orientation="Horizontal" Margin="0,6,0,6" VerticalAlignment="Bottom">
-                                        <TextBlock Text="{Binding TweaksDisplay}" FontFamily="{StaticResource FontDisplay}" FontSize="25" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Bottom" />
-                                        <TextBlock Text="{Binding TweaksStatus}" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" Margin="6,0,0,4" VerticalAlignment="Bottom" />
+                                    <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,2,0,0" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding TweaksDisplay}" FontFamily="{StaticResource FontDisplay}" FontSize="24" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center" />
+                                        <TextBlock Text="{Binding TweaksStatus}" FontSize="11.5" Foreground="{DynamicResource TextSecondary}" Margin="6,3,0,0" VerticalAlignment="Center" />
                                     </StackPanel>
-                                    <ProgressBar Value="{Binding OptimizationPercent, Mode=OneWay}" Minimum="0" Maximum="100" Style="{StaticResource VektorProgressBarStyle}" Margin="0,2,0,0" />
-                                </StackPanel>
+                                    <ProgressBar Grid.Row="2" Value="{Binding OptimizationPercent, Mode=OneWay}" Minimum="0" Maximum="100" Style="{StaticResource VektorProgressBarStyle}" VerticalAlignment="Center" />
+                                </Grid>
                             </Border>
                         </Grid>
 
@@ -678,7 +698,7 @@
 
                                     <!-- Chart Canvas Area with Y-Axis % Scale, 4x4 Grid, Smooth Gradient Curves & Per-Series Hover Inspector -->
                                     <Border Grid.Row="1" Background="{DynamicResource SearchBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="8" Padding="4,2">
-                                        <Grid x:Name="ChartPlotGrid" Height="116" ClipToBounds="True" Background="Transparent"
+                                        <Grid x:Name="ChartPlotGrid" Height="120" ClipToBounds="True" Background="Transparent"
                                               SizeChanged="ChartPlotGrid_SizeChanged"
                                               MouseMove="ChartPlotGrid_MouseMove"
                                               MouseLeave="ChartPlotGrid_MouseLeave">
@@ -693,7 +713,7 @@
                                             </Canvas>
 
                                             <!-- 4x4 Proportional Dashed Telemetry Grid -->
-                                            <Grid Margin="34,8,8,20" IsHitTestVisible="False">
+                                            <Grid Margin="34,8,8,24" IsHitTestVisible="False">
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="*" />
                                                     <RowDefinition Height="*" />
@@ -744,10 +764,10 @@
                                                 </Border>
                                             </Canvas>
 
-                                            <!-- Bottom X-Axis Aligned Time Labels -->
-                                            <Grid Margin="34,0,8,2" VerticalAlignment="Bottom" IsHitTestVisible="False">
+                                            <!-- Bottom X-Axis Aligned Time Labels (-60s centered cleanly over left axis start) -->
+                                            <Grid Margin="23,0,8,4" VerticalAlignment="Bottom" IsHitTestVisible="False">
                                                 <TextBlock Text="{Binding ChartTimeStartLabel}" FontFamily="{StaticResource FontMono}" FontSize="8.8" Foreground="{DynamicResource TextSecondary}" Opacity="0.75" HorizontalAlignment="Left" />
-                                                <TextBlock Text="{Binding ChartTimeMidLabel}" FontFamily="{StaticResource FontMono}" FontSize="8.8" Foreground="{DynamicResource TextSecondary}" Opacity="0.65" HorizontalAlignment="Center" />
+                                                <TextBlock Text="{Binding ChartTimeMidLabel}" FontFamily="{StaticResource FontMono}" FontSize="8.8" Foreground="{DynamicResource TextSecondary}" Opacity="0.65" HorizontalAlignment="Center" Margin="11,0,0,0" />
                                                 <TextBlock Text="Сейчас" FontFamily="{StaticResource FontMono}" FontSize="8.8" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" Opacity="0.9" HorizontalAlignment="Right" />
                                             </Grid>
 
@@ -761,16 +781,16 @@
                                         </Grid>
                                     </Border>
 
-                                    <!-- Minimal Clean Legend -->
-                                    <StackPanel Grid.Row="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,7,0,0">
+                                    <!-- Centered Clean Unified Russian Legend -->
+                                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,7,0,0">
                                         <Rectangle Width="9" Height="9" Fill="{DynamicResource AccentBrush}" RadiusX="2" RadiusY="2" VerticalAlignment="Center" Margin="0,0,5,0" />
-                                        <TextBlock Text="ЦП" FontSize="11" Foreground="{DynamicResource TextSecondary}" Margin="0,0,14,0" />
+                                        <TextBlock Text="ЦП" FontSize="11" Foreground="{DynamicResource TextSecondary}" Margin="0,0,18,0" />
 
                                         <Rectangle Width="9" Height="9" Fill="{DynamicResource SuccessBrush}" RadiusX="2" RadiusY="2" VerticalAlignment="Center" Margin="0,0,5,0" />
-                                        <TextBlock Text="ОЗУ" FontSize="11" Foreground="{DynamicResource TextSecondary}" Margin="0,0,14,0" />
+                                        <TextBlock Text="ОЗУ" FontSize="11" Foreground="{DynamicResource TextSecondary}" Margin="0,0,18,0" />
 
                                         <Rectangle Width="9" Height="9" Fill="{DynamicResource WarningBrush}" RadiusX="2" RadiusY="2" VerticalAlignment="Center" Margin="0,0,5,0" />
-                                        <TextBlock Text="GPU" FontSize="11" Foreground="{DynamicResource TextSecondary}" />
+                                        <TextBlock Text="Видеокарта" FontSize="11" Foreground="{DynamicResource TextSecondary}" />
                                     </StackPanel>
                                 </Grid>
                             </Border>

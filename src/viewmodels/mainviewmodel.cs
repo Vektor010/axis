@@ -1937,7 +1937,7 @@ namespace WinTweaker.ViewModels
 
             this.CpuLegendText = "ЦП";
             this.RamLegendText = "ОЗУ";
-            this.GpuLegendText = "GPU";
+            this.GpuLegendText = "Видеокарта";
 
             PointCollection cpuPts = this.CreateChartPoints(this._cpuHistory, yMax);
             PointCollection ramPts = this.CreateChartPoints(this._ramHistory, yMax);
@@ -2026,7 +2026,7 @@ namespace WinTweaker.ViewModels
             {
                 seriesKey = "gpu";
                 snapY = gpuY;
-                readout = string.Format("GPU · {0:F0}% • {1}", gpuVal, timeTag);
+                readout = string.Format("Видеокарта · {0:F0}% • {1}", gpuVal, timeTag);
             }
             return true;
         }
