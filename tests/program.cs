@@ -2226,6 +2226,49 @@ namespace WinTweaker.Tests
                        defragTaskTweak != null && TweakEngine.HasApplyBlock(defragTaskTweak) &&
                        !TweakEngine.IsEligibleForBatchApply(defragTaskTweak, 26300, TweakStatus.Disabled),
                     "ScheduledTasks_Noverse: Задачи планировщика Noverse распознаются движком, а опасные подгруппы (ScheduledDefrag/WU) защищены apply_block");
+
+                // Проверка адаптивного инженерного масштаба графика 2026 и crosshair-инспектора через собранный Axis.exe
+                string axisExePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Axis.exe");
+                if (File.Exists(axisExePath))
+                {
+                    System.Reflection.Assembly axisAsm = System.Reflection.Assembly.LoadFrom(axisExePath);
+                    Type vmType = axisAsm.GetType("WinTweaker.ViewModels.MainViewModel");
+                    object vmChart = Activator.CreateInstance(vmType, new object[] { false, true });
+                    try
+                    {
+                        vmType.GetMethod("Populate60SecondsHistory").Invoke(vmChart, null);
+                        bool isAuto = (bool)vmType.GetProperty("IsChartAutoScale").GetValue(vmChart, null);
+                        double yMax = (double)vmType.GetProperty("ChartYMax").GetValue(vmChart, null);
+                        string lbl100 = (string)vmType.GetProperty("ChartYLabel100").GetValue(vmChart, null);
+                        string cpuLeg = (string)vmType.GetProperty("CpuLegendText").GetValue(vmChart, null);
+                        System.Windows.Media.PointCollection cpuPts = (System.Windows.Media.PointCollection)vmType.GetProperty("CpuChartPoints").GetValue(vmChart, null);
+
+                        System.Reflection.MethodInfo sampleMi = vmType.GetMethod("TrySampleChartAtX");
+                        object[] sArgs = new object[] { 260.0, 0.0, 0.0, 0.0, 0.0, "" };
+                        bool sampled = (bool)sampleMi.Invoke(vmChart, sArgs);
+                        string hoverReadout = sArgs[5] as string ?? "";
+
+                        System.Windows.Input.ICommand toggleScaleCmd = (System.Windows.Input.ICommand)vmType.GetProperty("ToggleChartScaleCommand").GetValue(vmChart, null);
+                        toggleScaleCmd.Execute(null);
+                        bool isAutoAfter = (bool)vmType.GetProperty("IsChartAutoScale").GetValue(vmChart, null);
+                        double yMaxAfter = (double)vmType.GetProperty("ChartYMax").GetValue(vmChart, null);
+                        string lbl100After = (string)vmType.GetProperty("ChartYLabel100").GetValue(vmChart, null);
+
+                        bool ok = isAuto && yMax > 0 && yMax < 100.0 && ((int)yMax % 4) == 0 &&
+                                  !string.IsNullOrEmpty(lbl100) && !string.IsNullOrEmpty(cpuLeg) &&
+                                  cpuPts != null && cpuPts.Count > 60 &&
+                                  sampled && hoverReadout.Contains("ЦП") && hoverReadout.Contains("GPU") &&
+                                  !isAutoAfter && Math.Abs(yMaxAfter - 100.0) < 0.01 && lbl100After == "100%";
+                        Assert(ok,
+                            "Chart_EngineeringScale_And_Hover: Адаптивная шкала (делится на 4), сглаживание, подписи пиков, crosshair-инспектор и 0–100% работают",
+                            string.Format("auto={0}, yMax={1}, pts={2}, hover='{3}', yMaxAfter={4}", isAuto, yMax, cpuPts != null ? cpuPts.Count : 0, hoverReadout, yMaxAfter));
+                    }
+                    finally
+                    {
+                        IDisposable disp = vmChart as IDisposable;
+                        if (disp != null) disp.Dispose();
+                    }
+                }
             }
             finally
             {

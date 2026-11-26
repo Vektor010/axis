@@ -347,11 +347,55 @@ namespace WinTweaker
             }
         }
 
-        private void ChartAreaBorder_SizeChanged(object sender, SizeChangedEventArgs e)
+        private void ChartPlotGrid_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             if (this._viewModel != null && e.NewSize.Width > 0)
             {
-                this._viewModel.SetChartDimensions(e.NewSize.Width, 140);
+                this._viewModel.SetChartDimensions(e.NewSize.Width, e.NewSize.Height);
+            }
+        }
+
+        private void ChartPlotGrid_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if (this._viewModel == null || this.ChartPlotGrid == null || this.ChartHoverCanvas == null) return;
+            Point pos = e.GetPosition(this.ChartPlotGrid);
+            double snapX, cpuY, ramY, gpuY;
+            string readout;
+            if (!this._viewModel.TrySampleChartAtX(pos.X, out snapX, out cpuY, out ramY, out gpuY, out readout))
+            {
+                this.ChartHoverCanvas.Visibility = Visibility.Collapsed;
+                return;
+            }
+
+            this.ChartCrosshairLine.X1 = snapX;
+            this.ChartCrosshairLine.X2 = snapX;
+
+            System.Windows.Controls.Canvas.SetLeft(this.ChartHoverCpuDot, snapX - 4.0);
+            System.Windows.Controls.Canvas.SetTop(this.ChartHoverCpuDot, cpuY - 4.0);
+            System.Windows.Controls.Canvas.SetLeft(this.ChartHoverRamDot, snapX - 4.0);
+            System.Windows.Controls.Canvas.SetTop(this.ChartHoverRamDot, ramY - 4.0);
+            System.Windows.Controls.Canvas.SetLeft(this.ChartHoverGpuDot, snapX - 4.0);
+            System.Windows.Controls.Canvas.SetTop(this.ChartHoverGpuDot, gpuY - 4.0);
+
+            this.ChartHoverReadoutText.Text = readout;
+            this.ChartHoverBadge.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+            double badgeW = this.ChartHoverBadge.DesiredSize.Width;
+            double gridW = this.ChartPlotGrid.ActualWidth > 100 ? this.ChartPlotGrid.ActualWidth : 520.0;
+            double badgeLeft = snapX + 8.0;
+            if (badgeLeft + badgeW > gridW - 6.0)
+            {
+                badgeLeft = Math.Max(36.0, snapX - badgeW - 8.0);
+            }
+            System.Windows.Controls.Canvas.SetLeft(this.ChartHoverBadge, badgeLeft);
+            System.Windows.Controls.Canvas.SetTop(this.ChartHoverBadge, 4.0);
+            this.ChartHoverCanvas.Visibility = Visibility.Visible;
+        }
+
+        private void ChartPlotGrid_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if (this.ChartHoverCanvas != null)
+            {
+                this.ChartHoverCanvas.Visibility = Visibility.Collapsed;
             }
         }
 

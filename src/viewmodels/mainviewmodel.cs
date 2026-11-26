@@ -161,7 +161,35 @@ namespace WinTweaker.ViewModels
         private PointCollection _tweaksSparkline;
 
         // Big Chart properties
+        private const double ChartPlotLeft = 34.0;
+        private const double ChartPlotRightPad = 8.0;
+        private const double ChartPlotTop = 10.0;
+        private const double ChartPlotBottom = 118.0;
+        private const double ChartUsableHeight = 108.0;
+
         private string _chartTitle;
+        private bool _isChartAutoScale = true;
+        private double _chartYMax = 16.0;
+        private string _chartScaleButtonText = "Авто · 16%";
+        private string _chartYLabel100 = "16%";
+        private string _chartYLabel75 = "12%";
+        private string _chartYLabel50 = "8%";
+        private string _chartYLabel25 = "4%";
+        private string _chartTimeStartLabel = "-60с";
+        private string _chartTimeQuarterLabel = "-45с";
+        private string _chartTimeMidLabel = "-30с";
+        private string _chartTimeThreeQuarterLabel = "-15с";
+        private string _cpuLegendText = "ЦП 0,0%";
+        private string _ramLegendText = "ОЗУ 0%";
+        private string _gpuLegendText = "GPU 0%";
+        private double _cpuDotLeft;
+        private double _cpuDotTop;
+        private double _ramDotLeft;
+        private double _ramDotTop;
+        private double _gpuDotLeft;
+        private double _gpuDotTop;
+        private bool _hasChartDots;
+        private double _lastRamUsedGb;
         private PointCollection _cpuChartPoints;
         private PointCollection _ramChartPoints;
         private PointCollection _gpuChartPoints;
@@ -584,6 +612,7 @@ namespace WinTweaker.ViewModels
         public ICommand SetPingPresetCommand { get; private set; }
 
         public ICommand ToggleTweaksCategoriesCommand { get; private set; }
+        public ICommand ToggleChartScaleCommand { get; private set; }
 
         public int TotalTweaksCount { get; private set; }
         public int EnabledTweaksCount { get; private set; }
@@ -855,6 +884,132 @@ namespace WinTweaker.ViewModels
         {
             get { return this._chartTitle; }
             set { this._chartTitle = value; this.OnPropertyChanged("ChartTitle"); }
+        }
+
+        public bool IsChartAutoScale
+        {
+            get { return this._isChartAutoScale; }
+            set { this._isChartAutoScale = value; this.OnPropertyChanged("IsChartAutoScale"); }
+        }
+
+        public double ChartYMax
+        {
+            get { return this._chartYMax; }
+            set { this._chartYMax = value; this.OnPropertyChanged("ChartYMax"); }
+        }
+
+        public string ChartScaleButtonText
+        {
+            get { return this._chartScaleButtonText; }
+            set { this._chartScaleButtonText = value; this.OnPropertyChanged("ChartScaleButtonText"); }
+        }
+
+        public string ChartYLabel100
+        {
+            get { return this._chartYLabel100; }
+            set { this._chartYLabel100 = value; this.OnPropertyChanged("ChartYLabel100"); }
+        }
+
+        public string ChartYLabel75
+        {
+            get { return this._chartYLabel75; }
+            set { this._chartYLabel75 = value; this.OnPropertyChanged("ChartYLabel75"); }
+        }
+
+        public string ChartYLabel50
+        {
+            get { return this._chartYLabel50; }
+            set { this._chartYLabel50 = value; this.OnPropertyChanged("ChartYLabel50"); }
+        }
+
+        public string ChartYLabel25
+        {
+            get { return this._chartYLabel25; }
+            set { this._chartYLabel25 = value; this.OnPropertyChanged("ChartYLabel25"); }
+        }
+
+        public string ChartTimeStartLabel
+        {
+            get { return this._chartTimeStartLabel; }
+            set { this._chartTimeStartLabel = value; this.OnPropertyChanged("ChartTimeStartLabel"); }
+        }
+
+        public string ChartTimeQuarterLabel
+        {
+            get { return this._chartTimeQuarterLabel; }
+            set { this._chartTimeQuarterLabel = value; this.OnPropertyChanged("ChartTimeQuarterLabel"); }
+        }
+
+        public string ChartTimeMidLabel
+        {
+            get { return this._chartTimeMidLabel; }
+            set { this._chartTimeMidLabel = value; this.OnPropertyChanged("ChartTimeMidLabel"); }
+        }
+
+        public string ChartTimeThreeQuarterLabel
+        {
+            get { return this._chartTimeThreeQuarterLabel; }
+            set { this._chartTimeThreeQuarterLabel = value; this.OnPropertyChanged("ChartTimeThreeQuarterLabel"); }
+        }
+
+        public string CpuLegendText
+        {
+            get { return this._cpuLegendText; }
+            set { this._cpuLegendText = value; this.OnPropertyChanged("CpuLegendText"); }
+        }
+
+        public string RamLegendText
+        {
+            get { return this._ramLegendText; }
+            set { this._ramLegendText = value; this.OnPropertyChanged("RamLegendText"); }
+        }
+
+        public string GpuLegendText
+        {
+            get { return this._gpuLegendText; }
+            set { this._gpuLegendText = value; this.OnPropertyChanged("GpuLegendText"); }
+        }
+
+        public double CpuDotLeft
+        {
+            get { return this._cpuDotLeft; }
+            set { this._cpuDotLeft = value; this.OnPropertyChanged("CpuDotLeft"); }
+        }
+
+        public double CpuDotTop
+        {
+            get { return this._cpuDotTop; }
+            set { this._cpuDotTop = value; this.OnPropertyChanged("CpuDotTop"); }
+        }
+
+        public double RamDotLeft
+        {
+            get { return this._ramDotLeft; }
+            set { this._ramDotLeft = value; this.OnPropertyChanged("RamDotLeft"); }
+        }
+
+        public double RamDotTop
+        {
+            get { return this._ramDotTop; }
+            set { this._ramDotTop = value; this.OnPropertyChanged("RamDotTop"); }
+        }
+
+        public double GpuDotLeft
+        {
+            get { return this._gpuDotLeft; }
+            set { this._gpuDotLeft = value; this.OnPropertyChanged("GpuDotLeft"); }
+        }
+
+        public double GpuDotTop
+        {
+            get { return this._gpuDotTop; }
+            set { this._gpuDotTop = value; this.OnPropertyChanged("GpuDotTop"); }
+        }
+
+        public bool HasChartDots
+        {
+            get { return this._hasChartDots; }
+            set { this._hasChartDots = value; this.OnPropertyChanged("HasChartDots"); }
         }
 
         public PointCollection CpuChartPoints
@@ -1264,6 +1419,7 @@ namespace WinTweaker.ViewModels
             this.ToggleSidebarCommand = new RelayCommand(this.OnToggleSidebar);
             this.ToggleThemeCommand = new RelayCommand(this.OnToggleTheme);
             this.ToggleTweaksCategoriesCommand = new RelayCommand(this.OnToggleTweaksCategories);
+            this.ToggleChartScaleCommand = new RelayCommand(this.OnToggleChartScale);
             this.ApplySelectedCommand = new RelayCommand(this.OnApplySelected);
             this.ApplyAllRecommendedCommand = new RelayCommand(this.OnApplyAllRecommended);
             this.RevertAllCommand = new RelayCommand(this.OnRevertAll);
@@ -1317,6 +1473,12 @@ namespace WinTweaker.ViewModels
         private void OnToggleTweaksCategories(object parameter)
         {
             this.IsTweaksCategoriesExpanded = !this.IsTweaksCategoriesExpanded;
+        }
+
+        private void OnToggleChartScale(object parameter)
+        {
+            this.IsChartAutoScale = !this._isChartAutoScale;
+            this.RefreshBigChart();
         }
 
         private static bool IsUserAdmin()
@@ -1649,15 +1811,16 @@ namespace WinTweaker.ViewModels
             this.CpuStatus = m.IsCpuTempAvailable
                 ? string.Format("{0} • Т: {1} • {2} пот.", m.CpuClockDisplay, m.CpuTempDisplay, Environment.ProcessorCount)
                 : string.Format("{0} • Boost {1:F0}% • {2} пот.", m.CpuClockDisplay, m.CpuPerfPercent, Environment.ProcessorCount);
-            this.CpuSparkline = this.CreateSparklinePoints(this._cpuHistory);
+            this.CpuSparkline = this.CreateSparklinePoints(this._cpuHistory, true, 16.0, 0.0);
 
             // 2. RAM
             this._ramHistory.Add(m.RamLoadPercent);
             if (this._ramHistory.Count > MaxHistorySamples) this._ramHistory.RemoveAt(0);
+            this._lastRamUsedGb = m.RamUsedGb;
             this.RamDisplay = string.Format("{0:F1} ГБ", m.RamUsedGb);
             this.RamPercentBadge = string.Format("{0:F0}%", m.RamLoadPercent);
             this.RamStatus = string.Format("Из {0:F1} ГБ • Свободно {1:F1} ГБ", m.RamTotalGb, m.RamFreeGb);
-            this.RamSparkline = this.CreateSparklinePoints(this._ramHistory);
+            this.RamSparkline = this.CreateSparklinePoints(this._ramHistory, false, 100.0, 0.0);
 
             // 3. Ping
             double pingVal = m.PingMs >= 0 ? (double)m.PingMs : 0.0;
@@ -1666,7 +1829,7 @@ namespace WinTweaker.ViewModels
             this.PingDisplay = m.PingDisplay;
             string target = !string.IsNullOrEmpty(this._pingCustomHost) ? this._pingCustomHost : "шлюза";
             this.PingStatus = m.PingMs >= 0 ? string.Format("до {0}", target) : "Проверка связи...";
-            this.PingSparkline = this.CreateSparklinePoints(this._pingHistory);
+            this.PingSparkline = this.CreateSparklinePoints(this._pingHistory, true, 10.0, 0.0);
 
             // 4. GPU (Temp + Load + Clocks/Power/VRAM)
             this.TempDisplay = m.TempDisplay;
@@ -1682,7 +1845,7 @@ namespace WinTweaker.ViewModels
             }
             this._tempHistory.Add(tempVal);
             if (this._tempHistory.Count > MaxHistorySamples) this._tempHistory.RemoveAt(0);
-            this.TempSparkline = this.CreateSparklinePoints(this._tempHistory);
+            this.TempSparkline = this.CreateSparklinePoints(this._tempHistory, false, 90.0, 30.0);
             this.CpuTempDisplay = m.CpuTempDisplay;
             this.GpuLoadPercent = m.GpuLoadPercent;
             this.GpuLoadDisplay = m.GpuLoadDisplay;
@@ -1699,16 +1862,18 @@ namespace WinTweaker.ViewModels
             this.ProcessCountDisplay = m.ProcessCount > 0 ? m.ProcessCount.ToString() : "—";
             this.LastUpdatedDisplay = "Обновлено: " + m.LastUpdatedDisplay;
 
-            // 6. Big Chart
-            this.ChartTitle = m.IsGpuLoadAvailable
-                ? string.Format("ЦП: {0:F1}% ({1}) | ОЗУ: {2:F1}/{3:F1} ГБ | GPU: {4} • {5}", m.CpuLoadPercent, m.CpuClockDisplay, m.RamUsedGb, m.RamTotalGb, m.GpuLoadDisplay, m.TempDisplay)
-                : string.Format("ЦП: {0:F1}% ({1}) | ОЗУ: {2:F1}/{3:F1} ГБ ({4:F0}%)", m.CpuLoadPercent, m.CpuClockDisplay, m.RamUsedGb, m.RamTotalGb, m.RamLoadPercent);
-            this.CpuChartPoints = this.CreateChartPoints(this._cpuHistory);
-            this.RamChartPoints = this.CreateChartPoints(this._ramHistory);
-            this.GpuChartPoints = this.CreateChartPoints(this._gpuHistory);
-            this.CpuChartAreaPoints = this.CreateChartAreaPoints(this._cpuHistory);
-            this.RamChartAreaPoints = this.CreateChartAreaPoints(this._ramHistory);
-            this.GpuChartAreaPoints = this.CreateChartAreaPoints(this._gpuHistory);
+            // 6. Big Chart (Adaptive Engineering Scale + Smooth Curves + Endpoint Dots + Live Legends)
+            if (m.IsGpuLoadAvailable)
+            {
+                this.ChartTitle = m.IsCpuTempAvailable
+                    ? string.Format("{0} • ЦП {1} • GPU {2}", m.CpuClockDisplay, m.CpuTempDisplay, m.TempDisplay)
+                    : string.Format("{0} • GPU {1}", m.CpuClockDisplay, m.TempDisplay);
+            }
+            else
+            {
+                this.ChartTitle = string.Format("{0} • ОЗУ {1:F1}/{2:F1} ГБ", m.CpuClockDisplay, m.RamUsedGb, m.RamTotalGb);
+            }
+            this.RefreshBigChart();
             this.IsCollectingData = this._cpuHistory.Count < 1;
             this.OnPropertyChanged("HasAtLeast5Points");
             this.OnPropertyChanged("IsCollectingData");
@@ -1723,7 +1888,144 @@ namespace WinTweaker.ViewModels
             }
         }
 
-        private PointCollection CreateSparklinePoints(List<double> history)
+        private static double GetListMax(List<double> values)
+        {
+            double maxVal = 0.0;
+            if (values == null) return maxVal;
+            for (int i = 0; i < values.Count; i++)
+            {
+                if (values[i] > maxVal) maxVal = values[i];
+            }
+            return maxVal;
+        }
+
+        private double ComputeSmartChartYMax()
+        {
+            if (!this._isChartAutoScale) return 100.0;
+            double peak = Math.Max(GetListMax(this._cpuHistory), Math.Max(GetListMax(this._ramHistory), GetListMax(this._gpuHistory)));
+            double target = peak * 1.28;
+            double[] steps = new double[] { 12.0, 16.0, 20.0, 40.0, 60.0, 80.0, 100.0 };
+            for (int i = 0; i < steps.Length; i++)
+            {
+                if (target <= steps[i]) return steps[i];
+            }
+            return 100.0;
+        }
+
+        private double GetSampleStepSeconds()
+        {
+            if (!this._isRealMode) return 1.0;
+            int pollSec = (this._settingsManager != null && this._settingsManager.Settings != null) ? this._settingsManager.Settings.PollingIntervalSeconds : 1;
+            if (pollSec == 0 || pollSec == 1) return 0.5;
+            if (pollSec > 1) return (double)pollSec;
+            return 0.5;
+        }
+
+        public void RefreshBigChart()
+        {
+            double yMax = this.ComputeSmartChartYMax();
+            this.ChartYMax = yMax;
+            this.ChartScaleButtonText = this._isChartAutoScale
+                ? string.Format("Шкала: Авто ({0:F0}%)", yMax)
+                : "Шкала: 0–100%";
+            this.ChartYLabel100 = string.Format("{0:F0}%", yMax);
+            this.ChartYLabel75 = string.Format("{0:F0}%", yMax * 0.75);
+            this.ChartYLabel50 = string.Format("{0:F0}%", yMax * 0.50);
+            this.ChartYLabel25 = string.Format("{0:F0}%", yMax * 0.25);
+
+            int sampleCount = this._cpuHistory.Count;
+            double stepSec = this.GetSampleStepSeconds();
+            double totalSpanSec = Math.Max(4.0, Math.Round(Math.Max(1, sampleCount - 1) * stepSec));
+            this.ChartTimeStartLabel = string.Format("-{0:F0}с", totalSpanSec);
+            this.ChartTimeQuarterLabel = string.Format("-{0:F0}с", Math.Max(1.0, Math.Round(totalSpanSec * 0.75)));
+            this.ChartTimeMidLabel = string.Format("-{0:F0}с", Math.Max(1.0, Math.Round(totalSpanSec * 0.50)));
+            this.ChartTimeThreeQuarterLabel = string.Format("-{0:F0}с", Math.Max(1.0, Math.Round(totalSpanSec * 0.25)));
+
+            double lastCpu = sampleCount > 0 ? this._cpuHistory[sampleCount - 1] : 0.0;
+            double peakCpu = GetListMax(this._cpuHistory);
+            this.CpuLegendText = string.Format("ЦП {0:F1}% · пик {1:F1}%", lastCpu, peakCpu);
+
+            int ramCount = this._ramHistory.Count;
+            double lastRam = ramCount > 0 ? this._ramHistory[ramCount - 1] : 0.0;
+            this.RamLegendText = this._lastRamUsedGb > 0.1
+                ? string.Format("ОЗУ {0:F0}% · {1:F1} ГБ", lastRam, this._lastRamUsedGb)
+                : string.Format("ОЗУ {0:F0}%", lastRam);
+
+            int gpuCount = this._gpuHistory.Count;
+            double lastGpu = gpuCount > 0 ? this._gpuHistory[gpuCount - 1] : 0.0;
+            double peakGpu = GetListMax(this._gpuHistory);
+            this.GpuLegendText = string.Format("GPU {0:F0}% · пик {1:F0}%", lastGpu, peakGpu);
+
+            PointCollection cpuPts = this.CreateChartPoints(this._cpuHistory, yMax);
+            PointCollection ramPts = this.CreateChartPoints(this._ramHistory, yMax);
+            PointCollection gpuPts = this.CreateChartPoints(this._gpuHistory, yMax);
+            this.CpuChartPoints = cpuPts;
+            this.RamChartPoints = ramPts;
+            this.GpuChartPoints = gpuPts;
+            this.CpuChartAreaPoints = CreateChartAreaPointsFromCurve(cpuPts);
+            this.RamChartAreaPoints = CreateChartAreaPointsFromCurve(ramPts);
+            this.GpuChartAreaPoints = CreateChartAreaPointsFromCurve(gpuPts);
+
+            bool hasDots = cpuPts.Count >= 1 && ramPts.Count >= 1 && gpuPts.Count >= 1;
+            if (hasDots)
+            {
+                Point cEnd = cpuPts[cpuPts.Count - 1];
+                Point rEnd = ramPts[ramPts.Count - 1];
+                Point gEnd = gpuPts[gpuPts.Count - 1];
+                this.CpuDotLeft = cEnd.X - 3.5;
+                this.CpuDotTop = cEnd.Y - 3.5;
+                this.RamDotLeft = rEnd.X - 3.5;
+                this.RamDotTop = rEnd.Y - 3.5;
+                this.GpuDotLeft = gEnd.X - 3.5;
+                this.GpuDotTop = gEnd.Y - 3.5;
+            }
+            this.HasChartDots = hasDots;
+        }
+
+        public bool TrySampleChartAtX(double mouseX, out double snapX, out double cpuY, out double ramY, out double gpuY, out string readout)
+        {
+            snapX = 0.0;
+            cpuY = ChartPlotBottom;
+            ramY = ChartPlotBottom;
+            gpuY = ChartPlotBottom;
+            readout = "";
+
+            int count = this._cpuHistory.Count;
+            if (count < 2) return false;
+
+            double fullW = this._chartWidth > 120.0 ? this._chartWidth : 520.0;
+            double plotRight = Math.Max(ChartPlotLeft + 20.0, fullW - ChartPlotRightPad);
+            double plotW = plotRight - ChartPlotLeft;
+            if (mouseX < ChartPlotLeft - 8.0 || mouseX > plotRight + 8.0) return false;
+
+            double clampedRatio = Math.Max(0.0, Math.Min(1.0, (mouseX - ChartPlotLeft) / plotW));
+            int idx = (int)Math.Round(clampedRatio * (count - 1));
+            idx = Math.Max(0, Math.Min(count - 1, idx));
+
+            snapX = ChartPlotLeft + idx * (plotW / (count - 1));
+            double yMax = this._chartYMax > 0.0 ? this._chartYMax : 100.0;
+
+            double cpuVal = this._cpuHistory[idx];
+            double ramVal = idx < this._ramHistory.Count ? this._ramHistory[idx] : 0.0;
+            double gpuVal = idx < this._gpuHistory.Count ? this._gpuHistory[idx] : 0.0;
+
+            cpuY = ValueToChartY(cpuVal, yMax);
+            ramY = ValueToChartY(ramVal, yMax);
+            gpuY = ValueToChartY(gpuVal, yMax);
+
+            double agoSec = Math.Round((count - 1 - idx) * this.GetSampleStepSeconds());
+            string timeTag = agoSec <= 0.5 ? "Сейчас" : string.Format("-{0:F0}с", agoSec);
+            readout = string.Format("{0}  •  ЦП {1:F1}%  •  ОЗУ {2:F0}%  •  GPU {3:F0}%", timeTag, cpuVal, ramVal, gpuVal);
+            return true;
+        }
+
+        private static double ValueToChartY(double value, double yMax)
+        {
+            double clamped = Math.Max(0.0, Math.Min(yMax, value));
+            return ChartPlotBottom - (clamped / yMax * ChartUsableHeight);
+        }
+
+        private PointCollection CreateSparklinePoints(List<double> history, bool autoScale, double minMaxScale, double minFloor)
         {
             PointCollection pts = new PointCollection();
             double w = 90.0;
@@ -1733,10 +2035,18 @@ namespace WinTweaker.ViewModels
             int count = history.Count;
             if (count == 0) return pts;
 
+            double upper = minMaxScale;
+            if (autoScale)
+            {
+                double peak = GetListMax(history) * 1.25;
+                upper = Math.Max(minMaxScale, Math.Min(100.0, peak));
+            }
+            double span = Math.Max(1.0, upper - minFloor);
+
             if (count == 1)
             {
-                double val0 = Math.Max(0.0, Math.Min(100.0, history[0]));
-                double y0 = (h - padY) - (val0 / 100.0 * usableH);
+                double val0 = Math.Max(minFloor, Math.Min(upper, history[0]));
+                double y0 = (h - padY) - ((val0 - minFloor) / span * usableH);
                 pts.Add(new Point(0.0, y0));
                 pts.Add(new Point(w, y0));
             }
@@ -1745,8 +2055,8 @@ namespace WinTweaker.ViewModels
                 for (int i = 0; i < count; i++)
                 {
                     double x = i * (w / (count - 1));
-                    double val = Math.Max(0.0, Math.Min(100.0, history[i]));
-                    double y = (h - padY) - (val / 100.0 * usableH);
+                    double val = Math.Max(minFloor, Math.Min(upper, history[i]));
+                    double y = (h - padY) - ((val - minFloor) / span * usableH);
                     pts.Add(new Point(x, y));
                 }
             }
@@ -1754,47 +2064,76 @@ namespace WinTweaker.ViewModels
             return pts;
         }
 
-        private PointCollection CreateChartPoints(List<double> history)
+        private PointCollection CreateChartPoints(List<double> history, double yMax)
         {
             PointCollection pts = new PointCollection();
-            double w = this._chartWidth > 50 ? this._chartWidth : 480.0;
-            double h = 118.0;
-            double padY = 5.0;
-            double usableH = Math.Max(10.0, h - padY * 2.0);
+            double fullW = this._chartWidth > 120.0 ? this._chartWidth : 520.0;
+            double plotRight = Math.Max(ChartPlotLeft + 20.0, fullW - ChartPlotRightPad);
+            double plotW = plotRight - ChartPlotLeft;
             int count = history.Count;
             if (count == 0) return pts;
+            double scaleMax = yMax > 0.0 ? yMax : 100.0;
 
             if (count == 1)
             {
-                double val0 = Math.Max(0.0, Math.Min(100.0, history[0]));
-                double y0 = (h - padY) - (val0 / 100.0 * usableH);
-                pts.Add(new Point(0.0, y0));
-                pts.Add(new Point(w, y0));
+                double y0 = ValueToChartY(history[0], scaleMax);
+                pts.Add(new Point(ChartPlotLeft, y0));
+                pts.Add(new Point(plotRight, y0));
+            }
+            else if (count == 2)
+            {
+                pts.Add(new Point(ChartPlotLeft, ValueToChartY(history[0], scaleMax)));
+                pts.Add(new Point(plotRight, ValueToChartY(history[1], scaleMax)));
             }
             else
             {
+                // Catmull-Rom smooth cubic spline subdivision so live curves glide smoothly
+                Point[] raw = new Point[count];
                 for (int i = 0; i < count; i++)
                 {
-                    double x = i * (w / (count - 1));
-                    double val = Math.Max(0.0, Math.Min(100.0, history[i]));
-                    double y = (h - padY) - (val / 100.0 * usableH);
-                    pts.Add(new Point(x, y));
+                    double x = ChartPlotLeft + i * (plotW / (count - 1));
+                    raw[i] = new Point(x, ValueToChartY(history[i], scaleMax));
+                }
+
+                pts.Add(raw[0]);
+                const int SubSteps = 3;
+                for (int i = 0; i < count - 1; i++)
+                {
+                    Point p0 = raw[i > 0 ? i - 1 : 0];
+                    Point p1 = raw[i];
+                    Point p2 = raw[i + 1];
+                    Point p3 = raw[i + 2 < count ? i + 2 : count - 1];
+
+                    for (int s = 1; s <= SubSteps; s++)
+                    {
+                        double t = (double)s / SubSteps;
+                        double t2 = t * t;
+                        double t3 = t2 * t;
+
+                        double sx = 0.5 * ((2.0 * p1.X) + (-p0.X + p2.X) * t
+                            + (2.0 * p0.X - 5.0 * p1.X + 4.0 * p2.X - p3.X) * t2
+                            + (-p0.X + 3.0 * p1.X - 3.0 * p2.X + p3.X) * t3);
+                        double sy = 0.5 * ((2.0 * p1.Y) + (-p0.Y + p2.Y) * t
+                            + (2.0 * p0.Y - 5.0 * p1.Y + 4.0 * p2.Y - p3.Y) * t2
+                            + (-p0.Y + 3.0 * p1.Y - 3.0 * p2.Y + p3.Y) * t3);
+
+                        sy = Math.Max(ChartPlotTop, Math.Min(ChartPlotBottom, sy));
+                        sx = Math.Max(ChartPlotLeft, Math.Min(plotRight, sx));
+                        pts.Add(new Point(sx, sy));
+                    }
                 }
             }
             if (pts.CanFreeze) pts.Freeze();
             return pts;
         }
 
-        private PointCollection CreateChartAreaPoints(List<double> history)
+        private static PointCollection CreateChartAreaPointsFromCurve(PointCollection curvePts)
         {
-            PointCollection pts = this.CreateChartPoints(history);
-            if (pts.Count < 2) return new PointCollection();
-            double w = this._chartWidth > 50 ? this._chartWidth : 480.0;
-            double baselineY = 113.0;
-            PointCollection area = new PointCollection(pts.Count + 2);
-            area.Add(new Point(0.0, baselineY));
-            for (int i = 0; i < pts.Count; i++) area.Add(pts[i]);
-            area.Add(new Point(w, baselineY));
+            if (curvePts == null || curvePts.Count < 2) return new PointCollection();
+            PointCollection area = new PointCollection(curvePts.Count + 2);
+            area.Add(new Point(curvePts[0].X, ChartPlotBottom));
+            for (int i = 0; i < curvePts.Count; i++) area.Add(curvePts[i]);
+            area.Add(new Point(curvePts[curvePts.Count - 1].X, ChartPlotBottom));
             if (area.CanFreeze) area.Freeze();
             return area;
         }
@@ -2123,14 +2462,9 @@ namespace WinTweaker.ViewModels
         public void SetChartDimensions(double width, double height)
         {
             this._chartWidth = width;
-            if (this._cpuHistory.Count >= 2)
+            if (this._cpuHistory.Count >= 1)
             {
-                this.CpuChartPoints = this.CreateChartPoints(this._cpuHistory);
-                this.RamChartPoints = this.CreateChartPoints(this._ramHistory);
-                this.GpuChartPoints = this.CreateChartPoints(this._gpuHistory);
-                this.CpuChartAreaPoints = this.CreateChartAreaPoints(this._cpuHistory);
-                this.RamChartAreaPoints = this.CreateChartAreaPoints(this._ramHistory);
-                this.GpuChartAreaPoints = this.CreateChartAreaPoints(this._gpuHistory);
+                this.RefreshBigChart();
             }
         }
 
@@ -2168,16 +2502,11 @@ namespace WinTweaker.ViewModels
                 this._tempHistory.Add(48.0 + (i % 4));
             }
 
-            this.CpuChartPoints = this.CreateChartPoints(this._cpuHistory);
-            this.RamChartPoints = this.CreateChartPoints(this._ramHistory);
-            this.GpuChartPoints = this.CreateChartPoints(this._gpuHistory);
-            this.CpuChartAreaPoints = this.CreateChartAreaPoints(this._cpuHistory);
-            this.RamChartAreaPoints = this.CreateChartAreaPoints(this._ramHistory);
-            this.GpuChartAreaPoints = this.CreateChartAreaPoints(this._gpuHistory);
-            this.CpuSparkline = this.CreateSparklinePoints(this._cpuHistory);
-            this.RamSparkline = this.CreateSparklinePoints(this._ramHistory);
-            this.PingSparkline = this.CreateSparklinePoints(this._pingHistory);
-            this.TempSparkline = this.CreateSparklinePoints(this._tempHistory);
+            this.RefreshBigChart();
+            this.CpuSparkline = this.CreateSparklinePoints(this._cpuHistory, true, 16.0, 0.0);
+            this.RamSparkline = this.CreateSparklinePoints(this._ramHistory, false, 100.0, 0.0);
+            this.PingSparkline = this.CreateSparklinePoints(this._pingHistory, true, 10.0, 0.0);
+            this.TempSparkline = this.CreateSparklinePoints(this._tempHistory, false, 90.0, 30.0);
             this.IsCollectingData = false;
             this.OnPropertyChanged("HasAtLeast5Points");
             this.OnPropertyChanged("IsCollectingData");
