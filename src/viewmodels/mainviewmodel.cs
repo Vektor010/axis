@@ -629,9 +629,9 @@ namespace WinTweaker.ViewModels
         {
             get { return this.RevertableCount > 0 ? string.Format("Откатить все ({0})", this.RevertableCount) : "Откатить все"; }
         }
-        public string AppVersionDisplay { get { return "v3.2.0 • 2026"; } }
+        public string AppVersionDisplay { get { return "v3.2.1 • 2026"; } }
         public string DatabaseStatsDisplay { get { return string.Format("{0} твиков • 12 категорий", this.TotalTweaksCount); } }
-        public string EngineSummaryFooterText { get { return string.Format("AXIS Engine v3.2 • {0} твиков, изолированные снимки state.json и прямой WinAPI без внешних зависимостей.", this.TotalTweaksCount); } }
+        public string EngineSummaryFooterText { get { return string.Format("AXIS Engine v3.2.1 • {0} твиков, изолированные снимки state.json и прямой WinAPI без внешних зависимостей.", this.TotalTweaksCount); } }
 
         public bool CanApplyRecommended
         {
@@ -2438,13 +2438,9 @@ namespace WinTweaker.ViewModels
 
         private static readonly HashSet<string> ManualOnlyPreferenceIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
-            "visibility-show-cloud-files-in-quick-access",
-            "visibility-show-sync-provider-notifications",
-            "visibility-sharing-wizard-on",
             "visibility-navpane-show-all-folders",
-            "visibility-auto-check-select",
-            "visibility-show-recently-used-files",
             "visibility-show-frequently-used-folders",
+            "visibility-show-recently-used-files",
             "visibility-show-libraries",
             "visibility-show-type-overlay",
             "visibility-folder-contents-info-tip",
@@ -2458,8 +2454,6 @@ namespace WinTweaker.ViewModels
             "visibility-use-default-tile",
             "system-enabletaskgroups",
             "system-notifications-enable-legacy-balloons",
-            "security-dynamic-lock",
-            "network-allow-plaintext-passwords",
             "security-wu-allow-servicing-enterprise-features",
             "security-uac-enable-uia-desktop-toggle",
             "security-pua-protection",
@@ -2481,8 +2475,7 @@ namespace WinTweaker.ViewModels
             "security-powershell-invocation-header",
             "security-powershell-scriptblock-invocation-logging",
             "security-powershell-user-invocation-header",
-            "security-powershell-user-scriptblock-invocation-logging",
-            "privacy-display-last-logon-info"
+            "security-powershell-user-scriptblock-invocation-logging"
         };
 
         private static bool IsEligibleForContextBatchApply(TweakCardViewModel tw)

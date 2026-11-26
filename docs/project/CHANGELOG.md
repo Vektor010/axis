@@ -5,6 +5,13 @@ All notable changes to AXIS will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.2.1] - 2026-11-26
+
+### Permanent Removal of Harmful Logon Prompt, Desktop Checkbox & Bloat-Enabling Tweaks (`888` total)
+- Permanently deleted `privacy-dontdisplaylastusername` (`DontDisplayLastUserName=1`), `privacy-dontdisplayusername` (`DontDisplayUserName=1`), and `privacy-display-last-logon-info` (`DisplayLastLogonInfo=1`) — which broke Windows AutoLogon and forced typing both username and password on reboot.
+- Permanently deleted `visibility-auto-check-select` (`AutoCheckSelect=1`) — which added item-selection checkboxes to desktop icons and Explorer items.
+- Permanently deleted 5 stock-bloat/insecure toggles (`visibility-show-cloud-files-in-quick-access`, `visibility-show-sync-provider-notifications`, `visibility-sharing-wizard-on`, `security-dynamic-lock`, `network-allow-plaintext-passwords`), adding regression assertions in `Tests.exe` (`8,163 PASS`).
+
 ## [3.2.0] - 2026-11-26
 
 ### 2x Faster Startup, Single-Flush Batch I/O, Live-OS Error Fixes & Smart Batch Clarity

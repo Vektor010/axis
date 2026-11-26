@@ -2062,7 +2062,29 @@ namespace WinTweaker.Tests
             Assert(recCount == 216 && recHighOrMed == 0 && !vbsOrHvciInRec,
                 "Recommended_Integrity: Все 216 рекомендованных твиков безопасны (risk=low), VBS/HVCI исключены из автоприменения",
                 string.Format("rec={0}, nonLow={1}, vbsHvci={2}", recCount, recHighOrMed, vbsOrHvciInRec));
-            Assert(shortDesc == 0, "Catalog_Descriptions: У всех 897 твиков есть подробные описания на русском языке", "short=" + shortDesc);
+            Assert(shortDesc == 0, "Catalog_Descriptions: У всех 888 твиков есть подробные описания на русском языке", "short=" + shortDesc);
+
+            string[] forbiddenHarmfulIds = new string[] {
+                "privacy-dontdisplaylastusername",
+                "privacy-dontdisplayusername",
+                "privacy-display-last-logon-info",
+                "visibility-auto-check-select",
+                "visibility-show-cloud-files-in-quick-access",
+                "visibility-show-sync-provider-notifications",
+                "visibility-sharing-wizard-on",
+                "security-dynamic-lock",
+                "network-allow-plaintext-passwords"
+            };
+            bool anyForbiddenPresent = false;
+            for (int f = 0; f < forbiddenHarmfulIds.Length; f++)
+            {
+                if (list.Exists(delegate(TweakItem x) { return x.id == forbiddenHarmfulIds[f]; }))
+                {
+                    anyForbiddenPresent = true;
+                    break;
+                }
+            }
+            Assert(!anyForbiddenPresent, "Catalog_HarmfulRemoved: Вредные твики входа/пароля, галочек ярлыков и рекламы удалены навсегда");
 
             // 2. Проверка SystemInfoService IDisposable и реальных полей телеметрии без фейков
             using (SystemInfoService sys = new SystemInfoService())

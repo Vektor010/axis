@@ -1,8 +1,8 @@
 # PROJECT_STATE.md — Current Operational State
 
 **Last Updated**: 2026-11-26  
-**Version**: v3.2.0 (2x Faster Native Startup, Batched State/Journal I/O, Real-OS Error Fixes & Smart Apply All Filtering)  
-**Binary Output**: `dist/Axis.exe` (1.40 MB, standalone x64, 897 tweaks, 216 curated recommended, 8,162 PASS)
+**Version**: v3.2.1 (Permanently Removed Harmful Logon/Username, Desktop Checkbox & Bloat-Enabling Tweaks)  
+**Binary Output**: `dist/Axis.exe` (1.40 MB, standalone x64, 888 tweaks, 216 curated recommended, 8,163 PASS)
 
 ---
 
