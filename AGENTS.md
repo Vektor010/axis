@@ -9,10 +9,11 @@ This document is the single source of truth for AI coding agents (Claude Code, C
 AXIS is an ultra-compact (~1.2 MB), zero-overhead, native Windows 10/11 optimization suite designed for competitive esports players and system engineers.
 
 **Guiding Principles**:
-1. **Never break user systems**: Every modification must have an isolated, deterministic rollback mechanism in `state.json`.
-2. **Hardware honesty**: UI switches must reflect the live registry/WinAPI value in Windows, never an assumed or mocked state.
-3. **Zero bloat**: Strictly zero external NuGet dependencies. The binary size must stay strictly below 5.0 MB.
-4. **Build once, verify all**: Every change must pass 100% of all 7,760 unit and integration tests via `.\build.ps1`.
+1. **Never break user systems**: Every modification must have an isolated, deterministic rollback mechanism in `state.json`. Guard risky or experimental flags with `apply_block` so bulk actions cannot freeze Windows.
+2. **Hardware honesty**: UI switches and sensors must reflect live registry/WinAPI/NVML values in Windows, never an assumed or mocked state.
+3. **Zero bloat**: Strictly zero external NuGet dependencies. The binary size must stay strictly below 5.0 MB (`~1.55 MB` currently).
+4. **Build once, verify all**: Every change must pass 100% of all `8,852+` unit and integration tests via `.\build.ps1`.
+5. **Follow the 2026 Design System**: Every UI change MUST adhere strictly to [`docs/architecture/DESIGN_SYSTEM.md`](docs/architecture/DESIGN_SYSTEM.md) (pixel-equal Bento row heights, 3-row card Grids, unified `FontDisplay` metrics, adaptive Y-axis ticks, clean centered Russian legends).
 
 ---
 
@@ -53,6 +54,7 @@ All project documentation is organized in [`docs/`](docs/) and visual assets in 
 | Domain | File Path | Scope & Purpose |
 | :--- | :--- | :--- |
 | **Architecture** | [`docs/architecture/ARCHITECTURE.md`](docs/architecture/ARCHITECTURE.md) | Component model, state isolation, registry store abstraction, MVVM patterns |
+| **Design System** | [`docs/architecture/DESIGN_SYSTEM.md`](docs/architecture/DESIGN_SYSTEM.md) | 2026 Bento color tokens, typography rules, row grids, 60s oscilloscope telemetry spec |
 | **Decisions (ADR)** | [`docs/architecture/DECISIONS.md`](docs/architecture/DECISIONS.md) | Architectural decision records (C# 5.0, Frozen Brushes, WNF, JSON state) |
 | **Development** | [`docs/development/DEVELOPMENT.md`](docs/development/DEVELOPMENT.md) | Compiler setup, MSBuild paths, build & test CLI commands |
 | **Contributing** | [`docs/development/CONTRIBUTING.md`](docs/development/CONTRIBUTING.md) | Code style, commit rules, pull request checklist |

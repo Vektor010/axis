@@ -2,10 +2,10 @@
 
 [English](README.md) | [Русский](README.ru.md)
 
-[![Release: v3.3.0](https://img.shields.io/badge/Release-v3.3.0-2563eb.svg)](https://github.com/Vektor010/axis/releases)
-[![Tests: 8039 PASS](https://img.shields.io/badge/Tests-8039%20PASS-22c55e.svg)](tests/)
-[![Tweaks: 888](https://img.shields.io/badge/Tweaks-888-3b82f6.svg)](data/tweaks.json)
-[![Binary: Clean 1.40 MB](https://img.shields.io/badge/Binary-1.40%20MB-38bdf8.svg)](dist/Axis.exe)
+[![Release: v3.4.0](https://img.shields.io/badge/Release-v3.4.0-2563eb.svg)](https://github.com/Vektor010/axis/releases)
+[![Tests: 8852 PASS](https://img.shields.io/badge/Tests-8852%20PASS-22c55e.svg)](tests/)
+[![Tweaks: 969](https://img.shields.io/badge/Tweaks-969-3b82f6.svg)](data/tweaks.json)
+[![Binary: Clean 1.55 MB](https://img.shields.io/badge/Binary-1.55%20MB-38bdf8.svg)](dist/Axis.exe)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 > **AXIS** is a high-performance, standalone Windows 10/11 optimization suite designed for competitive esports players, system engineers, and enthusiasts.
@@ -51,22 +51,22 @@
 
 ---
 
-## 🧭 Tweak Catalog (856 Parameters Across 12 Categories)
+## 🧭 Tweak Catalog (969 Parameters Across 12 Categories)
 
 | Category | Count | Focus Area |
 | :--- | :---: | :--- |
-| ⚙️ **System** | 193 | Multimedia Class Scheduler (MMCSS), scheduler quantum tuning, DPC latency. |
-| 🔒 **Privacy** | 199 | Diagnostic telemetry, feedback hub, activity history, and background beacons. |
-| 🛡️ **Security** | 140 | Process isolation, dynamic lock, and Windows Defender tuning. |
-| 📁 **File Explorer** | 83 | Responsive shell layout, context menu simplification, folder view optimizations. |
-| 🌐 **Network & Internet** | 79 | TCP BBR2/CUBIC congestion providers, Nagle algorithm disabling, DNS cache flush, RSS/RSC. |
-| 🖱️ **Peripherals & Input** | 61 | 1:1 raw mouse input, pointer precision curve normalization, HID input latency. |
-| ⚡ **Power Management** | 46 | Core unparking, Ultimate Performance overlay, precision timer resolution. |
+| ⚙️ **System** | 231 | MMCSS scheduler tuning, services/drivers (`57`), scheduled tasks (`18` via COM), DPC latency. |
+| 🔒 **Privacy** | 211 | Diagnostic telemetry, feedback hub, activity history, and background beacons. |
+| 🛡️ **Security** | 147 | Process isolation, UAC/SmartScreen, and Windows Defender tuning. |
+| 📁 **File Explorer** | 88 | Responsive shell layout, context menu simplification, folder view optimizations. |
+| 🌐 **Network & Internet** | 94 | TCP BBR2/CUBIC congestion providers, Nagle disabling, DNS encryption, RSS/RSC. |
+| 🖱️ **Peripherals & Input** | 73 | 1:1 raw mouse input, pointer precision curve normalization, HID input latency. |
+| ⚡ **Power Management** | 51 | Core unparking, High/Ultimate Performance power plans, NIC power saving removal. |
 | 🗑️ **System Cleanup** | 16 | Temporary caches, DirectX shader cache, crash dump purging. |
-| 🎮 **NVIDIA Graphics** | 14 | Low latency mode, DXGI flip queue sizing, on-demand NVCPL daemon control. |
-| 🕹️ **Steam Platform** | 8 | Disabling Chromium Embedded Framework (CEF) bloat, shader background processing. |
+| 🎮 **NVIDIA Graphics** | 16 | Low latency mode, NV-Minimal Base Profile DRS (`nvapi64.dll`), on-demand NVCPL. |
+| 🕹️ **Steam Platform** | 18 | Disabling CEF webhelper bloat, `localconfig.vdf` optimizations, Dual-Registry autostart. |
 | 🧠 **CPU Affinities** | 5 | Dedicated core allocation, interrupt redirection away from Core 0. |
-| 🛠️ **Miscellaneous** | 12 | Background service autostart management (including RivaTuner Statistics Server). |
+| 🛠️ **Miscellaneous** | 19 | Background app telemetry & startup (`Spotify`, `VS Code`, `RTSS`, `Brave`, `Logitech`, `SteelSeries`). |
 
 ---
 
@@ -110,7 +110,7 @@ The build pipeline performs:
 1. Native compilation of `dist/Axis.exe` and test runner `dist/Tests.exe`.
 2. AST syntax check across all 52 production scripts (`verify-all.ps1`).
 3. SHA-256 byte-for-byte verification of embedded `tweaks.json`.
-4. Execution of all **7,760 unit and integration tests** (13 test suites).
+4. Execution of all **8,852 unit and integration tests** (`Tests.exe`) + deep `969`-tweak Noverse audit.
 
 ---
 
@@ -120,7 +120,7 @@ Detailed technical documentation is organized in [`docs/`](docs/):
 
 | Category | Documents | Description |
 | :--- | :--- | :--- |
-| **Architecture** | [Architecture](docs/architecture/ARCHITECTURE.md) • [Decisions](docs/architecture/DECISIONS.md) | Component model, state isolation, and ADRs |
+| **Architecture & Design** | [Design System 2026](docs/architecture/DESIGN_SYSTEM.md) • [Architecture](docs/architecture/ARCHITECTURE.md) • [Decisions](docs/architecture/DECISIONS.md) | 2026 Bento color tokens, uniform card grids, oscilloscope chart rules, state isolation, ADRs |
 | **Development** | [Development](docs/development/DEVELOPMENT.md) • [Contributing](docs/development/CONTRIBUTING.md) | Compiler prerequisites, build instructions, and guidelines |
 | **Project** | [Project State](docs/project/PROJECT_STATE.md) • [Changelog](docs/project/CHANGELOG.md) • [Roadmap](docs/project/ROADMAP.md) • [Known Issues](docs/project/KNOWN_ISSUES.md) | Operational status, releases, and documented edge cases |
 | **Security** | [Security Policy](docs/security/SECURITY.md) | Vulnerability disclosure and registry rollback guarantees |

@@ -5,6 +5,22 @@ All notable changes to AXIS will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.4.0] - 2026-11-27
+
+### 2026 Bento Telemetry Redesign, 969 Noverse Tweaks (Services + Scheduled Tasks) & Freeze Protection
+- **2026 Bento Design System (`docs/architecture/DESIGN_SYSTEM.md`, `MainWindow.xaml`)**:
+  - Standardized all dashboard rows on equal-height (`VerticalAlignment="Stretch"`) 3-row `<Grid>` cards (`20/38/16`, `14/24/15`, `14/22/15`) and unified `FontDisplay` across primary metrics, network RX/TX, ping latency, and uptime.
+  - Replaced mixed/cluttered legend with clean centered Russian legend (`ЦП`, `ОЗУ`, `Видеокарта`), equalized chart and System card heights, and removed redundant header/footer text.
+- **Zero-Lag 60s Oscilloscope Telemetry (`MainViewModel.cs`, `SystemInfoService.cs`)**:
+  - Instant startup telemetry snapshot (`CollectInstantStartupSnapshot`) eliminating dummy initial zeros on Frame 0, plus captured `_uiDispatcher` for reliable background `0.5s` live ticks.
+  - Fixed-slot 120-sample right-to-left conveyor (`Сейчас` anchored right) with adaptive 4-divisible Y-axis scale (`12/16/20/40/60/80/100%` toggleable vs `0–100%`), orange `WarningBrush` GPU curve color, and single-curve mouse hover inspector (`ЦП · ...%`, `ОЗУ · ...%`, `Видеокарта · ...%`).
+  - Native NVML GPU load/clocks/power/VRAM, `% Processor Utility` CPU load, effective boost MHz, smart CPU temp cascade (Afterburner/LHM/OHM/ACPI), and non-blocking ICMP ping.
+- **Full Noverse Catalog Expansion (`969` tweaks)**:
+  - Integrated `57` Windows services/drivers (`disable-services-drivers.md`), `18` Scheduled Task groups (`disable-scheduled-tasks.md` via COM `Schedule.Service`), and missing Noverse parameters with OS existence checks (`Unavailable` when absent).
+- **System Stability & Freeze Guard**:
+  - Enforced `apply_block` exclusion in `IsEligibleForContextBatchApply`, blocked 13 freeze-risk DWM/DXG/kernel tweaks from bulk auto-apply, and fixed signed `REG_DWORD`/`REG_QWORD` `>= 0x80000000` overflow in `JournalManager.ExportRegBackup`.
+- **Verification**: `8,852` assertions PASS (`0` FAIL), `969` tweaks audited, `dist/Axis.exe` `1.55 MB`.
+
 ## [3.3.0] - 2026-11-26
 
 ### Responsive 1s Dashboard Telemetry, Accurate Network RX/TX, Smooth Area Charts & Journal Fixes

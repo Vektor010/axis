@@ -1,8 +1,8 @@
 # PROJECT_STATE.md — Current Operational State
 
-**Last Updated**: 2026-11-26  
-**Version**: v3.3.0 (Responsive 1s Dashboard Telemetry, GetIPStatistics Network Rate, Area Charts & Historical Journal Fix)  
-**Binary Output**: `dist/Axis.exe` (1.40 MB, standalone x64, 888 tweaks, 216 curated recommended, 8,039 PASS)
+**Last Updated**: 2026-11-27  
+**Version**: v3.4.0 (2026 Bento Telemetry Design System, Instant Frame-0 Dashboard, 969 Tweaks incl. Services & Scheduled Tasks, Freeze Guard)  
+**Binary Output**: `dist/Axis.exe` (1.55 MB, standalone x64, 969 tweaks, 247 curated recommended, 8,852 PASS)
 
 ---
 
@@ -71,10 +71,10 @@
 | Suite / Check | Assertions | Result | Status |
 | :--- | :---: | :---: | :---: |
 | **PowerShell AST Syntax** | 52 scripts | 52 PASS / 0 FAIL | **PASS** |
-| **Tweak Definition Audit** | 856 tweaks | 856 PASS / 0 FAIL | **PASS** |
+| **Tweak Definition Audit** | 969 tweaks | 969 PASS / 0 FAIL | **PASS** |
 | **Embedded tweaks.json Parity** | SHA-256 | Exact Match | **PASS** |
-| **Executable Size Limit** | 1.22 MB (< 5.0 MB) | 1,249.5 KB | **PASS** |
-| **Automated Unit & Integration Tests** | 14 test suites | **7,793 PASS / 0 FAIL** | **PASS** |
+| **Executable Size Limit** | 1.55 MB (< 5.0 MB) | 1,590.5 KB | **PASS** |
+| **Automated Unit & Integration Tests** | 16+ test suites | **8,852 PASS / 0 FAIL** | **PASS** |
 | **Theme Toggle Latency Benchmark** | 30 cycles | Median: 0.10 ms, P95: 2.67 ms | **PASS** |
 
 ---
