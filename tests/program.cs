@@ -2087,6 +2087,54 @@ namespace WinTweaker.Tests
                 Assert(!mvmText.Contains("MessageBox.Show"),
                     "Unified_Dialogs: В MainViewModel полностью удалены системные MessageBox.Show (используется AxisDialogWindow)");
             }
+
+            // 4. Проверка пакетной буферизации StateManager и JournalManager (BeginBatch / EndBatch) + SysMain fallback
+            string tempDir = Path.Combine(Path.GetTempPath(), "AxisBatchTest_" + Guid.NewGuid().ToString("N"));
+            try
+            {
+                Directory.CreateDirectory(tempDir);
+                string batchStatePath = Path.Combine(tempDir, "state.json");
+                string batchLogPath = Path.Combine(tempDir, "journal.log");
+
+                StateManager sm = new StateManager(batchStatePath, true);
+                sm.BeginBatch();
+                for (int i = 0; i < 20; i++)
+                {
+                    TweakSnapshot sn = new TweakSnapshot();
+                    sn.TweakId = "batch-tweak-" + i;
+                    sm.SaveSnapshot(sn.TweakId, sn);
+                }
+                bool fileWrittenMidBatch = File.Exists(batchStatePath);
+                sm.EndBatch();
+                bool fileWrittenAfterBatch = File.Exists(batchStatePath);
+
+                StateManager smReloaded = new StateManager(batchStatePath, true);
+                Assert(!fileWrittenMidBatch && fileWrittenAfterBatch && smReloaded.SnapshotCount == 20,
+                    "Batch_StateManager: BeginBatch/EndBatch откладывает сериализацию и сохраняет 20 снимков за 1 запись",
+                    string.Format("mid={0}, after={1}, count={2}", fileWrittenMidBatch, fileWrittenAfterBatch, smReloaded.SnapshotCount));
+
+                JournalManager jm = new JournalManager(batchLogPath, true);
+                jm.BeginBatch();
+                for (int i = 0; i < 15; i++) jm.Log("APPLY", "id-" + i, "ok");
+                bool logWrittenMidBatch = File.Exists(batchLogPath);
+                jm.EndBatch();
+                int logLines = File.Exists(batchLogPath) ? File.ReadAllLines(batchLogPath).Length : 0;
+                Assert(!logWrittenMidBatch && logLines == 15,
+                    "Batch_JournalManager: BeginBatch/EndBatch записывает 15 строк журнала за 1 открытие файла",
+                    string.Format("mid={0}, lines={1}", logWrittenMidBatch, logLines));
+
+                MemoryOverlayRegistryStore memStore = new MemoryOverlayRegistryStore(null);
+                memStore.SetValue("HKLM", @"SYSTEM\CurrentControlSet\Services\SysMain", "Start", 4, Microsoft.Win32.RegistryValueKind.DWord);
+                TweakEngine eng = new TweakEngine(memStore, sm, jm, true, null);
+                TweakItem memTweak = list.Find(delegate(TweakItem x) { return x.id == "system-disable-memory-compression"; });
+                Assert(memTweak != null && eng.CheckStatus(memTweak) == TweakStatus.Enabled && eng.Apply(memTweak, true),
+                    "SysMain_Disabled_MemCompression: Отключенный SysMain корректно трактуется как отключенное сжатие памяти без exit=1",
+                    memTweak != null ? eng.CheckStatus(memTweak).ToString() : "null");
+            }
+            finally
+            {
+                try { if (Directory.Exists(tempDir)) Directory.Delete(tempDir, true); } catch { }
+            }
         }
     }
 }

@@ -636,7 +636,7 @@ namespace WinTweaker.ViewModels
             this.RevertTweakCommand = new RelayCommand(this.OnRevertTweak);
             this.ApplyTweakCommand = new RelayCommand(this.OnApplyTweak);
             this.ExecuteActionCommand = new RelayCommand(this.OnExecuteAction);
-            this.RefreshFromEngine();
+            this.RefreshFromEngine(false);
         }
 
         private void OnOpenDetails(object obj)
@@ -707,19 +707,34 @@ namespace WinTweaker.ViewModels
             }
         }
 
-        public void RefreshFromEngine()
+        public void RefreshFromEngine(bool notifyProperties = true)
         {
+            TweakStatus resolved = TweakStatus.Disabled;
             if (this._engine != null && this._model != null)
             {
-                bool applied = this._engine.Check(this._model);
-                this.Status = applied ? TweakStatus.Enabled : TweakStatus.Disabled;
-                this.StatusMessage = applied ? "Значение активно в системе" : "Исходное значение в системе";
+                resolved = this._engine.CheckStatus(this._model);
             }
-            else
-            {
-                this.Status = TweakStatus.Disabled;
-                this.StatusMessage = "";
-            }
+
+            this.ApplyResolvedStatus(resolved, notifyProperties);
+        }
+
+        public void ApplyResolvedStatus(TweakStatus status, bool notifyProperties = true)
+        {
+            this._status = status;
+            this._isChecked = (status == TweakStatus.Enabled);
+            this._isBusy = (status == TweakStatus.Executing);
+            this._statusMessage = (status == TweakStatus.Enabled)
+                ? "Значение активно в системе"
+                : (status == TweakStatus.Unavailable ? "Недоступно на данном ПК" : "Исходное значение в системе");
+
+            if (!notifyProperties) return;
+
+            this.OnPropertyChanged("Status");
+            this.OnPropertyChanged("IsChecked");
+            this.OnPropertyChanged("IsBusy");
+            this.OnPropertyChanged("StatusMessage");
+            this.OnPropertyChanged("StatusBadgeText");
+            this.OnPropertyChanged("StatusBadgeColor");
             this.OnPropertyChanged("CanRevert");
             this.OnPropertyChanged("RevertToolTip");
             this.OnPropertyChanged("HasSnapshotRecord");
@@ -734,24 +749,10 @@ namespace WinTweaker.ViewModels
 
         public void RefreshStatus()
         {
-            if (this._engine != null && this._model != null)
-            {
-                TweakStatus status = this._engine.CheckStatus(this._model);
-                this.Status = status;
-                this._isChecked = (status == TweakStatus.Enabled);
-                this.OnPropertyChanged("IsChecked");
-                this.OnPropertyChanged("Status");
-            }
-            this.OnPropertyChanged("CanRevert");
-            this.OnPropertyChanged("RevertToolTip");
-            this.OnPropertyChanged("HasSnapshotRecord");
-            this.OnPropertyChanged("LiveSystemValueText");
-            this.OnPropertyChanged("RecommendedValueText");
-            this.OnPropertyChanged("OptimizationStatusText");
-            this.OnPropertyChanged("OptimizationStatusColor");
-            this.OnPropertyChanged("RebootRequirementText");
-            this.OnPropertyChanged("CompatibilityText");
-            this.OnPropertyChanged("RollbackCapabilityText");
+            TweakStatus status = (this._engine != null && this._model != null)
+                ? this._engine.CheckStatus(this._model)
+                : TweakStatus.Disabled;
+            this.ApplyResolvedStatus(status, true);
         }
 
         private void OnToggleClicked(object obj)

@@ -51,6 +51,9 @@ namespace WinTweaker.Engine
         private readonly bool _isTestMode;
         private StateData _data;
         private readonly JavaScriptSerializer _serializer;
+        private readonly object _batchLock = new object();
+        private int _batchDepth;
+        private bool _batchDirty;
 
         public StateManager(string customPath = null, bool isTestMode = false)
         {
@@ -113,6 +116,32 @@ namespace WinTweaker.Engine
             }
         }
 
+        public void BeginBatch()
+        {
+            lock (this._batchLock)
+            {
+                this._batchDepth++;
+            }
+        }
+
+        public void EndBatch()
+        {
+            bool shouldFlush = false;
+            lock (this._batchLock)
+            {
+                if (this._batchDepth > 0) this._batchDepth--;
+                if (this._batchDepth == 0 && this._batchDirty)
+                {
+                    this._batchDirty = false;
+                    shouldFlush = true;
+                }
+            }
+            if (shouldFlush)
+            {
+                this.SaveImmediate();
+            }
+        }
+
         public void Save()
         {
             if (this._isTestMode && IsProgramDataPath(this._filePath))
@@ -120,6 +149,20 @@ namespace WinTweaker.Engine
                 throw new InvalidOperationException("В тестовом режиме запись в %ProgramData%\\Tweaker запрещена на уровне кода.");
             }
 
+            lock (this._batchLock)
+            {
+                if (this._batchDepth > 0)
+                {
+                    this._batchDirty = true;
+                    return;
+                }
+            }
+
+            this.SaveImmediate();
+        }
+
+        private void SaveImmediate()
+        {
             try
             {
                 this._data.LastUpdated = DateTime.Now.ToString("o");

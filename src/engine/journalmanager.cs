@@ -33,6 +33,9 @@ namespace WinTweaker.Engine
         private readonly string _backupDir;
         private readonly bool _isTestMode;
         private readonly List<JournalEntry> _entries;
+        private readonly object _batchLock = new object();
+        private readonly List<string> _pendingLines = new List<string>();
+        private int _batchDepth;
 
         public event Action<JournalEntry> EntryAdded;
 
@@ -124,6 +127,46 @@ namespace WinTweaker.Engine
             catch { }
         }
 
+        public void BeginBatch()
+        {
+            lock (this._batchLock)
+            {
+                this._batchDepth++;
+            }
+        }
+
+        public void EndBatch()
+        {
+            List<string> linesToFlush = null;
+            lock (this._batchLock)
+            {
+                if (this._batchDepth > 0) this._batchDepth--;
+                if (this._batchDepth == 0 && this._pendingLines.Count > 0)
+                {
+                    linesToFlush = new List<string>(this._pendingLines);
+                    this._pendingLines.Clear();
+                }
+            }
+
+            if (linesToFlush != null && linesToFlush.Count > 0)
+            {
+                try
+                {
+                    this.EnsureDirectories();
+                    using (StreamWriter sw = new StreamWriter(this._logFilePath, true, Encoding.UTF8))
+                    {
+                        for (int i = 0; i < linesToFlush.Count; i++)
+                        {
+                            sw.WriteLine(linesToFlush[i]);
+                        }
+                    }
+                }
+                catch
+                {
+                }
+            }
+        }
+
         public void Log(string level, string tweakId, string message)
         {
             if (this._isTestMode && StateManager.IsProgramDataPath(this._logFilePath))
@@ -137,23 +180,35 @@ namespace WinTweaker.Engine
             entry.TweakId = tweakId;
             entry.Message = message;
 
-            this._entries.Add(entry);
-
-            try
+            bool notifyNow = true;
+            lock (this._batchLock)
             {
-                this.EnsureDirectories();
-                using (StreamWriter sw = new StreamWriter(this._logFilePath, true, Encoding.UTF8))
+                this._entries.Add(entry);
+                if (this._batchDepth > 0)
                 {
-                    sw.WriteLine(entry.ToString());
+                    this._pendingLines.Add(entry.ToString());
+                    notifyNow = false;
                 }
             }
-            catch
-            {
-            }
 
-            if (this.EntryAdded != null)
+            if (notifyNow)
             {
-                this.EntryAdded(entry);
+                try
+                {
+                    this.EnsureDirectories();
+                    using (StreamWriter sw = new StreamWriter(this._logFilePath, true, Encoding.UTF8))
+                    {
+                        sw.WriteLine(entry.ToString());
+                    }
+                }
+                catch
+                {
+                }
+
+                if (this.EntryAdded != null)
+                {
+                    this.EntryAdded(entry);
+                }
             }
         }
 

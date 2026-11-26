@@ -1,8 +1,8 @@
 # PROJECT_STATE.md — Current Operational State
 
 **Last Updated**: 2026-11-26  
-**Version**: v3.1.0 (Human-Clear Contextual Batch Buttons, Risk Guard Consent & Curated 216 Recommended Preset)  
-**Binary Output**: `dist/Axis.exe` (1.38 MB, standalone x64, 897 tweaks, 216 curated recommended, 8,159 PASS)
+**Version**: v3.2.0 (2x Faster Native Startup, Batched State/Journal I/O, Real-OS Error Fixes & Smart Apply All Filtering)  
+**Binary Output**: `dist/Axis.exe` (1.40 MB, standalone x64, 897 tweaks, 216 curated recommended, 8,162 PASS)
 
 ---
 

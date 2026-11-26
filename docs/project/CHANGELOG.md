@@ -5,6 +5,20 @@ All notable changes to AXIS will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.2.0] - 2026-11-26
+
+### 2x Faster Startup, Single-Flush Batch I/O, Live-OS Error Fixes & Smart Batch Clarity
+- **Faster Cold Startup (2.01s -> 1.01s REAL MODE)**:
+  - Replaced cold `powershell.exe` calls during `CheckStatus` (`IsAnyIpv6BindingEnabled` via .NET `NetworkInterface.Supports(IPv6)`, `CheckNvidiaTasksDisabledStatus` via Task Scheduler COM `Schedule.Service`, `GetActivePowerSchemeGuid` via native registry) and added 5-second TTL hardware enumeration caches (`NIC`, `Audio`, `NVIDIA Display`, `PCI`) in `SpecialTweakExecutor`.
+  - Moved blocking `CollectLiveMetrics()` (`Ping.Send` / ACPI WMI / cold PDH `PerformanceCounter`) off the synchronous UI constructor onto background `PollLiveMetrics()` in real mode.
+- **Much Faster Batch Apply & Revert (`BeginBatch` / `EndBatch`)**:
+  - Deferred `state.json` JSON serialization and `journal.log` file writes until batch completion (`StateManager.BeginBatch/EndBatch`, `JournalManager.BeginBatch/EndBatch`), eliminated redundant per-tweak `EnsureRestorePoint` checks/warnings inside batches, and pre-resolved post-batch statuses on background threads.
+- **Fixed 3 Real-OS Failures & Unavailable Detection**:
+  - Fixed `TweakCardViewModel.RefreshFromEngine` collapsing `Unavailable` into `Disabled` (`misc-vscode-disable-telemetry` and missing apps/hardware are now accurately marked `Unavailable` and skipped cleanly).
+  - Fixed `power-noverse-high-performance-plan` on stripped custom Windows builds (clones active/Balanced plan as `Noverse High Performance` + applies all 4 Noverse power indexes when `SCHEME_MIN` is absent).
+  - Fixed `system-disable-memory-compression` when `SysMain` is already disabled (`Start=4`), avoiding `Disable-MMAgent` Error 1058.
+- **Cleaner Batch Filtering & Transparent Math**: Excluded ~45 stock-feature/bloat-enabling and Defender-re-enabling toggles from automatic `Применить все / раздел` (remaining manually toggleable) and added live active/shown counts (`Показано: X (активно: Y)`) + clear skipped/already-active totals in confirmation and completion dialogs.
+
 ## [3.1.0] - 2026-11-26
 
 ### Clear Contextual Batch Buttons, OS Protection Guard & Smarter Recommended Preset

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using System.ServiceProcess;
 using System.Text;
@@ -30,6 +31,14 @@ namespace WinTweaker.Engine
         private static DateTime _tcpCacheTime = DateTime.MinValue;
         private static bool? _ipv6BindingAnyEnabledCache = null;
         private static DateTime _ipv6BindingCacheTime = DateTime.MinValue;
+        private static List<string> _nicKeysCache = null;
+        private static DateTime _nicKeysCacheTime = DateTime.MinValue;
+        private static List<string> _audioKeysCache = null;
+        private static DateTime _audioKeysCacheTime = DateTime.MinValue;
+        private static List<string> _nvKeysCache = null;
+        private static DateTime _nvKeysCacheTime = DateTime.MinValue;
+        private static readonly Dictionary<string, List<string>> _pciKeysCache = new Dictionary<string, List<string>>(StringComparer.Ordinal);
+        private static DateTime _pciKeysCacheTime = DateTime.MinValue;
 
         [DllImport("dnsapi.dll", EntryPoint = "DnsFlushResolverCache")]
         private static extern int DnsFlushResolverCache();
@@ -47,6 +56,14 @@ namespace WinTweaker.Engine
                 _tcpCacheTime = DateTime.MinValue;
                 _ipv6BindingAnyEnabledCache = null;
                 _ipv6BindingCacheTime = DateTime.MinValue;
+                _nicKeysCache = null;
+                _nicKeysCacheTime = DateTime.MinValue;
+                _audioKeysCache = null;
+                _audioKeysCacheTime = DateTime.MinValue;
+                _nvKeysCache = null;
+                _nvKeysCacheTime = DateTime.MinValue;
+                _pciKeysCache.Clear();
+                _pciKeysCacheTime = DateTime.MinValue;
             }
         }
 
@@ -377,6 +394,13 @@ namespace WinTweaker.Engine
 
         private static List<string> EnumerateRealPhysicalNicSubkeys()
         {
+            lock (_cacheLock)
+            {
+                if (_nicKeysCache != null && (DateTime.UtcNow - _nicKeysCacheTime).TotalSeconds < 5.0)
+                {
+                    return new List<string>(_nicKeysCache);
+                }
+            }
             List<string> keys = new List<string>();
             try
             {
@@ -415,11 +439,23 @@ namespace WinTweaker.Engine
                 }
             }
             catch { }
+            lock (_cacheLock)
+            {
+                _nicKeysCache = new List<string>(keys);
+                _nicKeysCacheTime = DateTime.UtcNow;
+            }
             return keys;
         }
 
         private static List<string> EnumerateAudioPowerSettingsSubkeys()
         {
+            lock (_cacheLock)
+            {
+                if (_audioKeysCache != null && (DateTime.UtcNow - _audioKeysCacheTime).TotalSeconds < 5.0)
+                {
+                    return new List<string>(_audioKeysCache);
+                }
+            }
             List<string> keys = new List<string>();
             try
             {
@@ -440,11 +476,23 @@ namespace WinTweaker.Engine
                 }
             }
             catch { }
+            lock (_cacheLock)
+            {
+                _audioKeysCache = new List<string>(keys);
+                _audioKeysCacheTime = DateTime.UtcNow;
+            }
             return keys;
         }
 
         private static List<string> EnumerateNvidiaDisplaySubkeys()
         {
+            lock (_cacheLock)
+            {
+                if (_nvKeysCache != null && (DateTime.UtcNow - _nvKeysCacheTime).TotalSeconds < 5.0)
+                {
+                    return new List<string>(_nvKeysCache);
+                }
+            }
             List<string> keys = new List<string>();
             try
             {
@@ -472,15 +520,29 @@ namespace WinTweaker.Engine
                 }
             }
             catch { }
+            lock (_cacheLock)
+            {
+                _nvKeysCache = new List<string>(keys);
+                _nvKeysCacheTime = DateTime.UtcNow;
+            }
             return keys;
         }
 
         private static List<string> EnumerateTargetPciDevicePaths(string tweakId)
         {
-            List<string> paths = new List<string>();
             bool wantDisplay = tweakId != null && (tweakId.Contains("-gpu-") || tweakId.Contains("msi-mode-gpu") || tweakId.Contains("device-policy-spread"));
             bool wantNet = tweakId != null && (tweakId.Contains("-nic-") || tweakId.Contains("device-policy-spread"));
             bool wantUsbXhci = tweakId != null && tweakId.Contains("device-policy-spread");
+            string cacheKey = string.Format("{0}_{1}_{2}", wantDisplay ? 1 : 0, wantNet ? 1 : 0, wantUsbXhci ? 1 : 0);
+            lock (_cacheLock)
+            {
+                List<string> cached;
+                if ((DateTime.UtcNow - _pciKeysCacheTime).TotalSeconds < 5.0 && _pciKeysCache.TryGetValue(cacheKey, out cached))
+                {
+                    return new List<string>(cached);
+                }
+            }
+            List<string> paths = new List<string>();
 
             try
             {
@@ -538,6 +600,11 @@ namespace WinTweaker.Engine
                 }
             }
             catch { }
+            lock (_cacheLock)
+            {
+                _pciKeysCache[cacheKey] = new List<string>(paths);
+                _pciKeysCacheTime = DateTime.UtcNow;
+            }
             return paths;
         }
 
@@ -640,13 +707,22 @@ namespace WinTweaker.Engine
                 return matched > 0 ? TweakStatus.PartiallyEnabled : TweakStatus.Disabled;
             }
 
-            // Noverse High Performance Power Plan (SCHEME_MIN)
+            // Noverse High Performance Power Plan (SCHEME_MIN or cloned Noverse High Performance)
             if (string.Equals(id, "power-noverse-high-performance-plan", StringComparison.OrdinalIgnoreCase))
             {
                 string activeGuid = GetActivePowerSchemeGuid();
                 if (string.IsNullOrEmpty(activeGuid)) return TweakStatus.Unknown;
-                return string.Equals(activeGuid, "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c", StringComparison.OrdinalIgnoreCase)
-                    ? TweakStatus.Enabled : TweakStatus.Disabled;
+                if (string.Equals(activeGuid, "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c", StringComparison.OrdinalIgnoreCase))
+                {
+                    return TweakStatus.Enabled;
+                }
+                string friendly = GetPowerSchemeFriendlyName(store, activeGuid);
+                if (!string.IsNullOrEmpty(friendly) &&
+                    friendly.IndexOf("Noverse High Performance", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    return TweakStatus.Enabled;
+                }
+                return TweakStatus.Disabled;
             }
 
             // NVIDIA Scheduled Tasks
@@ -838,6 +914,12 @@ namespace WinTweaker.Engine
             // 2b) Memory Compression (MMAgent)
             if (string.Equals(id, "system-disable-memory-compression", StringComparison.OrdinalIgnoreCase))
             {
+                if (IsSysMainServiceDisabled(store))
+                {
+                    SaveCustomSnapshot(stateManager, id, "MemCompression", "SysMainDisabled");
+                    journal.Log("APPLY", id, "Сжатие памяти (MMAgent) уже неактивно — служба SysMain отключена в системе");
+                    return true;
+                }
                 int rc = RunProcess("powershell.exe", "-NoProfile -Command \"Disable-MMAgent -MemoryCompression\"", 12000);
                 SaveCustomSnapshot(stateManager, id, "MemCompression", "Enabled");
                 journal.Log(rc == 0 ? "APPLY" : "ERROR", id, "Выполнен Disable-MMAgent -MemoryCompression (exit=" + rc + ")");
@@ -882,16 +964,43 @@ namespace WinTweaker.Engine
                 return true;
             }
 
-            // 2e) Noverse High Performance Power Plan
+            // 2e) Noverse High Performance Power Plan (with custom-OS fallback when SCHEME_MIN is stripped)
             if (string.Equals(id, "power-noverse-high-performance-plan", StringComparison.OrdinalIgnoreCase))
             {
                 string prevGuid = GetActivePowerSchemeGuid();
                 SaveCustomSnapshot(stateManager, id, "PrevPowerScheme", prevGuid ?? "");
                 int rc = RunProcess("powercfg.exe", "/setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c", 8000);
+                string activatedDesc = "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c (High Performance)";
                 if (rc != 0)
                 {
                     RunProcess("powercfg.exe", "/duplicatescheme 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c", 8000);
                     rc = RunProcess("powercfg.exe", "/setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c", 8000);
+                }
+                if (rc != 0)
+                {
+                    string baseGuid = !string.IsNullOrEmpty(prevGuid) ? prevGuid : "381b4222-f694-41f0-9685-ff5bb260df2e";
+                    string dupOut;
+                    int dupRc = RunProcessCapture("powercfg.exe", "/duplicatescheme " + baseGuid, 8000, out dupOut);
+                    if (dupRc == 0 && !string.IsNullOrEmpty(dupOut))
+                    {
+                        System.Text.RegularExpressions.Match m = System.Text.RegularExpressions.Regex.Match(
+                            dupOut, @"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}");
+                        if (m.Success)
+                        {
+                            string newGuid = m.Value.ToLowerInvariant();
+                            RunProcess("powercfg.exe", string.Format("/changename {0} \"Noverse High Performance\" \"Noverse low-latency performance profile\"", newGuid), 4000);
+                            rc = RunProcess("powercfg.exe", "/setactive " + newGuid, 8000);
+                            if (rc == 0)
+                            {
+                                activatedDesc = newGuid + " (Noverse High Performance)";
+                            }
+                        }
+                    }
+                    if (rc != 0 && !string.IsNullOrEmpty(prevGuid))
+                    {
+                        rc = RunProcess("powercfg.exe", "/setactive SCHEME_CURRENT", 4000);
+                        activatedDesc = "SCHEME_CURRENT (применены индексы Noverse)";
+                    }
                 }
                 // Apply Noverse High Perf indexes: processor min=100, USB selective suspend=0, PCIe ASPM=0, disk idle=0
                 RunProcess("powercfg.exe", "/setacvalueindex SCHEME_CURRENT SUB_PROCESSOR PROCTHROTTLEMIN 100", 4000);
@@ -899,17 +1008,23 @@ namespace WinTweaker.Engine
                 RunProcess("powercfg.exe", "/setacvalueindex SCHEME_CURRENT SUB_PCIEXPRESS ASPM 0", 4000);
                 RunProcess("powercfg.exe", "/setacvalueindex SCHEME_CURRENT SUB_DISK DISKIDLE 0", 4000);
                 RunProcess("powercfg.exe", "/setactive SCHEME_CURRENT", 4000);
-                journal.Log(rc == 0 ? "APPLY" : "ERROR", id, "Активирована схема High Performance (Noverse PowerPlan, exit=" + rc + ")");
+                InvalidateCaches();
+                journal.Log(rc == 0 ? "APPLY" : "ERROR", id, "Активирована схема питания " + activatedDesc);
                 return rc == 0;
             }
 
             // 2f) NVIDIA Scheduled Tasks
             if (string.Equals(id, "nvidia-disable-scheduled-tasks", StringComparison.OrdinalIgnoreCase))
             {
-                int rc = RunProcess("powershell.exe", "-NoProfile -Command \"Get-ScheduledTask -TaskName 'NvTmRep*','NvTmMon*' -ErrorAction SilentlyContinue | Disable-ScheduledTask | Out-Null\"", 10000);
+                bool ok = SetNvidiaTasksEnabledViaCom(false);
+                if (!ok)
+                {
+                    int rc = RunProcess("powershell.exe", "-NoProfile -Command \"Get-ScheduledTask -TaskName 'NvTmRep*','NvTmMon*' -ErrorAction SilentlyContinue | Disable-ScheduledTask | Out-Null\"", 10000);
+                    ok = (rc == 0);
+                }
                 SaveCustomSnapshot(stateManager, id, "NvTasks", "Disabled");
                 journal.Log("APPLY", id, "Задачи телеметрии NVIDIA (NvTmRep*/NvTmMon*) отключены");
-                return rc == 0;
+                return ok;
             }
 
             // 2g) NVIDIA Telemetry Opt-Out (HKLM + HKCU)
@@ -1140,10 +1255,15 @@ namespace WinTweaker.Engine
 
             if (string.Equals(id, "nvidia-disable-scheduled-tasks", StringComparison.OrdinalIgnoreCase))
             {
-                int rc = RunProcess("powershell.exe", "-NoProfile -Command \"Get-ScheduledTask -TaskName 'NvTmRep*','NvTmMon*' -ErrorAction SilentlyContinue | Enable-ScheduledTask | Out-Null\"", 10000);
+                bool ok = SetNvidiaTasksEnabledViaCom(true);
+                if (!ok)
+                {
+                    int rc = RunProcess("powershell.exe", "-NoProfile -Command \"Get-ScheduledTask -TaskName 'NvTmRep*','NvTmMon*' -ErrorAction SilentlyContinue | Enable-ScheduledTask | Out-Null\"", 10000);
+                    ok = (rc == 0);
+                }
                 stateManager.RemoveSnapshot(id);
                 journal.Log("REVERT", id, "Задачи NVIDIA повторно включены (при наличии в системе)");
-                return rc == 0;
+                return ok;
             }
 
             if (string.Equals(id, "network-interrupt-moderation-low", StringComparison.OrdinalIgnoreCase) ||
@@ -2185,6 +2305,27 @@ namespace WinTweaker.Engine
             return null;
         }
 
+        private static bool IsSysMainServiceDisabled(IRegistryStore store)
+        {
+            try
+            {
+                object st = store != null
+                    ? store.GetValue("HKLM", @"SYSTEM\CurrentControlSet\Services\SysMain", "Start")
+                    : null;
+                if (st == null)
+                {
+                    using (RegistryKey hklm = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64))
+                    using (RegistryKey k = hklm.OpenSubKey(@"SYSTEM\CurrentControlSet\Services\SysMain", false))
+                    {
+                        st = k != null ? k.GetValue("Start") : null;
+                    }
+                }
+                if (st != null && Convert.ToInt32(st) == 4) return true;
+            }
+            catch { }
+            return false;
+        }
+
         private static TweakStatus CheckMemoryCompressionDisabled(IRegistryStore store)
         {
             try
@@ -2195,14 +2336,50 @@ namespace WinTweaker.Engine
                 int dis = disObj != null ? Convert.ToInt32(disObj) : 0;
                 int en = enObj != null ? Convert.ToInt32(enObj) : 0;
                 if ((dis & 0x200) != 0) return TweakStatus.Enabled;
+                if (IsSysMainServiceDisabled(store)) return TweakStatus.Enabled;
                 if ((en & 0x200) != 0) return TweakStatus.Disabled;
             }
             catch { }
             return TweakStatus.Unknown;
         }
 
+        private static string GetPowerSchemeFriendlyName(IRegistryStore store, string guid)
+        {
+            if (string.IsNullOrEmpty(guid)) return null;
+            try
+            {
+                string path = @"SYSTEM\CurrentControlSet\Control\Power\User\PowerSchemes\" + guid;
+                object fn = store != null ? store.GetValue("HKLM", path, "FriendlyName") : null;
+                if (fn == null)
+                {
+                    using (RegistryKey hklm = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64))
+                    using (RegistryKey k = hklm.OpenSubKey(path, false))
+                    {
+                        fn = k != null ? k.GetValue("FriendlyName") : null;
+                    }
+                }
+                return fn != null ? fn.ToString() : null;
+            }
+            catch { return null; }
+        }
+
         private static string GetActivePowerSchemeGuid()
         {
+            try
+            {
+                using (RegistryKey hklm = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64))
+                using (RegistryKey k = hklm.OpenSubKey(@"SYSTEM\CurrentControlSet\Control\Power\User\PowerSchemes", false))
+                {
+                    object val = k != null ? k.GetValue("ActivePowerScheme") : null;
+                    if (val != null)
+                    {
+                        string s = val.ToString().Trim('{', '}').ToLowerInvariant();
+                        if (s.Length == 36) return s;
+                    }
+                }
+            }
+            catch { }
+
             string stdout;
             int rc = RunProcessCapture("powercfg.exe", "/getactivescheme", 4000, out stdout);
             if (rc == 0 && !string.IsNullOrEmpty(stdout))
@@ -2214,8 +2391,75 @@ namespace WinTweaker.Engine
             return null;
         }
 
+        private static bool SetNvidiaTasksEnabledViaCom(bool enabled)
+        {
+            try
+            {
+                Type comType = Type.GetTypeFromProgID("Schedule.Service");
+                if (comType == null) return false;
+                object sched = Activator.CreateInstance(comType);
+                comType.InvokeMember("Connect", System.Reflection.BindingFlags.InvokeMethod, null, sched, null);
+                object root = comType.InvokeMember("GetFolder", System.Reflection.BindingFlags.InvokeMethod, null, sched, new object[] { @"\" });
+                object tasks = root.GetType().InvokeMember("GetTasks", System.Reflection.BindingFlags.InvokeMethod, null, root, new object[] { 1 });
+                System.Collections.IEnumerable enumerable = tasks as System.Collections.IEnumerable;
+                if (enumerable == null) return false;
+                foreach (object t in enumerable)
+                {
+                    if (t == null) continue;
+                    Type tt = t.GetType();
+                    string name = tt.InvokeMember("Name", System.Reflection.BindingFlags.GetProperty, null, t, null) as string;
+                    if (!string.IsNullOrEmpty(name) &&
+                        (name.StartsWith("NvTmRep", StringComparison.OrdinalIgnoreCase) ||
+                         name.StartsWith("NvTmMon", StringComparison.OrdinalIgnoreCase)))
+                    {
+                        tt.InvokeMember("Enabled", System.Reflection.BindingFlags.SetProperty, null, t, new object[] { enabled });
+                    }
+                }
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         private static TweakStatus CheckNvidiaTasksDisabledStatus()
         {
+            try
+            {
+                Type comType = Type.GetTypeFromProgID("Schedule.Service");
+                if (comType != null)
+                {
+                    object sched = Activator.CreateInstance(comType);
+                    comType.InvokeMember("Connect", System.Reflection.BindingFlags.InvokeMethod, null, sched, null);
+                    object root = comType.InvokeMember("GetFolder", System.Reflection.BindingFlags.InvokeMethod, null, sched, new object[] { @"\" });
+                    object tasks = root.GetType().InvokeMember("GetTasks", System.Reflection.BindingFlags.InvokeMethod, null, root, new object[] { 1 });
+                    System.Collections.IEnumerable enumerable = tasks as System.Collections.IEnumerable;
+                    if (enumerable != null)
+                    {
+                        int found = 0;
+                        int disabled = 0;
+                        foreach (object t in enumerable)
+                        {
+                            if (t == null) continue;
+                            Type tt = t.GetType();
+                            string name = tt.InvokeMember("Name", System.Reflection.BindingFlags.GetProperty, null, t, null) as string;
+                            if (!string.IsNullOrEmpty(name) &&
+                                (name.StartsWith("NvTmRep", StringComparison.OrdinalIgnoreCase) ||
+                                 name.StartsWith("NvTmMon", StringComparison.OrdinalIgnoreCase)))
+                            {
+                                found++;
+                                object enObj = tt.InvokeMember("Enabled", System.Reflection.BindingFlags.GetProperty, null, t, null);
+                                if (enObj is bool && !((bool)enObj)) disabled++;
+                            }
+                        }
+                        if (found == 0 || disabled == found) return TweakStatus.Enabled;
+                        return TweakStatus.Disabled;
+                    }
+                }
+            }
+            catch { }
+
             string stdout;
             int rc = RunProcessCapture("powershell.exe",
                 "-NoProfile -Command \"$t = Get-ScheduledTask -TaskName 'NvTmRep*','NvTmMon*' -ErrorAction SilentlyContinue; if (-not $t) { 'NONE' } elseif (($t | Where-Object { $_.State -ne 'Disabled' }).Count -eq 0) { 'DISABLED' } else { 'ENABLED' }\"",
@@ -2244,15 +2488,38 @@ namespace WinTweaker.Engine
             }
 
             bool? result = null;
-            string stdout;
-            int rc = RunProcessCapture("powershell.exe",
-                "-NoProfile -Command \"$b = Get-NetAdapterBinding -ComponentID ms_tcpip6 -ErrorAction SilentlyContinue; if (-not $b) { 'NONE' } elseif (($b | Where-Object { $_.Enabled }).Count -gt 0) { 'ENABLED' } else { 'DISABLED' }\"",
-                5000, out stdout);
-            if (rc == 0 && !string.IsNullOrEmpty(stdout))
+            try
             {
-                string s = stdout.Trim();
-                if (s.IndexOf("ENABLED", StringComparison.OrdinalIgnoreCase) >= 0) result = true;
-                else if (s.IndexOf("DISABLED", StringComparison.OrdinalIgnoreCase) >= 0) result = false;
+                NetworkInterface[] ifaces = NetworkInterface.GetAllNetworkInterfaces();
+                bool anyEnabled = false;
+                for (int i = 0; i < ifaces.Length; i++)
+                {
+                    NetworkInterface ni = ifaces[i];
+                    if (ni.NetworkInterfaceType == NetworkInterfaceType.Loopback ||
+                        ni.NetworkInterfaceType == NetworkInterfaceType.Tunnel)
+                    {
+                        continue;
+                    }
+                    if (ni.Supports(NetworkInterfaceComponent.IPv6))
+                    {
+                        anyEnabled = true;
+                        break;
+                    }
+                }
+                result = anyEnabled;
+            }
+            catch
+            {
+                string stdout;
+                int rc = RunProcessCapture("powershell.exe",
+                    "-NoProfile -Command \"$b = Get-NetAdapterBinding -ComponentID ms_tcpip6 -ErrorAction SilentlyContinue; if (-not $b) { 'NONE' } elseif (($b | Where-Object { $_.Enabled }).Count -gt 0) { 'ENABLED' } else { 'DISABLED' }\"",
+                    5000, out stdout);
+                if (rc == 0 && !string.IsNullOrEmpty(stdout))
+                {
+                    string s = stdout.Trim();
+                    if (s.IndexOf("ENABLED", StringComparison.OrdinalIgnoreCase) >= 0) result = true;
+                    else if (s.IndexOf("DISABLED", StringComparison.OrdinalIgnoreCase) >= 0) result = false;
+                }
             }
 
             lock (_cacheLock)

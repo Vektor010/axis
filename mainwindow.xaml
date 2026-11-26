@@ -124,7 +124,7 @@
                                         Padding="4,0.5"
                                         Margin="6,0,0,0"
                                         VerticalAlignment="Center">
-                                    <TextBlock Text="3.1"
+                                    <TextBlock Text="3.2"
                                                FontFamily="{StaticResource FontMono}"
                                                FontSize="9"
                                                FontWeight="Bold"

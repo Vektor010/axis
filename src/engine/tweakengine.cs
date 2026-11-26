@@ -166,41 +166,52 @@ namespace WinTweaker.Engine
                 result.RestorePointMessage = rpMsg;
             }
 
-            // 2. Экспорт .reg и снимок исходных значений в state.json делаются перед записью каждого твика в this.Apply(tweak)
-            for (int i = 0; i < tweaks.Count; i++)
+            // 2. Буферизуем запись state.json и journal.log на время пакета для максимальной скорости
+            if (this._stateManager != null) this._stateManager.BeginBatch();
+            if (this._journalManager != null) this._journalManager.BeginBatch();
+            try
             {
-                if (isCancelledFunc != null && isCancelledFunc())
+                for (int i = 0; i < tweaks.Count; i++)
                 {
-                    result.SkippedCount += (tweaks.Count - i);
-                    break;
-                }
-
-                if (progressCallback != null)
-                {
-                    progressCallback(i + 1, tweaks.Count);
-                }
-
-                TweakItem tweak = tweaks[i];
-                try
-                {
-                    bool ok = this.Apply(tweak);
-                    if (ok)
+                    if (isCancelledFunc != null && isCancelledFunc())
                     {
-                        result.AppliedCount++;
+                        result.SkippedCount += (tweaks.Count - i);
+                        break;
                     }
-                    else
+
+                    if (progressCallback != null)
+                    {
+                        progressCallback(i + 1, tweaks.Count);
+                    }
+
+                    TweakItem tweak = tweaks[i];
+                    try
+                    {
+                        bool ok = this.Apply(tweak, true);
+                        if (ok)
+                        {
+                            result.AppliedCount++;
+                        }
+                        else
+                        {
+                            result.ErrorCount++;
+                        }
+                    }
+                    catch (Exception ex)
                     {
                         result.ErrorCount++;
+                        if (this._journalManager != null)
+                        {
+                            this._journalManager.Log("ERROR", tweak.id, "Исключение при пакетном применении: " + ex.Message);
+                        }
                     }
                 }
-                catch (Exception ex)
-                {
-                    result.ErrorCount++;
-                    if (this._journalManager != null)
-                    {
-                        this._journalManager.Log("ERROR", tweak.id, "Исключение при пакетном применении: " + ex.Message);
-                    }
-                }
+            }
+            finally
+            {
+                if (this._stateManager != null) this._stateManager.EndBatch();
+                if (this._journalManager != null) this._journalManager.EndBatch();
+                SpecialTweakExecutor.InvalidateCaches();
             }
 
             if (this._journalManager != null)
@@ -240,40 +251,51 @@ namespace WinTweaker.Engine
 
             result.SkippedCount = skippedWithoutSnapshot;
 
-            for (int i = 0; i < withSnapshot.Count; i++)
+            if (this._stateManager != null) this._stateManager.BeginBatch();
+            if (this._journalManager != null) this._journalManager.BeginBatch();
+            try
             {
-                if (isCancelledFunc != null && isCancelledFunc())
+                for (int i = 0; i < withSnapshot.Count; i++)
                 {
-                    result.SkippedCount += (withSnapshot.Count - i);
-                    break;
-                }
-
-                if (progressCallback != null)
-                {
-                    progressCallback(i + 1, withSnapshot.Count);
-                }
-
-                TweakItem tweak = withSnapshot[i];
-                try
-                {
-                    bool ok = this.Revert(tweak);
-                    if (ok)
+                    if (isCancelledFunc != null && isCancelledFunc())
                     {
-                        result.RevertedCount++;
+                        result.SkippedCount += (withSnapshot.Count - i);
+                        break;
                     }
-                    else
+
+                    if (progressCallback != null)
+                    {
+                        progressCallback(i + 1, withSnapshot.Count);
+                    }
+
+                    TweakItem tweak = withSnapshot[i];
+                    try
+                    {
+                        bool ok = this.Revert(tweak);
+                        if (ok)
+                        {
+                            result.RevertedCount++;
+                        }
+                        else
+                        {
+                            result.ErrorCount++;
+                        }
+                    }
+                    catch (Exception ex)
                     {
                         result.ErrorCount++;
+                        if (this._journalManager != null)
+                        {
+                            this._journalManager.Log("ERROR", tweak.id, "Исключение при пакетном откате: " + ex.Message);
+                        }
                     }
                 }
-                catch (Exception ex)
-                {
-                    result.ErrorCount++;
-                    if (this._journalManager != null)
-                    {
-                        this._journalManager.Log("ERROR", tweak.id, "Исключение при пакетном откате: " + ex.Message);
-                    }
-                }
+            }
+            finally
+            {
+                if (this._stateManager != null) this._stateManager.EndBatch();
+                if (this._journalManager != null) this._journalManager.EndBatch();
+                SpecialTweakExecutor.InvalidateCaches();
             }
 
             if (this._journalManager != null)
@@ -547,6 +569,11 @@ namespace WinTweaker.Engine
 
         public bool Apply(TweakItem tweak)
         {
+            return this.Apply(tweak, false);
+        }
+
+        public bool Apply(TweakItem tweak, bool skipRestorePointCheck)
+        {
             if (tweak == null || tweak.registry == null) return false;
 
             try
@@ -554,7 +581,7 @@ namespace WinTweaker.Engine
                 if (SpecialTweakExecutor.IsCustomRealExecutorTweak(tweak) &&
                     (this._isRealMode || SpecialTweakExecutor.IsCleanupAction(tweak)))
                 {
-                    if (this._restorePointManager != null && this._isRealMode && !SpecialTweakExecutor.IsCleanupAction(tweak))
+                    if (!skipRestorePointCheck && this._restorePointManager != null && this._isRealMode && !SpecialTweakExecutor.IsCleanupAction(tweak))
                     {
                         string rpMsg;
                         this._restorePointManager.EnsureRestorePoint(tweak.name_ru ?? tweak.id, this._journalManager, out rpMsg);
@@ -563,7 +590,7 @@ namespace WinTweaker.Engine
                 }
 
                 // 0. Обеспечение точки восстановления перед применением
-                if (this._restorePointManager != null)
+                if (!skipRestorePointCheck && this._restorePointManager != null)
                 {
                     string rpMsg;
                     this._restorePointManager.EnsureRestorePoint(tweak.name_ru ?? tweak.id, this._journalManager, out rpMsg);
