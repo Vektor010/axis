@@ -62,6 +62,19 @@ namespace WinTweaker.Engine
             get { return this._restorePointManager; }
         }
 
+        public static bool HasApplyBlock(TweakItem tweak)
+        {
+            if (tweak == null || tweak.registry == null) return false;
+            for (int i = 0; i < tweak.registry.Count; i++)
+            {
+                if (!string.IsNullOrEmpty(tweak.registry[i].apply_block))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public static bool IsEligibleForBatchApply(TweakItem tweak, int currentBuild, TweakStatus currentStatus)
         {
             if (tweak == null) return false;
@@ -85,12 +98,9 @@ namespace WinTweaker.Engine
             if (currentStatus == TweakStatus.Enabled || currentStatus == TweakStatus.Unavailable) return false;
 
             // Твики с apply_block исключаются
-            for (int i = 0; i < tweak.registry.Count; i++)
+            if (HasApplyBlock(tweak))
             {
-                if (!string.IsNullOrEmpty(tweak.registry[i].apply_block))
-                {
-                    return false;
-                }
+                return false;
             }
 
             // Твики с needs_review входят

@@ -130,6 +130,7 @@ namespace WinTweaker.ViewModels
         private GameModeState _gameModeState;
 
         private DispatcherTimer _liveTimer;
+        private readonly System.Windows.Threading.Dispatcher _uiDispatcher;
         private int _isPollingMetrics;
         private volatile bool _isDisposed;
         private readonly List<double> _cpuHistory;
@@ -168,17 +169,21 @@ namespace WinTweaker.ViewModels
         private PointCollection _ramChartAreaPoints;
         private PointCollection _gpuChartAreaPoints;
 
-        // Extended Real Hardware Telemetry (CPU Temp, GPU Load, Disk, Net, Uptime, Processes)
+        // Extended Real Hardware Telemetry (CPU Boost/Temp, GPU Load/Clocks/Power, RAM, Disk, Net, Uptime, Processes)
         private string _cpuTempDisplay;
         private string _gpuLoadDisplay;
+        private string _gpuDetailDisplay;
         private double _gpuLoadPercent;
+        private string _ramPercentBadge;
         private string _diskActivityDisplay;
         private string _diskSpaceDisplay;
         private string _networkRateDisplay;
+        private string _networkDetailDisplay;
         private string _uptimeDisplay;
         private string _processCountDisplay;
         private string _lastUpdatedDisplay;
         private string _lastDiagnosticSummary;
+        private int _lastKnownJournalCount = -1;
 
         // System Specs properties
         private string _cpuSpec;
@@ -633,9 +638,9 @@ namespace WinTweaker.ViewModels
         {
             get { return this.RevertableCount > 0 ? string.Format("Откатить все ({0})", this.RevertableCount) : "Откатить все"; }
         }
-        public string AppVersionDisplay { get { return "v3.3.0 • 2026"; } }
+        public string AppVersionDisplay { get { return "v3.4.0 • 2026"; } }
         public string DatabaseStatsDisplay { get { return string.Format("{0} твиков • 12 категорий", this.TotalTweaksCount); } }
-        public string EngineSummaryFooterText { get { return string.Format("AXIS Engine v3.3 • {0} твиков, изолированные снимки state.json и прямой WinAPI без внешних зависимостей.", this.TotalTweaksCount); } }
+        public string EngineSummaryFooterText { get { return string.Format("AXIS Engine v3.4 • {0} твиков, изолированные снимки state.json и прямой WinAPI без внешних зависимостей.", this.TotalTweaksCount); } }
 
         public bool CanApplyRecommended
         {
@@ -900,10 +905,22 @@ namespace WinTweaker.ViewModels
             set { this._gpuLoadDisplay = value; this.OnPropertyChanged("GpuLoadDisplay"); }
         }
 
+        public string GpuDetailDisplay
+        {
+            get { return this._gpuDetailDisplay; }
+            set { this._gpuDetailDisplay = value; this.OnPropertyChanged("GpuDetailDisplay"); }
+        }
+
         public double GpuLoadPercent
         {
             get { return this._gpuLoadPercent; }
             set { this._gpuLoadPercent = value; this.OnPropertyChanged("GpuLoadPercent"); }
+        }
+
+        public string RamPercentBadge
+        {
+            get { return this._ramPercentBadge; }
+            set { this._ramPercentBadge = value; this.OnPropertyChanged("RamPercentBadge"); }
         }
 
         public string DiskActivityDisplay
@@ -922,6 +939,12 @@ namespace WinTweaker.ViewModels
         {
             get { return this._networkRateDisplay; }
             set { this._networkRateDisplay = value; this.OnPropertyChanged("NetworkRateDisplay"); }
+        }
+
+        public string NetworkDetailDisplay
+        {
+            get { return this._networkDetailDisplay; }
+            set { this._networkDetailDisplay = value; this.OnPropertyChanged("NetworkDetailDisplay"); }
         }
 
         public string UptimeDisplay
@@ -1212,6 +1235,7 @@ namespace WinTweaker.ViewModels
 
             this._isGrouped = true;
             this._isTweaksCategoriesExpanded = true;
+            this._uiDispatcher = System.Windows.Threading.Dispatcher.CurrentDispatcher;
             this._chartWidth = 480.0;
 
             this._cpuHistory = new List<double>();
@@ -1220,11 +1244,14 @@ namespace WinTweaker.ViewModels
             this._pingHistory = new List<double>();
             this._tempHistory = new List<double>();
 
-            this._cpuTempDisplay = "Опрос...";
-            this._gpuLoadDisplay = "Опрос...";
+            this._cpuTempDisplay = "";
+            this._gpuLoadDisplay = "0%";
+            this._gpuDetailDisplay = "Опрос видеокарты...";
+            this._ramPercentBadge = "0%";
             this._diskActivityDisplay = "Опрос...";
             this._diskSpaceDisplay = "—";
-            this._networkRateDisplay = "0 КБ/с";
+            this._networkRateDisplay = "↓ 0 КБ/с  ↑ 0 КБ/с";
+            this._networkDetailDisplay = "Активный канал";
             this._uptimeDisplay = "—";
             this._processCountDisplay = "—";
             this._lastUpdatedDisplay = "Ожидание...";
@@ -1267,19 +1294,19 @@ namespace WinTweaker.ViewModels
             this.UpdateRecentJournal();
             this.RefreshHistory();
 
-            // Setup live update timer with configurable polling interval (default 1s responsive live graph)
+            // Setup live update timer (default Live 500ms high-frequency telemetry; 2s / 5s / Pause optional)
             this._liveTimer = new DispatcherTimer();
             int pollSec = (this._settingsManager != null && this._settingsManager.Settings != null) ? this._settingsManager.Settings.PollingIntervalSeconds : 1;
             if (pollSec == 0) pollSec = 1;
             if (pollSec > 0)
             {
-                this._liveTimer.Interval = TimeSpan.FromSeconds(pollSec);
+                this._liveTimer.Interval = (pollSec == 1) ? TimeSpan.FromMilliseconds(500) : TimeSpan.FromSeconds(pollSec);
                 this._liveTimer.Tick += this.OnLiveTimerTick;
                 this._liveTimer.Start();
             }
             else
             {
-                this._liveTimer.Interval = TimeSpan.FromSeconds(1);
+                this._liveTimer.Interval = TimeSpan.FromMilliseconds(500);
                 this._liveTimer.Tick += this.OnLiveTimerTick;
             }
 
@@ -1393,23 +1420,12 @@ namespace WinTweaker.ViewModels
                 this.DisksList = specs.DisksList;
                 this.OsSpec = specs.Os;
 
-                // Память
-                SystemInfoService.MEMORYSTATUSEX mem = new SystemInfoService.MEMORYSTATUSEX();
-                mem.dwLength = (uint)System.Runtime.InteropServices.Marshal.SizeOf(typeof(SystemInfoService.MEMORYSTATUSEX));
-                if (SystemInfoService.GlobalMemoryStatusEx(ref mem))
+                if (this._isRealMode)
                 {
-                    double totalGb = (double)mem.ullTotalPhys / (1024.0 * 1024.0 * 1024.0);
-                    double availGb = (double)mem.ullAvailPhys / (1024.0 * 1024.0 * 1024.0);
-                    double usedGb = Math.Max(0.0, totalGb - availGb);
-                    double ramPercent = (double)mem.dwMemoryLoad;
-                    this.RamDisplay = string.Format("{0:F1} ГБ", usedGb);
-                    this.RamStatus = string.Format("Занято {0:F0}% из {1:F1} ГБ", ramPercent, totalGb);
-                    this._ramHistory.Add(ramPercent);
+                    SystemMetrics instant = this._systemInfoService.CollectInstantStartupSnapshot(this._pingCustomHost);
+                    this.UpdateLiveMetricsUI(instant);
                 }
-
-                // В тестовом режиме собираем первый снимок синхронно (для мгновенного --screenshot),
-                // а в реальном режиме ОС — асинхронно в PollLiveMetrics(), чтобы окно открывалось мгновенно без ожидания Ping/WMI/PDH.
-                if (!this._isRealMode)
+                else
                 {
                     SystemMetrics initMetrics = this._systemInfoService.CollectLiveMetrics(this._pingCustomHost);
                     this.UpdateLiveMetricsUI(initMetrics);
@@ -1594,29 +1610,23 @@ namespace WinTweaker.ViewModels
             }
 
             string host = this._pingCustomHost;
-            bool needTwoPoints = (this._cpuHistory.Count == 0 && this._isRealMode);
+            var disp = this._uiDispatcher ?? (Application.Current != null ? Application.Current.Dispatcher : null);
             Task.Run(() =>
             {
                 try
                 {
                     if (this._isDisposed) return;
                     SystemMetrics m = this._systemInfoService.CollectLiveMetrics(host);
-                    SystemMetrics m2 = null;
-                    if (needTwoPoints && !this._isDisposed)
-                    {
-                        System.Threading.Thread.Sleep(180);
-                        if (!this._isDisposed) m2 = this._systemInfoService.CollectLiveMetrics(host);
-                    }
-                    if (this._isDisposed || Application.Current == null) return;
-                    Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+                    if (this._isDisposed || disp == null) return;
+                    disp.BeginInvoke(new Action(() =>
                     {
                         if (!this._isDisposed)
                         {
                             this.UpdateLiveMetricsUI(m);
-                            if (m2 != null) this.UpdateLiveMetricsUI(m2);
                         }
                     }));
                 }
+                catch { }
                 finally
                 {
                     System.Threading.Interlocked.Exchange(ref this._isPollingMetrics, 0);
@@ -1628,34 +1638,42 @@ namespace WinTweaker.ViewModels
         {
             if (m == null) return;
 
-            // 1. CPU
+            const int MaxHistorySamples = 120;
+
+            // 1. CPU (Utility + Boost GHz + Smart Temp if available)
             this._cpuHistory.Add(m.CpuLoadPercent);
-            if (this._cpuHistory.Count > 60) this._cpuHistory.RemoveAt(0);
-            this.CpuDisplay = string.Format("{0:F0}%", m.CpuLoadPercent);
-            this.CpuStatus = string.Format("{0} потоков • Т: {1}", Environment.ProcessorCount, m.CpuTempDisplay);
+            if (this._cpuHistory.Count > MaxHistorySamples) this._cpuHistory.RemoveAt(0);
+            this.CpuDisplay = (m.CpuLoadPercent < 10.0)
+                ? string.Format("{0:F1}%", m.CpuLoadPercent)
+                : string.Format("{0:F0}%", m.CpuLoadPercent);
+            this.CpuStatus = m.IsCpuTempAvailable
+                ? string.Format("{0} • Т: {1} • {2} пот.", m.CpuClockDisplay, m.CpuTempDisplay, Environment.ProcessorCount)
+                : string.Format("{0} • Boost {1:F0}% • {2} пот.", m.CpuClockDisplay, m.CpuPerfPercent, Environment.ProcessorCount);
             this.CpuSparkline = this.CreateSparklinePoints(this._cpuHistory);
 
             // 2. RAM
             this._ramHistory.Add(m.RamLoadPercent);
-            if (this._ramHistory.Count > 60) this._ramHistory.RemoveAt(0);
+            if (this._ramHistory.Count > MaxHistorySamples) this._ramHistory.RemoveAt(0);
             this.RamDisplay = string.Format("{0:F1} ГБ", m.RamUsedGb);
-            this.RamStatus = string.Format("Занято {0:F0}% из {1:F1} ГБ", m.RamLoadPercent, m.RamTotalGb);
+            this.RamPercentBadge = string.Format("{0:F0}%", m.RamLoadPercent);
+            this.RamStatus = string.Format("Из {0:F1} ГБ • Свободно {1:F1} ГБ", m.RamTotalGb, m.RamFreeGb);
             this.RamSparkline = this.CreateSparklinePoints(this._ramHistory);
 
             // 3. Ping
             double pingVal = m.PingMs >= 0 ? (double)m.PingMs : 0.0;
             this._pingHistory.Add(pingVal);
-            if (this._pingHistory.Count > 60) this._pingHistory.RemoveAt(0);
+            if (this._pingHistory.Count > MaxHistorySamples) this._pingHistory.RemoveAt(0);
             this.PingDisplay = m.PingDisplay;
             string target = !string.IsNullOrEmpty(this._pingCustomHost) ? this._pingCustomHost : "шлюза";
-            this.PingStatus = m.PingMs >= 0 ? string.Format("до {0}", target) : "Нет ответа";
+            this.PingStatus = m.PingMs >= 0 ? string.Format("до {0}", target) : "Проверка связи...";
             this.PingSparkline = this.CreateSparklinePoints(this._pingHistory);
 
-            // 4. Temp & GPU Utilization
+            // 4. GPU (Temp + Load + Clocks/Power/VRAM)
             this.TempDisplay = m.TempDisplay;
             this.TempStatus = m.IsGpuLoadAvailable
                 ? string.Format("{0} • Нагрузка: {1}", m.TempStatus, m.GpuLoadDisplay)
                 : m.TempStatus;
+            this.GpuDetailDisplay = m.GpuDetailDisplay;
             double tempVal = 0.0;
             if (!string.IsNullOrEmpty(m.TempDisplay) && m.TempDisplay != "Нет данных")
             {
@@ -1663,43 +1681,46 @@ namespace WinTweaker.ViewModels
                 double.TryParse(digits, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out tempVal);
             }
             this._tempHistory.Add(tempVal);
-            if (this._tempHistory.Count > 60) this._tempHistory.RemoveAt(0);
+            if (this._tempHistory.Count > MaxHistorySamples) this._tempHistory.RemoveAt(0);
             this.TempSparkline = this.CreateSparklinePoints(this._tempHistory);
             this.CpuTempDisplay = m.CpuTempDisplay;
             this.GpuLoadPercent = m.GpuLoadPercent;
             this.GpuLoadDisplay = m.GpuLoadDisplay;
             this._gpuHistory.Add(m.IsGpuLoadAvailable ? m.GpuLoadPercent : 0.0);
-            if (this._gpuHistory.Count > 60) this._gpuHistory.RemoveAt(0);
+            if (this._gpuHistory.Count > MaxHistorySamples) this._gpuHistory.RemoveAt(0);
             this.OnPropertyChanged("IsTempAvailable");
 
             // 5. Real Hardware Sensors Bar (Disk / Network / Uptime / Processes / Last Update)
             this.DiskActivityDisplay = m.DiskActivityDisplay;
             this.DiskSpaceDisplay = m.DiskSpaceDisplay;
             this.NetworkRateDisplay = m.NetworkRateDisplay;
+            this.NetworkDetailDisplay = m.NetworkDetailDisplay;
             this.UptimeDisplay = m.UptimeDisplay;
             this.ProcessCountDisplay = m.ProcessCount > 0 ? m.ProcessCount.ToString() : "—";
             this.LastUpdatedDisplay = "Обновлено: " + m.LastUpdatedDisplay;
 
             // 6. Big Chart
             this.ChartTitle = m.IsGpuLoadAvailable
-                ? string.Format("ЦП: {0:F1}% | ОЗУ: {1:F1}/{2:F1} ГБ | GPU: {3}", m.CpuLoadPercent, m.RamUsedGb, m.RamTotalGb, m.GpuLoadDisplay)
-                : string.Format("ЦП: {0:F1}% | ОЗУ: {1:F1}/{2:F1} ГБ ({3:F0}%)", m.CpuLoadPercent, m.RamUsedGb, m.RamTotalGb, m.RamLoadPercent);
+                ? string.Format("ЦП: {0:F1}% ({1}) | ОЗУ: {2:F1}/{3:F1} ГБ | GPU: {4} • {5}", m.CpuLoadPercent, m.CpuClockDisplay, m.RamUsedGb, m.RamTotalGb, m.GpuLoadDisplay, m.TempDisplay)
+                : string.Format("ЦП: {0:F1}% ({1}) | ОЗУ: {2:F1}/{3:F1} ГБ ({4:F0}%)", m.CpuLoadPercent, m.CpuClockDisplay, m.RamUsedGb, m.RamTotalGb, m.RamLoadPercent);
             this.CpuChartPoints = this.CreateChartPoints(this._cpuHistory);
             this.RamChartPoints = this.CreateChartPoints(this._ramHistory);
             this.GpuChartPoints = this.CreateChartPoints(this._gpuHistory);
             this.CpuChartAreaPoints = this.CreateChartAreaPoints(this._cpuHistory);
             this.RamChartAreaPoints = this.CreateChartAreaPoints(this._ramHistory);
             this.GpuChartAreaPoints = this.CreateChartAreaPoints(this._gpuHistory);
-            this.IsCollectingData = this._cpuHistory.Count < 2;
+            this.IsCollectingData = this._cpuHistory.Count < 1;
             this.OnPropertyChanged("HasAtLeast5Points");
             this.OnPropertyChanged("IsCollectingData");
 
-            // 7. Update counts
-            this.UpdateSummary();
-            this.UpdateRecentJournal();
-            this.OnPropertyChanged("AttentionCount");
-            this.OnPropertyChanged("AttentionSummary");
-            this.OnPropertyChanged("JournalCountDisplay");
+            // 7. Журнал обновляем ТОЛЬКО при изменении числа записей (без пересчета 888 твиков каждую секунду)
+            int jCount = (this._journalManager != null && this._journalManager.Entries != null) ? this._journalManager.Entries.Count : 0;
+            if (jCount != this._lastKnownJournalCount)
+            {
+                this._lastKnownJournalCount = jCount;
+                this.UpdateRecentJournal();
+                this.OnPropertyChanged("JournalCountDisplay");
+            }
         }
 
         private PointCollection CreateSparklinePoints(List<double> history)
@@ -1710,15 +1731,26 @@ namespace WinTweaker.ViewModels
             double padY = 3.0;
             double usableH = h - padY * 2.0;
             int count = history.Count;
-            if (count < 2) return pts;
+            if (count == 0) return pts;
 
-            for (int i = 0; i < count; i++)
+            if (count == 1)
             {
-                double x = i * (w / (count - 1));
-                double val = Math.Max(0.0, Math.Min(100.0, history[i]));
-                double y = (h - padY) - (val / 100.0 * usableH);
-                pts.Add(new Point(x, y));
+                double val0 = Math.Max(0.0, Math.Min(100.0, history[0]));
+                double y0 = (h - padY) - (val0 / 100.0 * usableH);
+                pts.Add(new Point(0.0, y0));
+                pts.Add(new Point(w, y0));
             }
+            else
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    double x = i * (w / (count - 1));
+                    double val = Math.Max(0.0, Math.Min(100.0, history[i]));
+                    double y = (h - padY) - (val / 100.0 * usableH);
+                    pts.Add(new Point(x, y));
+                }
+            }
+            if (pts.CanFreeze) pts.Freeze();
             return pts;
         }
 
@@ -1730,15 +1762,26 @@ namespace WinTweaker.ViewModels
             double padY = 5.0;
             double usableH = Math.Max(10.0, h - padY * 2.0);
             int count = history.Count;
-            if (count < 2) return pts;
+            if (count == 0) return pts;
 
-            for (int i = 0; i < count; i++)
+            if (count == 1)
             {
-                double x = i * (w / (count - 1));
-                double val = Math.Max(0.0, Math.Min(100.0, history[i]));
-                double y = (h - padY) - (val / 100.0 * usableH);
-                pts.Add(new Point(x, y));
+                double val0 = Math.Max(0.0, Math.Min(100.0, history[0]));
+                double y0 = (h - padY) - (val0 / 100.0 * usableH);
+                pts.Add(new Point(0.0, y0));
+                pts.Add(new Point(w, y0));
             }
+            else
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    double x = i * (w / (count - 1));
+                    double val = Math.Max(0.0, Math.Min(100.0, history[i]));
+                    double y = (h - padY) - (val / 100.0 * usableH);
+                    pts.Add(new Point(x, y));
+                }
+            }
+            if (pts.CanFreeze) pts.Freeze();
             return pts;
         }
 
@@ -1752,6 +1795,7 @@ namespace WinTweaker.ViewModels
             area.Add(new Point(0.0, baselineY));
             for (int i = 0; i < pts.Count; i++) area.Add(pts[i]);
             area.Add(new Point(w, baselineY));
+            if (area.CanFreeze) area.Freeze();
             return area;
         }
 
@@ -2560,14 +2604,29 @@ namespace WinTweaker.ViewModels
             "security-powershell-invocation-header",
             "security-powershell-scriptblock-invocation-logging",
             "security-powershell-user-invocation-header",
-            "security-powershell-user-scriptblock-invocation-logging"
+            "security-powershell-user-scriptblock-invocation-logging",
+            // Экспериментальные / отладочные параметры GPU, DWM, MMCSS и таймеров ядра (риск зависаний при массовом применении)
+            "system-dxg-hw-queue-packet-cap",
+            "system-dxg-hwsch-thread-offload",
+            "system-kernel-disable-low-qos-timer-resolution",
+            "system-dwm-enable-front-buffer-render-checks",
+            "system-dwm-disable-draw-list-caching",
+            "system-dwm-disable-device-bitmaps",
+            "system-dwm-disable-locking-memory",
+            "system-mmcss-no-lazy-mode",
+            "system-mmcss-idle-detection-cycles",
+            "system-mmcss-lazy-mode-timeout",
+            "system-mmcss-scheduler-period",
+            "system-mmcss-max-threads-process",
+            "system-mmcss-max-threads-total"
         };
 
-        private static bool IsEligibleForContextBatchApply(TweakCardViewModel tw)
+        internal static bool IsEligibleForContextBatchApply(TweakCardViewModel tw)
         {
             if (tw == null || tw.IsActionTweak) return false;
             if (tw.Status == TweakStatus.Enabled || tw.Status == TweakStatus.Unavailable) return false;
             if (!string.IsNullOrEmpty(tw.Id) && ManualOnlyPreferenceIds.Contains(tw.Id)) return false;
+            if (TweakEngine.HasApplyBlock(tw.Model)) return false;
             return true;
         }
 
@@ -3044,7 +3103,7 @@ namespace WinTweaker.ViewModels
                 }
                 else
                 {
-                    this._liveTimer.Interval = TimeSpan.FromSeconds(sec);
+                    this._liveTimer.Interval = (sec == 1) ? TimeSpan.FromMilliseconds(500) : TimeSpan.FromSeconds(sec);
                     if (!this._liveTimer.IsEnabled) this._liveTimer.Start();
                 }
             }

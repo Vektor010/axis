@@ -39,6 +39,8 @@ namespace WinTweaker.Engine
         private static DateTime _nvKeysCacheTime = DateTime.MinValue;
         private static readonly Dictionary<string, List<string>> _pciKeysCache = new Dictionary<string, List<string>>(StringComparer.Ordinal);
         private static DateTime _pciKeysCacheTime = DateTime.MinValue;
+        private static Dictionary<string, bool> _scheduledTaskCache = null;
+        private static DateTime _scheduledTaskCacheTime = DateTime.MinValue;
 
         [DllImport("dnsapi.dll", EntryPoint = "DnsFlushResolverCache")]
         private static extern int DnsFlushResolverCache();
@@ -63,6 +65,8 @@ namespace WinTweaker.Engine
                 _nvKeysCache = null;
                 _nvKeysCacheTime = DateTime.MinValue;
                 _pciKeysCache.Clear();
+                _scheduledTaskCache = null;
+                _scheduledTaskCacheTime = DateTime.MinValue;
                 _pciKeysCacheTime = DateTime.MinValue;
             }
         }
@@ -254,9 +258,146 @@ namespace WinTweaker.Engine
             if (string.Equals(id, "nvidia-disable-scheduled-tasks", StringComparison.OrdinalIgnoreCase)) return true;
             if (string.Equals(id, "nvidia-telemetry-client-optout", StringComparison.OrdinalIgnoreCase)) return true;
             if (id.StartsWith("steam-vdf-", StringComparison.OrdinalIgnoreCase)) return true;
+            if (ScheduledTaskGroupSpecs.ContainsKey(id)) return true;
             if (IsCleanupAction(tweak)) return true;
             return false;
         }
+
+        private static readonly Dictionary<string, string[]> ScheduledTaskGroupSpecs = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase)
+        {
+            { "system-tasks-disable-ceip", new[] {
+                @"\Microsoft\Windows\Autochk\Proxy",
+                @"\Microsoft\Windows\Customer Experience Improvement Program\UsbCeip",
+                @"\Microsoft\Windows\Customer Experience Improvement Program\Consolidator",
+                @"\Microsoft\Windows\Customer Experience Improvement Program\Uploader",
+                @"\Microsoft\Windows\Customer Experience Improvement Program\Server\ServerCeipAssistant",
+                @"\Microsoft\Windows\Customer Experience Improvement Program\Server\ServerRoleUsageCollector"
+            }},
+            { "system-tasks-disable-error-reporting", new[] {
+                @"\Microsoft\Windows\Windows Error Reporting\QueueReporting"
+            }},
+            { "system-tasks-disable-feedback", new[] {
+                @"\Microsoft\Windows\Feedback\Siuf\DmClient",
+                @"\Microsoft\Windows\Feedback\Siuf\DmClientOnScenarioDownload"
+            }},
+            { "system-tasks-disable-app-experience", new[] {
+                @"\Microsoft\Windows\Application Experience\MareBackup",
+                @"\Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser",
+                @"\Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser Exp",
+                @"\Microsoft\Windows\Application Experience\PcaPatchDbTask",
+                @"\Microsoft\Windows\Application Experience\SdbinstMergeDbTask",
+                @"\Microsoft\Windows\Application Experience\StartupAppTask"
+            }},
+            { "system-tasks-disable-census", new[] {
+                @"\Microsoft\Windows\Device Information\Device",
+                @"\Microsoft\Windows\Device Information\Device User"
+            }},
+            { "system-tasks-disable-maps", new[] {
+                @"\Microsoft\Windows\Maps\MapsUpdateTask",
+                @"\Microsoft\Windows\Maps\MapsToastTask"
+            }},
+            { "system-tasks-disable-sleep-study", new[] {
+                @"\Microsoft\Windows\Power Efficiency Diagnostics\AnalyzeSystem"
+            }},
+            { "system-tasks-disable-diag-telemetry", new[] {
+                @"\Microsoft\Windows\Diagnosis\RecommendedTroubleshootingScanner",
+                @"\Microsoft\Windows\Diagnosis\Scheduled",
+                @"\Microsoft\Windows\Diagnosis\UnexpectedCodePath",
+                @"\Microsoft\Windows\DiskDiagnostic\Microsoft-Windows-DiskDiagnosticDataCollector",
+                @"\Microsoft\Windows\Flighting\OneSettings\RefreshCache",
+                @"\Microsoft\Windows\AccountHealth\RecoverabilityToastTask",
+                @"\Microsoft\Windows\Location\WindowsActionDialog",
+                @"\Microsoft\Windows\RetailDemo\CleanupOfflineContent",
+                @"\Microsoft\Windows\Speech\SpeechModelDownloadTask",
+                @"\Microsoft\Windows\RemoteAssistance\RemoteAssistanceTask"
+            }},
+            { "system-tasks-disable-windows-ai", new[] {
+                @"\Microsoft\Windows\WindowsAI\Recall\InitialConfiguration",
+                @"\Microsoft\Windows\WindowsAI\Recall\PolicyConfiguration",
+                @"\Microsoft\Windows\WindowsAI\Settings\InitialConfiguration"
+            }},
+            { "system-tasks-disable-office-telemetry", new[] {
+                @"\Microsoft\Office\OfficeTelemetryAgentFallBack",
+                @"\Microsoft\Office\OfficeTelemetryAgentFallBack2016",
+                @"\Microsoft\Office\OfficeTelemetryAgentLogOn",
+                @"\Microsoft\Office\OfficeTelemetryAgentLogOn2016"
+            }},
+            { "system-tasks-disable-defrag", new[] {
+                @"\Microsoft\Windows\Defrag\ScheduledDefrag"
+            }},
+            { "system-tasks-disable-maintenance-misc", new[] {
+                @"\Microsoft\Windows\ApplicationData\DsSvcCleanup",
+                @"\Microsoft\Windows\CloudExperienceHost\CreateObjectTask",
+                @"\Microsoft\Windows\DiskCleanup\SilentCleanup",
+                @"\Microsoft\Windows\DiskDiagnostic\Microsoft-Windows-DiskDiagnosticResolver",
+                @"\Microsoft\Windows\DiskFootprint\Diagnostics",
+                @"\Microsoft\Windows\DiskFootprint\StorageSense",
+                @"\Microsoft\Windows\UNP\RunUpdateNotificationMgr",
+                @"\Microsoft\Windows\BrokerInfrastructure\BgTaskRegistrationMaintenanceTask",
+                @"\Microsoft\Windows\capabilityaccessmanager\maintenancetasks",
+                @"\Microsoft\Windows\Registry\RegIdleBackup",
+                @"\Microsoft\Windows\MemoryDiagnostic\AutomaticOfflineMemoryDiagnostic",
+                @"\Microsoft\Windows\MemoryDiagnostic\ProcessMemoryDiagnosticEvents",
+                @"\Microsoft\Windows\MemoryDiagnostic\RunFullMemoryDiagnostic",
+                @"\Microsoft\Windows\Chkdsk\ProactiveScan",
+                @"\Microsoft\Windows\Chkdsk\SyspartRepair"
+            }},
+            { "system-tasks-disable-offline-files-workfolders", new[] {
+                @"\Microsoft\Windows\Offline Files\Background Synchronization",
+                @"\Microsoft\Windows\Offline Files\Logon Synchronization",
+                @"\Microsoft\Windows\Work Folders\Work Folders Logon Synchronization",
+                @"\Microsoft\Windows\Work Folders\Work Folders Maintenance Work"
+            }},
+            { "system-tasks-disable-printing-wifi-tasks", new[] {
+                @"\Microsoft\Windows\Printing\PrintJobCleanupTask",
+                @"\Microsoft\Windows\Printing\PrinterCleanupTask",
+                @"\Microsoft\Windows\Printing\EduPrintProv",
+                @"\Microsoft\Windows\WCM\WiFiTask",
+                @"\Microsoft\Windows\WlanSvc\CDSSync",
+                @"\Microsoft\Windows\WwanSvc\NotificationTask",
+                @"\Microsoft\Windows\WwanSvc\OobeDiscovery",
+                @"\Microsoft\Windows\WlanSvc\MoProfileManagement"
+            }},
+            { "system-tasks-disable-localization-timesync", new[] {
+                @"\Microsoft\Windows\International\Synchronize Language Settings",
+                @"\Microsoft\Windows\LanguageComponentsInstaller\Installation",
+                @"\Microsoft\Windows\LanguageComponentsInstaller\ReconcileLanguageResources",
+                @"\Microsoft\Windows\LanguageComponentsInstaller\Uninstallation",
+                @"\Microsoft\Windows\Time Synchronization\ForceSynchronizeTime",
+                @"\Microsoft\Windows\Time Synchronization\SynchronizeTime"
+            }},
+            { "system-tasks-disable-wu-store-tasks", new[] {
+                @"\Microsoft\Windows\InstallService\ScanForUpdates",
+                @"\Microsoft\Windows\InstallService\ScanForUpdatesAsUser",
+                @"\Microsoft\Windows\InstallService\SmartRetry",
+                @"\Microsoft\Windows\InstallService\WakeUpAndContinueUpdates",
+                @"\Microsoft\Windows\InstallService\WakeUpAndScanForUpdates",
+                @"\Microsoft\Windows\UpdateOrchestrator\Report policies",
+                @"\Microsoft\Windows\UpdateOrchestrator\Schedule Maintenance Work",
+                @"\Microsoft\Windows\UpdateOrchestrator\Schedule Scan",
+                @"\Microsoft\Windows\UpdateOrchestrator\Schedule Scan Static Task",
+                @"\Microsoft\Windows\UpdateOrchestrator\Schedule Wake To Work",
+                @"\Microsoft\Windows\UpdateOrchestrator\Schedule Work",
+                @"\Microsoft\Windows\UpdateOrchestrator\Start Oobe Expedite Work",
+                @"\Microsoft\Windows\UpdateOrchestrator\StartOobeAppsScan_LicenseAccepted",
+                @"\Microsoft\Windows\UpdateOrchestrator\StartOobeAppsScanAfterUpdate",
+                @"\Microsoft\Windows\UpdateOrchestrator\USO_UxBroker",
+                @"\Microsoft\Windows\UpdateOrchestrator\UUS Failover Task",
+                @"\Microsoft\Windows\WindowsUpdate\Scheduled Start",
+                @"\Microsoft\Windows\WindowsUpdate\Refresh Group Policy Cache",
+                @"\Microsoft\Windows\BitLocker\BitLocker Encrypt All Drives",
+                @"\Microsoft\Windows\BitLocker\BitLocker MDM Policy Refresh"
+            }},
+            { "system-tasks-disable-system-restore", new[] {
+                @"\Microsoft\Windows\SystemRestore\SR"
+            }},
+            { "security-tasks-disable-defender", new[] {
+                @"\Microsoft\Windows\Windows Defender\Windows Defender Cache Maintenance",
+                @"\Microsoft\Windows\Windows Defender\Windows Defender Cleanup",
+                @"\Microsoft\Windows\Windows Defender\Windows Defender Scheduled Scan",
+                @"\Microsoft\Windows\Windows Defender\Windows Defender Verification"
+            }}
+        };
 
         private class SteamVdfSpec
         {
@@ -387,6 +528,27 @@ namespace WinTweaker.Engine
                     results.Add(pciInstances[i] + @"\" + relativeSuffix);
                 }
                 return results;
+            }
+
+            // E) Реальные службы и драйверы Windows/сторонних приложений: проверяем наличие Start в реестре,
+            // чтобы отсутствующие на данном ПК службы (VirtualBox, SteelSeries, Epic, удалённые компоненты) были Unavailable
+            const string servicesPrefix = @"SYSTEM\CurrentControlSet\Services\";
+            if (string.Equals(action.name, "Start", StringComparison.OrdinalIgnoreCase) &&
+                rawPath.StartsWith(servicesPrefix, StringComparison.OrdinalIgnoreCase) &&
+                rawPath.LastIndexOf('\\') == servicesPrefix.Length - 1)
+            {
+                try
+                {
+                    using (RegistryKey hklm = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64))
+                    using (RegistryKey sk = hklm.OpenSubKey(rawPath, false))
+                    {
+                        if (sk == null || sk.GetValue("Start") == null)
+                        {
+                            return results;
+                        }
+                    }
+                }
+                catch { }
             }
 
             results.Add(rawPath);
@@ -733,6 +895,13 @@ namespace WinTweaker.Engine
                 return CheckNvidiaTasksDisabledStatus();
             }
 
+            // Noverse Windows Scheduled Tasks Groups (COM Schedule.Service)
+            string[] taskPaths;
+            if (ScheduledTaskGroupSpecs.TryGetValue(id, out taskPaths))
+            {
+                return CheckScheduledTaskGroupStatus(taskPaths);
+            }
+
             // NVIDIA Telemetry Opt-Out (both HKLM and HKCU)
             if (string.Equals(id, "nvidia-telemetry-client-optout", StringComparison.OrdinalIgnoreCase))
             {
@@ -1059,6 +1228,13 @@ namespace WinTweaker.Engine
                 return ok;
             }
 
+            // 2f-bis) Noverse Scheduled Tasks Groups (COM Schedule.Service + Snapshot + schtasks fallback)
+            string[] applyTaskPaths;
+            if (ScheduledTaskGroupSpecs.TryGetValue(id, out applyTaskPaths))
+            {
+                return ApplyScheduledTaskGroup(id, applyTaskPaths, stateManager, journal);
+            }
+
             // 2g) NVIDIA Telemetry Opt-Out (HKLM + HKCU)
             if (string.Equals(id, "nvidia-telemetry-client-optout", StringComparison.OrdinalIgnoreCase))
             {
@@ -1312,6 +1488,12 @@ namespace WinTweaker.Engine
                 return ok;
             }
 
+            string[] revertTaskPaths;
+            if (ScheduledTaskGroupSpecs.TryGetValue(id, out revertTaskPaths))
+            {
+                return RevertScheduledTaskGroup(id, revertTaskPaths, stateManager, journal);
+            }
+
             if (string.Equals(id, "network-interrupt-moderation-low", StringComparison.OrdinalIgnoreCase) ||
                 string.Equals(id, "nvidia-telemetry-client-optout", StringComparison.OrdinalIgnoreCase) ||
                 string.Equals(id, "nvidia-powermizer-maximum-performance", StringComparison.OrdinalIgnoreCase))
@@ -1541,6 +1723,15 @@ namespace WinTweaker.Engine
             {
                 TweakStatus ts = CheckNvidiaTasksDisabledStatus();
                 return (ts == TweakStatus.Enabled) ? "Задачи отключены" : "Активны (или не установлены)";
+            }
+
+            string[] dispTaskPaths;
+            if (ScheduledTaskGroupSpecs.TryGetValue(id, out dispTaskPaths))
+            {
+                int foundCount, disabledCount;
+                TweakStatus ts = CheckScheduledTaskGroupStatus(dispTaskPaths, out foundCount, out disabledCount);
+                if (foundCount == 0 || ts == TweakStatus.Unavailable) return "Задачи не обнаружены в этой ОС";
+                return string.Format("Отключено {0} из {1} задач", disabledCount, foundCount);
             }
 
             if (string.Equals(id, "network-congestion-provider-bbr", StringComparison.OrdinalIgnoreCase))
@@ -2032,14 +2223,14 @@ namespace WinTweaker.Engine
                     {
                         if (sc.Status != ServiceControllerStatus.Stopped && sc.Status != ServiceControllerStatus.StopPending)
                         {
-                            try { sc.Stop(); sc.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(4)); } catch { }
+                            try { sc.Stop(); sc.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromMilliseconds(1500)); } catch { }
                         }
                     }
                     else if (targetStart == 2)
                     {
                         if (sc.Status == ServiceControllerStatus.Stopped)
                         {
-                            try { sc.Start(); sc.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(4)); } catch { }
+                            try { sc.Start(); sc.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromMilliseconds(1500)); } catch { }
                         }
                     }
                 }
@@ -2533,6 +2724,210 @@ namespace WinTweaker.Engine
                 if (s.IndexOf("ENABLED", StringComparison.OrdinalIgnoreCase) >= 0) return TweakStatus.Disabled;
             }
             return TweakStatus.Unknown;
+        }
+
+        private static Dictionary<string, bool> GetScheduledTaskEnabledMap()
+        {
+            lock (_cacheLock)
+            {
+                if (_scheduledTaskCache != null && (DateTime.UtcNow - _scheduledTaskCacheTime).TotalSeconds < 4.0)
+                {
+                    return _scheduledTaskCache;
+                }
+            }
+
+            Dictionary<string, bool> map = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+            try
+            {
+                Type comType = Type.GetTypeFromProgID("Schedule.Service");
+                if (comType != null)
+                {
+                    object sched = Activator.CreateInstance(comType);
+                    comType.InvokeMember("Connect", System.Reflection.BindingFlags.InvokeMethod, null, sched, null);
+                    object root = comType.InvokeMember("GetFolder", System.Reflection.BindingFlags.InvokeMethod, null, sched, new object[] { @"\" });
+                    TraverseTaskFolder(root, map);
+                }
+            }
+            catch { }
+
+            lock (_cacheLock)
+            {
+                _scheduledTaskCache = map;
+                _scheduledTaskCacheTime = DateTime.UtcNow;
+            }
+            return map;
+        }
+
+        private static void TraverseTaskFolder(object folder, Dictionary<string, bool> map)
+        {
+            if (folder == null) return;
+            Type ft = folder.GetType();
+            try
+            {
+                object tasks = ft.InvokeMember("GetTasks", System.Reflection.BindingFlags.InvokeMethod, null, folder, new object[] { 1 });
+                System.Collections.IEnumerable enumTasks = tasks as System.Collections.IEnumerable;
+                if (enumTasks != null)
+                {
+                    foreach (object t in enumTasks)
+                    {
+                        if (t == null) continue;
+                        Type tt = t.GetType();
+                        string path = tt.InvokeMember("Path", System.Reflection.BindingFlags.GetProperty, null, t, null) as string;
+                        object enObj = tt.InvokeMember("Enabled", System.Reflection.BindingFlags.GetProperty, null, t, null);
+                        if (!string.IsNullOrEmpty(path) && enObj is bool)
+                        {
+                            map[path] = (bool)enObj;
+                        }
+                    }
+                }
+            }
+            catch { }
+
+            try
+            {
+                object subFolders = ft.InvokeMember("GetFolders", System.Reflection.BindingFlags.InvokeMethod, null, folder, new object[] { 0 });
+                System.Collections.IEnumerable enumFolders = subFolders as System.Collections.IEnumerable;
+                if (enumFolders != null)
+                {
+                    foreach (object sf in enumFolders)
+                    {
+                        TraverseTaskFolder(sf, map);
+                    }
+                }
+            }
+            catch { }
+        }
+
+        private static TweakStatus CheckScheduledTaskGroupStatus(string[] taskPaths)
+        {
+            int found, disabled;
+            return CheckScheduledTaskGroupStatus(taskPaths, out found, out disabled);
+        }
+
+        private static TweakStatus CheckScheduledTaskGroupStatus(string[] taskPaths, out int found, out int disabled)
+        {
+            found = 0;
+            disabled = 0;
+            if (taskPaths == null || taskPaths.Length == 0) return TweakStatus.Unavailable;
+
+            Dictionary<string, bool> map = GetScheduledTaskEnabledMap();
+            for (int i = 0; i < taskPaths.Length; i++)
+            {
+                bool enabled;
+                if (map.TryGetValue(taskPaths[i], out enabled))
+                {
+                    found++;
+                    if (!enabled) disabled++;
+                }
+            }
+
+            if (found == 0) return TweakStatus.Unavailable;
+            if (disabled == found) return TweakStatus.Enabled;
+            if (disabled > 0) return TweakStatus.PartiallyEnabled;
+            return TweakStatus.Disabled;
+        }
+
+        private static bool SetScheduledTaskEnabled(string fullTaskPath, bool enabled)
+        {
+            if (string.IsNullOrEmpty(fullTaskPath)) return false;
+            try
+            {
+                Type comType = Type.GetTypeFromProgID("Schedule.Service");
+                if (comType != null)
+                {
+                    object sched = Activator.CreateInstance(comType);
+                    comType.InvokeMember("Connect", System.Reflection.BindingFlags.InvokeMethod, null, sched, null);
+                    int idx = fullTaskPath.LastIndexOf('\\');
+                    string folderPath = idx > 0 ? fullTaskPath.Substring(0, idx) : @"\";
+                    string taskName = idx >= 0 ? fullTaskPath.Substring(idx + 1) : fullTaskPath;
+                    object folder = comType.InvokeMember("GetFolder", System.Reflection.BindingFlags.InvokeMethod, null, sched, new object[] { folderPath });
+                    object task = folder.GetType().InvokeMember("GetTask", System.Reflection.BindingFlags.InvokeMethod, null, folder, new object[] { taskName });
+                    task.GetType().InvokeMember("Enabled", System.Reflection.BindingFlags.SetProperty, null, task, new object[] { enabled });
+                    return true;
+                }
+            }
+            catch { }
+
+            string flag = enabled ? "/ENABLE" : "/DISABLE";
+            int rc = RunProcess("schtasks.exe", string.Format("/Change /TN \"{0}\" {1}", fullTaskPath, flag), 4000);
+            return rc == 0;
+        }
+
+        private static bool ApplyScheduledTaskGroup(string id, string[] taskPaths, StateManager stateManager, JournalManager journal)
+        {
+            Dictionary<string, bool> map = GetScheduledTaskEnabledMap();
+            TweakSnapshot snap = new TweakSnapshot();
+            snap.TweakId = id;
+
+            int modified = 0;
+            int found = 0;
+            for (int i = 0; i < taskPaths.Length; i++)
+            {
+                string tp = taskPaths[i];
+                bool curEnabled;
+                if (!map.TryGetValue(tp, out curEnabled)) continue;
+                found++;
+                snap.Values.Add(new RegistryValueSnapshot
+                {
+                    Hive = "TASK",
+                    Path = tp,
+                    Name = "Enabled",
+                    Existed = true,
+                    Kind = "DWord",
+                    Value = curEnabled ? 1 : 0
+                });
+                if (!curEnabled || SetScheduledTaskEnabled(tp, false))
+                {
+                    modified++;
+                }
+            }
+
+            if (found == 0)
+            {
+                if (journal != null) journal.Log("WARN", id, "Задачи планировщика из этой группы отсутствуют в установленной редакции Windows");
+                return false;
+            }
+
+            if (stateManager != null) stateManager.SaveSnapshot(id, snap);
+            InvalidateCaches();
+            if (journal != null)
+            {
+                journal.Log("APPLY", id, string.Format("Отключены задачи планировщика ({0} из {1})", modified, found));
+            }
+            return modified > 0;
+        }
+
+        private static bool RevertScheduledTaskGroup(string id, string[] taskPaths, StateManager stateManager, JournalManager journal)
+        {
+            TweakSnapshot snap = stateManager != null ? stateManager.GetSnapshot(id) : null;
+            int restored = 0;
+            if (snap != null && snap.Values != null && snap.Values.Count > 0)
+            {
+                for (int i = 0; i < snap.Values.Count; i++)
+                {
+                    var v = snap.Values[i];
+                    if (string.Equals(v.Hive, "TASK", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrEmpty(v.Path))
+                    {
+                        bool origEnabled = v.Value == null || Convert.ToInt64(v.Value) != 0;
+                        if (origEnabled && SetScheduledTaskEnabled(v.Path, true)) restored++;
+                    }
+                }
+            }
+            else if (taskPaths != null)
+            {
+                Dictionary<string, bool> map = GetScheduledTaskEnabledMap();
+                for (int i = 0; i < taskPaths.Length; i++)
+                {
+                    if (map.ContainsKey(taskPaths[i]) && SetScheduledTaskEnabled(taskPaths[i], true)) restored++;
+                }
+            }
+            if (stateManager != null) stateManager.RemoveSnapshot(id);
+            InvalidateCaches();
+            if (journal != null)
+            {
+                journal.Log("REVERT", id, string.Format("Задачи планировщика восстановлены ({0})", restored));
+            }
+            return true;
         }
 
         // =====================================================================

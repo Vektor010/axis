@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.MemoryMappedFiles;
 using System.Management;
 using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using Microsoft.Win32;
 
 namespace WinTweaker.Engine
@@ -37,11 +39,18 @@ namespace WinTweaker.Engine
     public class SystemMetrics
     {
         public double CpuLoadPercent { get; set; }
+        public double CpuClockGhz { get; set; }
+        public double CpuPerfPercent { get; set; }
+        public string CpuClockDisplay { get; set; }
+        public bool IsCpuTempAvailable { get; set; }
+        public double CpuTempC { get; set; }
         public string CpuTempDisplay { get; set; }
         public double GpuLoadPercent { get; set; }
         public bool IsGpuLoadAvailable { get; set; }
         public string GpuLoadDisplay { get; set; }
+        public string GpuDetailDisplay { get; set; }
         public double RamUsedGb { get; set; }
+        public double RamFreeGb { get; set; }
         public double RamTotalGb { get; set; }
         public double RamLoadPercent { get; set; }
         public double DiskActivityPercent { get; set; }
@@ -50,6 +59,7 @@ namespace WinTweaker.Engine
         public double NetworkRxKbPerSec { get; set; }
         public double NetworkTxKbPerSec { get; set; }
         public string NetworkRateDisplay { get; set; }
+        public string NetworkDetailDisplay { get; set; }
         public string UptimeDisplay { get; set; }
         public int ProcessCount { get; set; }
         public long PingMs { get; set; }
@@ -61,11 +71,18 @@ namespace WinTweaker.Engine
         public SystemMetrics()
         {
             this.CpuLoadPercent = 0.0;
-            this.CpuTempDisplay = "Датчик недоступен";
+            this.CpuClockGhz = 0.0;
+            this.CpuPerfPercent = 100.0;
+            this.CpuClockDisplay = "—";
+            this.IsCpuTempAvailable = false;
+            this.CpuTempC = 0.0;
+            this.CpuTempDisplay = "";
             this.GpuLoadPercent = 0.0;
             this.IsGpuLoadAvailable = false;
             this.GpuLoadDisplay = "Недоступно";
+            this.GpuDetailDisplay = "Опрос видеокарты...";
             this.RamUsedGb = 0.0;
+            this.RamFreeGb = 0.0;
             this.RamTotalGb = 0.0;
             this.RamLoadPercent = 0.0;
             this.DiskActivityPercent = 0.0;
@@ -73,7 +90,8 @@ namespace WinTweaker.Engine
             this.DiskSpaceDisplay = "Нет данных";
             this.NetworkRxKbPerSec = 0.0;
             this.NetworkTxKbPerSec = 0.0;
-            this.NetworkRateDisplay = "0 КБ/с";
+            this.NetworkRateDisplay = "↓ 0 КБ/с  ↑ 0 КБ/с";
+            this.NetworkDetailDisplay = "Активный канал";
             this.UptimeDisplay = "—";
             this.ProcessCount = 0;
             this.PingMs = -1;
@@ -109,6 +127,25 @@ namespace WinTweaker.Engine
         [DllImport("kernel32.dll")]
         private static extern ulong GetTickCount64();
 
+        [StructLayout(LayoutKind.Sequential)]
+        private struct PROCESSOR_POWER_INFORMATION
+        {
+            public uint Number;
+            public uint MaxMhz;
+            public uint CurrentMhz;
+            public uint MhzLimit;
+            public uint MaxIdleState;
+            public uint CurrentIdleState;
+        }
+
+        [DllImport("powrprof.dll")]
+        private static extern uint CallNtPowerInformation(
+            int InformationLevel,
+            IntPtr InputBuffer,
+            uint InputBufferLength,
+            IntPtr OutputBuffer,
+            uint OutputBufferLength);
+
         private long _prevIdleTime;
         private long _prevKernelTime;
         private long _prevUserTime;
@@ -117,17 +154,30 @@ namespace WinTweaker.Engine
         private long _prevNetBytesRx;
         private long _prevNetBytesTx;
         private DateTime _prevNetSampleUtc = DateTime.MinValue;
+        private string _cachedNetAdapterName = "";
 
-        private string _cachedGateway = null;
+        private volatile string _cachedGateway = null;
         private DateTime _gatewayCacheUtc = DateTime.MinValue;
         private long _cachedPingMs = -1;
-        private string _cachedPingDisplay = "Нет данных";
+        private volatile string _cachedPingDisplay = "Нет данных";
         private DateTime _pingCacheUtc = DateTime.MinValue;
+        private int _pingInFlight = 0;
 
-        private bool _cpuTempProbed = false;
-        private bool _cpuTempSupported = false;
+        private bool _acpiTempProbed = false;
+        private bool _acpiTempSupported = false;
+        private bool _lhmTempProbed = false;
+        private string _lhmNamespace = null;
+
+        private bool _perfCountersInitialized = false;
+        private PerformanceCounter _cpuUtilityCounter = null;
+        private PerformanceCounter _cpuPerfCounter = null;
+        private PerformanceCounter _cpuFreqCounter = null;
         private PerformanceCounter _diskCounter = null;
+        private PerformanceCounter _processCounter = null;
+        private bool _cpuCountersFailed = false;
         private bool _diskCounterFailed = false;
+        private bool _processCounterFailed = false;
+        private uint _cachedMaxCpuMhz = 0;
         private bool _isDisposed = false;
 
         private SystemSpecs _cachedSpecs;
@@ -400,71 +450,55 @@ namespace WinTweaker.Engine
             return "Нет данных";
         }
 
-        public SystemMetrics CollectLiveMetrics(string customPingHost = null)
+        public SystemMetrics CollectInstantStartupSnapshot(string customPingHost = null)
         {
             SystemMetrics m = new SystemMetrics();
-
-            // Если нет предыдущего замера ЦП или сети (первый кадр / возврат на вкладку), делаем быстрый двойной сэмпл 160 мс на фоне
-            bool needWarmup = !this._hasPrevTimes ||
-                              this._prevNetSampleUtc == DateTime.MinValue ||
-                              (DateTime.UtcNow - this._prevNetSampleUtc).TotalSeconds > 5.0;
-            if (needWarmup)
+            long wIdle, wKernel, wUser;
+            if (!this._hasPrevTimes && GetSystemTimes(out wIdle, out wKernel, out wUser))
             {
-                long wIdle, wKernel, wUser;
-                if (!this._hasPrevTimes && GetSystemTimes(out wIdle, out wKernel, out wUser))
-                {
-                    this._prevIdleTime = wIdle;
-                    this._prevKernelTime = wKernel;
-                    this._prevUserTime = wUser;
-                    this._hasPrevTimes = true;
-                }
-                long wRx, wTx;
-                if (TrySumActiveNetworkBytes(out wRx, out wTx))
-                {
-                    this._prevNetBytesRx = wRx;
-                    this._prevNetBytesTx = wTx;
-                    this._prevNetSampleUtc = DateTime.UtcNow;
-                }
-                if (this._diskCounter == null && !this._diskCounterFailed)
-                {
-                    try
-                    {
-                        this._diskCounter = new PerformanceCounter("PhysicalDisk", "% Disk Time", "_Total", true);
-                        this._diskCounter.NextValue();
-                    }
-                    catch { this._diskCounterFailed = true; }
-                }
-                System.Threading.Thread.Sleep(160);
+                this._prevIdleTime = wIdle;
+                this._prevKernelTime = wKernel;
+                this._prevUserTime = wUser;
+                this._hasPrevTimes = true;
+            }
+            long wRx, wTx;
+            string wAdapter;
+            if (this._prevNetSampleUtc == DateTime.MinValue && TrySumActiveNetworkBytes(out wRx, out wTx, out wAdapter))
+            {
+                this._prevNetBytesRx = wRx;
+                this._prevNetBytesTx = wTx;
+                this._cachedNetAdapterName = wAdapter;
+                this._prevNetSampleUtc = DateTime.UtcNow;
             }
 
-            // 1. Нагрузка ЦП через GetSystemTimes
-            try
+            uint baseMhz = this.QueryNativeCpuMaxMhz();
+            if (baseMhz > 0)
             {
-                long idle, kernel, user;
-                if (GetSystemTimes(out idle, out kernel, out user))
-                {
-                    if (this._hasPrevTimes)
-                    {
-                        long sysDiff = (kernel - this._prevKernelTime) + (user - this._prevUserTime);
-                        long idleDiff = idle - this._prevIdleTime;
-                        if (sysDiff > 0)
-                        {
-                            double cpu = (1.0 - (double)idleDiff / (double)sysDiff) * 100.0;
-                            m.CpuLoadPercent = Math.Max(0.0, Math.Min(100.0, cpu));
-                        }
-                    }
-                    this._prevIdleTime = idle;
-                    this._prevKernelTime = kernel;
-                    this._prevUserTime = user;
-                    this._hasPrevTimes = true;
-                }
+                m.CpuClockGhz = baseMhz / 1000.0;
+                m.CpuClockDisplay = string.Format("{0:F2} ГГц", m.CpuClockGhz);
             }
-            catch
+            this.PopulateMemoryMetrics(m);
+            this.TriggerBackgroundPingIfDue(customPingHost);
+            m.PingMs = Interlocked.Read(ref this._cachedPingMs);
+            m.PingDisplay = this._cachedPingDisplay;
+            this.PopulateGpuMetrics(m);
+            double cpuTempC;
+            if (TryReadAfterburnerCpuTemp(out cpuTempC))
             {
-                m.CpuLoadPercent = 0.0;
+                m.IsCpuTempAvailable = true;
+                m.CpuTempC = cpuTempC;
+                m.CpuTempDisplay = string.Format("{0:F0}°C", cpuTempC);
             }
+            m.DiskActivityDisplay = "0%";
+            m.DiskSpaceDisplay = this.QuerySystemDriveUsage();
+            if (!string.IsNullOrEmpty(this._cachedNetAdapterName)) m.NetworkDetailDisplay = this._cachedNetAdapterName;
+            PopulateUptime(m);
+            m.LastUpdatedDisplay = DateTime.Now.ToString("HH:mm:ss");
+            return m;
+        }
 
-            // 2. Память через GlobalMemoryStatusEx
+        private void PopulateMemoryMetrics(SystemMetrics m)
+        {
             try
             {
                 MEMORYSTATUSEX mem = new MEMORYSTATUSEX();
@@ -474,115 +508,75 @@ namespace WinTweaker.Engine
                     double totalGb = (double)mem.ullTotalPhys / (1024.0 * 1024.0 * 1024.0);
                     double availGb = (double)mem.ullAvailPhys / (1024.0 * 1024.0 * 1024.0);
                     m.RamTotalGb = totalGb;
+                    m.RamFreeGb = availGb;
                     m.RamUsedGb = Math.Max(0.0, totalGb - availGb);
                     m.RamLoadPercent = (double)mem.dwMemoryLoad;
                 }
             }
             catch { }
+        }
 
-            // 3. Задержка Ping (кэшируется на 3 сек с таймаутом 400 мс, чтобы не тормозить секундный график)
-            string hostToPing = customPingHost;
-            bool isAutoGateway = false;
-            if (string.IsNullOrEmpty(hostToPing))
-            {
-                if (this._cachedGateway == null || (DateTime.UtcNow - this._gatewayCacheUtc).TotalSeconds > 30.0)
-                {
-                    this._cachedGateway = this.GetDefaultGatewayAddress();
-                    this._gatewayCacheUtc = DateTime.UtcNow;
-                }
-                hostToPing = this._cachedGateway;
-                isAutoGateway = true;
-            }
-
-            if ((DateTime.UtcNow - this._pingCacheUtc).TotalSeconds >= 2.8)
-            {
-                if (!string.IsNullOrEmpty(hostToPing) && hostToPing != "Нет данных")
-                {
-                    try
-                    {
-                        using (Ping pinger = new Ping())
-                        {
-                            PingReply reply = null;
-                            try { reply = pinger.Send(hostToPing, 400); } catch { }
-
-                            if ((reply == null || reply.Status != IPStatus.Success) && isAutoGateway)
-                            {
-                                try { reply = pinger.Send("1.1.1.1", 400); } catch { }
-                            }
-
-                            if (reply != null && reply.Status == IPStatus.Success)
-                            {
-                                this._cachedPingMs = reply.RoundtripTime;
-                                this._cachedPingDisplay = reply.RoundtripTime == 0 ? "< 1 мс" : string.Format("{0} мс", reply.RoundtripTime);
-                            }
-                            else
-                            {
-                                this._cachedPingMs = -1;
-                                this._cachedPingDisplay = "Нет данных";
-                            }
-                        }
-                    }
-                    catch
-                    {
-                        this._cachedPingMs = -1;
-                        this._cachedPingDisplay = "Нет данных";
-                    }
-                }
-                else
-                {
-                    this._cachedPingMs = -1;
-                    this._cachedPingDisplay = "Нет данных";
-                }
-                this._pingCacheUtc = DateTime.UtcNow;
-            }
-            m.PingMs = this._cachedPingMs;
-            m.PingDisplay = this._cachedPingDisplay;
-
-            // 4. Температура GPU и загрузка GPU через NVML (если установлен драйвер NVIDIA)
+        private void PopulateGpuMetrics(SystemMetrics m)
+        {
             try
             {
                 if (this._tempSource == null)
                 {
                     this._tempSource = new NvmlTemperatureSource();
                 }
-                GpuTemperatureResult tempRes = this._tempSource.GetGpuTemperature();
-                if (tempRes.IsAvailable)
+
+                NvmlTemperatureSource nvml = this._tempSource as NvmlTemperatureSource;
+                GpuTelemetrySnapshot gpuSnap;
+                if (nvml != null && nvml.TryGetGpuTelemetry(out gpuSnap) && gpuSnap.IsAvailable)
                 {
-                    m.TempDisplay = string.Format("{0}°C", tempRes.TemperatureC);
+                    m.TempDisplay = string.Format("{0}°C", gpuSnap.TemperatureC);
                     m.TempStatus = "GPU (NVIDIA NVML)";
+                    m.IsGpuLoadAvailable = true;
+                    m.GpuLoadPercent = gpuSnap.GpuLoadPercent;
+                    m.GpuLoadDisplay = string.Format("{0}%", gpuSnap.GpuLoadPercent);
+
+                    List<string> detailParts = new List<string>();
+                    if (gpuSnap.CoreClockMhz > 0 && gpuSnap.MemClockMhz > 0)
+                    {
+                        detailParts.Add(string.Format("{0}/{1} МГц", gpuSnap.CoreClockMhz, gpuSnap.MemClockMhz));
+                    }
+                    if (gpuSnap.PowerWatts > 0.5)
+                    {
+                        detailParts.Add(string.Format("{0:F0} Вт", gpuSnap.PowerWatts));
+                    }
+                    if (gpuSnap.VramTotalGb > 0.5)
+                    {
+                        detailParts.Add(string.Format("{0:F1}/{1:F0} ГБ", gpuSnap.VramUsedGb, gpuSnap.VramTotalGb));
+                    }
+                    m.GpuDetailDisplay = detailParts.Count > 0 ? string.Join(" • ", detailParts.ToArray()) : "NVIDIA NVML";
                 }
                 else
                 {
-                    m.TempDisplay = "Нет данных";
-                    m.TempStatus = "Датчик недоступен";
-                }
-
-                NvmlTemperatureSource nvml = this._tempSource as NvmlTemperatureSource;
-                uint gpuUtil;
-                if (nvml != null && nvml.TryGetGpuUtilization(out gpuUtil))
-                {
-                    m.IsGpuLoadAvailable = true;
-                    m.GpuLoadPercent = gpuUtil;
-                    m.GpuLoadDisplay = string.Format("{0}%", gpuUtil);
+                    GpuTemperatureResult tempRes = this._tempSource.GetGpuTemperature();
+                    if (tempRes.IsAvailable)
+                    {
+                        m.TempDisplay = string.Format("{0}°C", tempRes.TemperatureC);
+                        m.TempStatus = "GPU (NVIDIA NVML)";
+                        m.GpuDetailDisplay = "NVIDIA NVML";
+                    }
+                    else
+                    {
+                        m.TempDisplay = "Нет данных";
+                        m.TempStatus = "GPU не обнаружена";
+                        m.GpuDetailDisplay = tempRes.ErrorMessage;
+                    }
                 }
             }
             catch
             {
                 m.TempDisplay = "Нет данных";
                 m.TempStatus = "Датчик недоступен";
+                m.GpuDetailDisplay = "Нет данных NVML";
             }
+        }
 
-            // 5. Температура ЦП через ACPI ThermalZone (честный отказ при отсутствии датчика)
-            m.CpuTempDisplay = this.QueryCpuThermalZoneSafe();
-
-            // 6. Активность и занятость дисков
-            m.DiskActivityDisplay = this.QueryDiskActivitySafe(m);
-            m.DiskSpaceDisplay = this.QuerySystemDriveUsage();
-
-            // 7. Сетевая активность (RX / TX КБ/с)
-            this.QueryNetworkThroughput(m);
-
-            // 8. Аптайм ОС и число активных процессов (без утечки Win32 handles)
+        private static void PopulateUptime(SystemMetrics m)
+        {
             try
             {
                 TimeSpan up = TimeSpan.FromMilliseconds(GetTickCount64());
@@ -591,25 +585,336 @@ namespace WinTweaker.Engine
                     : string.Format("{0:D2}:{1:D2}:{2:D2}", up.Hours, up.Minutes, up.Seconds);
             }
             catch { }
+        }
+
+        public SystemMetrics CollectLiveMetrics(string customPingHost = null)
+        {
+            SystemMetrics m = new SystemMetrics();
+
+            // 0. Однократная быстрая инициализация аппаратных счетчиков PDH (~60 мс при первом запуске, далее 0 мс/тик)
+            bool needWarmup = !this._perfCountersInitialized ||
+                              !this._hasPrevTimes ||
+                              this._prevNetSampleUtc == DateTime.MinValue;
+            if (needWarmup)
+            {
+                this.EnsurePerfCountersInitialized();
+                long wIdle, wKernel, wUser;
+                if (!this._hasPrevTimes && GetSystemTimes(out wIdle, out wKernel, out wUser))
+                {
+                    this._prevIdleTime = wIdle;
+                    this._prevKernelTime = wKernel;
+                    this._prevUserTime = wUser;
+                    this._hasPrevTimes = true;
+                }
+                long wRx, wTx;
+                string wAdapter;
+                if (this._prevNetSampleUtc == DateTime.MinValue && TrySumActiveNetworkBytes(out wRx, out wTx, out wAdapter))
+                {
+                    this._prevNetBytesRx = wRx;
+                    this._prevNetBytesTx = wTx;
+                    this._cachedNetAdapterName = wAdapter;
+                    this._prevNetSampleUtc = DateTime.UtcNow;
+                }
+                Thread.Sleep(110);
+            }
+
+            // 1. Загрузка ЦП (формула Диспетчера задач Windows: % Processor Utility) + запасной путь GetSystemTimes
+            double cpuPct = -1.0;
+            if (!this._cpuCountersFailed && this._cpuUtilityCounter != null)
+            {
+                try
+                {
+                    double util = this._cpuUtilityCounter.NextValue();
+                    if (!double.IsNaN(util) && !double.IsInfinity(util))
+                    {
+                        cpuPct = Math.Max(0.0, Math.Min(100.0, util));
+                    }
+                }
+                catch
+                {
+                    this._cpuCountersFailed = true;
+                }
+            }
 
             try
             {
-                Process[] procs = Process.GetProcesses();
-                m.ProcessCount = procs.Length;
-                for (int i = 0; i < procs.Length; i++)
+                long idle, kernel, user;
+                if (GetSystemTimes(out idle, out kernel, out user))
                 {
-                    try { procs[i].Dispose(); } catch { }
+                    if (cpuPct < 0.0 && this._hasPrevTimes)
+                    {
+                        long sysDiff = (kernel - this._prevKernelTime) + (user - this._prevUserTime);
+                        long idleDiff = idle - this._prevIdleTime;
+                        if (sysDiff > 0)
+                        {
+                            double cpu = (1.0 - (double)idleDiff / (double)sysDiff) * 100.0;
+                            cpuPct = Math.Max(0.0, Math.Min(100.0, cpu));
+                        }
+                    }
+                    this._prevIdleTime = idle;
+                    this._prevKernelTime = kernel;
+                    this._prevUserTime = user;
+                    this._hasPrevTimes = true;
                 }
             }
-            catch { m.ProcessCount = 0; }
+            catch { }
+            m.CpuLoadPercent = cpuPct >= 0.0 ? cpuPct : 0.0;
 
+            // 1.5 Реальная эффективная частота ЦП и Turbo Boost (% Processor Performance + CallNtPowerInformation fallback)
+            double perfPct = 100.0;
+            double baseMhz = this._cachedMaxCpuMhz;
+            if (!this._cpuCountersFailed && this._cpuPerfCounter != null && this._cpuFreqCounter != null)
+            {
+                try
+                {
+                    double pVal = this._cpuPerfCounter.NextValue();
+                    double fVal = this._cpuFreqCounter.NextValue();
+                    if (fVal > 200.0 && pVal > 5.0)
+                    {
+                        perfPct = pVal;
+                        baseMhz = fVal;
+                    }
+                }
+                catch { }
+            }
+            if (baseMhz <= 0)
+            {
+                baseMhz = this.QueryNativeCpuMaxMhz();
+            }
+            if (baseMhz > 0)
+            {
+                double effMhz = baseMhz * (perfPct / 100.0);
+                m.CpuPerfPercent = perfPct;
+                m.CpuClockGhz = effMhz / 1000.0;
+                m.CpuClockDisplay = string.Format("{0:F2} ГГц", m.CpuClockGhz);
+            }
+
+            // 2. Память через GlobalMemoryStatusEx
+            this.PopulateMemoryMetrics(m);
+
+            // 3. Неблокирующий фоновый Ping (обновляется в фоне раз в ~2.5 сек, не тормозит 500мс графики!)
+            this.TriggerBackgroundPingIfDue(customPingHost);
+            m.PingMs = Interlocked.Read(ref this._cachedPingMs);
+            m.PingDisplay = this._cachedPingDisplay;
+
+            // 4. Полная телеметрия GPU через NVML (температура, нагрузка, частоты, питание Вт, VRAM)
+            this.PopulateGpuMetrics(m);
+
+            // 5. Температура ЦП (каскад: MSI Afterburner SharedMem -> LHM/OHM WMI -> ACPI; без ошибок при отсутствии)
+            double cpuTempC;
+            if (this.TryQueryCpuTempSmart(out cpuTempC))
+            {
+                m.IsCpuTempAvailable = true;
+                m.CpuTempC = cpuTempC;
+                m.CpuTempDisplay = string.Format("{0:F0}°C", cpuTempC);
+            }
+            else
+            {
+                m.IsCpuTempAvailable = false;
+                m.CpuTempDisplay = m.CpuClockDisplay;
+            }
+
+            // 6. Активность и занятость дисков
+            m.DiskActivityDisplay = this.QueryDiskActivitySafe(m);
+            m.DiskSpaceDisplay = this.QuerySystemDriveUsage();
+
+            // 7. Сетевая активность (RX / TX КБ/с)
+            this.QueryNetworkThroughput(m);
+
+            // 8. Аптайм ОС и число активных процессов (через 0.02мс PDH без создания Process[] объектов)
+            PopulateUptime(m);
+            m.ProcessCount = this.QueryProcessCountFast();
             m.LastUpdatedDisplay = DateTime.Now.ToString("HH:mm:ss");
             return m;
         }
 
-        private string QueryCpuThermalZoneSafe()
+        private void EnsurePerfCountersInitialized()
         {
-            if (this._cpuTempProbed && !this._cpuTempSupported) return "Датчик недоступен";
+            if (this._perfCountersInitialized) return;
+            this._perfCountersInitialized = true;
+
+            try
+            {
+                this._cpuUtilityCounter = new PerformanceCounter("Processor Information", "% Processor Utility", "_Total", true);
+                this._cpuPerfCounter = new PerformanceCounter("Processor Information", "% Processor Performance", "_Total", true);
+                this._cpuFreqCounter = new PerformanceCounter("Processor Information", "Processor Frequency", "_Total", true);
+                this._cpuUtilityCounter.NextValue();
+                this._cpuPerfCounter.NextValue();
+                this._cpuFreqCounter.NextValue();
+            }
+            catch
+            {
+                this._cpuCountersFailed = true;
+            }
+
+            if (this._diskCounter == null && !this._diskCounterFailed)
+            {
+                try
+                {
+                    this._diskCounter = new PerformanceCounter("PhysicalDisk", "% Disk Time", "_Total", true);
+                    this._diskCounter.NextValue();
+                }
+                catch { this._diskCounterFailed = true; }
+            }
+
+            if (this._processCounter == null && !this._processCounterFailed)
+            {
+                try
+                {
+                    this._processCounter = new PerformanceCounter("System", "Processes", true);
+                    this._processCounter.NextValue();
+                }
+                catch { this._processCounterFailed = true; }
+            }
+        }
+
+        private uint QueryNativeCpuMaxMhz()
+        {
+            if (this._cachedMaxCpuMhz > 0) return this._cachedMaxCpuMhz;
+            IntPtr buf = IntPtr.Zero;
+            try
+            {
+                int sz = Marshal.SizeOf(typeof(PROCESSOR_POWER_INFORMATION));
+                buf = Marshal.AllocHGlobal(sz * Math.Max(1, Environment.ProcessorCount));
+                if (CallNtPowerInformation(11, IntPtr.Zero, 0, buf, (uint)(sz * Environment.ProcessorCount)) == 0)
+                {
+                    PROCESSOR_POWER_INFORMATION info = (PROCESSOR_POWER_INFORMATION)Marshal.PtrToStructure(buf, typeof(PROCESSOR_POWER_INFORMATION));
+                    if (info.MaxMhz > 0) this._cachedMaxCpuMhz = info.MaxMhz;
+                }
+            }
+            catch { }
+            finally
+            {
+                if (buf != IntPtr.Zero) Marshal.FreeHGlobal(buf);
+            }
+            return this._cachedMaxCpuMhz;
+        }
+
+        private void TriggerBackgroundPingIfDue(string customPingHost)
+        {
+            if (string.Equals(customPingHost, "Нет данных", StringComparison.OrdinalIgnoreCase))
+            {
+                Interlocked.Exchange(ref this._cachedPingMs, -1);
+                this._cachedPingDisplay = "Нет данных";
+                return;
+            }
+            if ((DateTime.UtcNow - this._pingCacheUtc).TotalSeconds < 2.5) return;
+            if (Interlocked.CompareExchange(ref this._pingInFlight, 1, 0) != 0) return;
+
+            this._pingCacheUtc = DateTime.UtcNow;
+            ThreadPool.QueueUserWorkItem(_ =>
+            {
+                try
+                {
+                    string hostToPing = customPingHost;
+                    bool isAutoGateway = false;
+                    if (string.IsNullOrEmpty(hostToPing))
+                    {
+                        if (string.IsNullOrEmpty(this._cachedGateway) || (DateTime.UtcNow - this._gatewayCacheUtc).TotalSeconds > 30.0)
+                        {
+                            this._cachedGateway = this.GetDefaultGatewayAddress();
+                            this._gatewayCacheUtc = DateTime.UtcNow;
+                        }
+                        hostToPing = this._cachedGateway;
+                        isAutoGateway = true;
+                    }
+
+                    if (!string.IsNullOrEmpty(hostToPing) && hostToPing != "Нет данных")
+                    {
+                        using (Ping pinger = new Ping())
+                        {
+                            PingReply reply = null;
+                            try { reply = pinger.Send(hostToPing, 250); } catch { }
+                            if ((reply == null || reply.Status != IPStatus.Success) && isAutoGateway)
+                            {
+                                try { reply = pinger.Send("1.1.1.1", 250); } catch { }
+                            }
+
+                            if (reply != null && reply.Status == IPStatus.Success)
+                            {
+                                Interlocked.Exchange(ref this._cachedPingMs, reply.RoundtripTime);
+                                this._cachedPingDisplay = reply.RoundtripTime == 0 ? "< 1 мс" : string.Format("{0} мс", reply.RoundtripTime);
+                            }
+                            else
+                            {
+                                Interlocked.Exchange(ref this._cachedPingMs, -1);
+                                this._cachedPingDisplay = "Нет ответа";
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Interlocked.Exchange(ref this._cachedPingMs, -1);
+                        this._cachedPingDisplay = "Нет данных";
+                    }
+                }
+                catch
+                {
+                    Interlocked.Exchange(ref this._cachedPingMs, -1);
+                    this._cachedPingDisplay = "Нет данных";
+                }
+                finally
+                {
+                    Interlocked.Exchange(ref this._pingInFlight, 0);
+                }
+            });
+        }
+
+        private int QueryProcessCountFast()
+        {
+            if (!this._processCounterFailed && this._processCounter != null)
+            {
+                try
+                {
+                    int val = (int)Math.Round(this._processCounter.NextValue());
+                    if (val > 0) return val;
+                }
+                catch { this._processCounterFailed = true; }
+            }
+            try
+            {
+                Process[] procs = Process.GetProcesses();
+                int count = procs.Length;
+                for (int i = 0; i < procs.Length; i++)
+                {
+                    try { procs[i].Dispose(); } catch { }
+                }
+                return count;
+            }
+            catch { return 0; }
+        }
+
+        private bool TryQueryCpuTempSmart(out double tempC)
+        {
+            tempC = 0.0;
+
+            // 1. MSI Afterburner Shared Memory (< 0.05 мс, без драйверов и WMI)
+            if (TryReadAfterburnerCpuTemp(out tempC))
+            {
+                return true;
+            }
+
+            // 2. LibreHardwareMonitor / OpenHardwareMonitor WMI (только если уже запущены у пользователя)
+            if (!this._lhmTempProbed)
+            {
+                this._lhmTempProbed = true;
+                string[] nsList = new[] { @"root\LibreHardwareMonitor", @"root\OpenHardwareMonitor" };
+                for (int n = 0; n < nsList.Length; n++)
+                {
+                    if (TryReadLhmCpuTemp(nsList[n], out tempC))
+                    {
+                        this._lhmNamespace = nsList[n];
+                        return true;
+                    }
+                }
+            }
+            else if (!string.IsNullOrEmpty(this._lhmNamespace))
+            {
+                if (TryReadLhmCpuTemp(this._lhmNamespace, out tempC)) return true;
+            }
+
+            // 3. ACPI ThermalZone WMI (проверяется 1 раз и кэшируется при отсутствии на десктопной плате)
+            if (this._acpiTempProbed && !this._acpiTempSupported) return false;
             try
             {
                 double maxC = -1.0;
@@ -632,20 +937,110 @@ namespace WinTweaker.Engine
                         }
                     }
                 }
-                this._cpuTempProbed = true;
+                this._acpiTempProbed = true;
                 if (maxC > 0)
                 {
-                    this._cpuTempSupported = true;
-                    return string.Format("{0:F0}°C", maxC);
+                    this._acpiTempSupported = true;
+                    tempC = maxC;
+                    return true;
                 }
-                this._cpuTempSupported = false;
+                this._acpiTempSupported = false;
             }
             catch
             {
-                this._cpuTempProbed = true;
-                this._cpuTempSupported = false;
+                this._acpiTempProbed = true;
+                this._acpiTempSupported = false;
             }
-            return "Датчик недоступен";
+            return false;
+        }
+
+        private static bool TryReadAfterburnerCpuTemp(out double tempC)
+        {
+            tempC = 0.0;
+            try
+            {
+                using (MemoryMappedFile mmf = MemoryMappedFile.OpenExisting("MAHMSharedMemory", MemoryMappedFileRights.Read))
+                using (MemoryMappedViewAccessor acc = mmf.CreateViewAccessor(0, 0, MemoryMappedFileAccess.Read))
+                {
+                    byte[] hdr = new byte[24];
+                    acc.ReadArray(0, hdr, 0, 24);
+                    uint sig = BitConverter.ToUInt32(hdr, 0);
+                    uint hdrSize = BitConverter.ToUInt32(hdr, 8);
+                    uint numEntries = BitConverter.ToUInt32(hdr, 12);
+                    uint entrySize = BitConverter.ToUInt32(hdr, 16);
+                    if (sig != 0x4D41484D && sig != 0x4D48414D) return false;
+                    if (hdrSize < 24 || entrySize < 1304 || numEntries == 0 || numEntries > 256) return false;
+
+                    byte[] allEntries = new byte[numEntries * entrySize];
+                    acc.ReadArray(hdrSize, allEntries, 0, allEntries.Length);
+
+                    double fallbackCoreMax = 0.0;
+                    for (int i = 0; i < (int)numEntries; i++)
+                    {
+                        int off = i * (int)entrySize;
+                        int nameLen = 0;
+                        while (nameLen < 260 && allEntries[off + nameLen] != 0) nameLen++;
+                        string name = Encoding.ASCII.GetString(allEntries, off, nameLen);
+                        if (name.IndexOf("CPU", StringComparison.OrdinalIgnoreCase) >= 0 &&
+                            name.IndexOf("temperature", StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            float val = BitConverter.ToSingle(allEntries, off + 1300);
+                            if (val > 5.0f && val < 130.0f)
+                            {
+                                if (string.Equals(name, "CPU temperature", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    tempC = val;
+                                    return true;
+                                }
+                                if (val > fallbackCoreMax) fallbackCoreMax = val;
+                            }
+                        }
+                    }
+                    if (fallbackCoreMax > 0.0)
+                    {
+                        tempC = fallbackCoreMax;
+                        return true;
+                    }
+                }
+            }
+            catch { }
+            return false;
+        }
+
+        private static bool TryReadLhmCpuTemp(string wmiNamespace, out double tempC)
+        {
+            tempC = 0.0;
+            try
+            {
+                using (ManagementObjectSearcher searcher = new ManagementObjectSearcher(wmiNamespace, "SELECT Name, Value, SensorType FROM Sensor WHERE SensorType='Temperature'"))
+                using (ManagementObjectCollection results = searcher.Get())
+                {
+                    foreach (ManagementObject obj in results)
+                    {
+                        using (obj)
+                        {
+                            string name = obj["Name"] != null ? obj["Name"].ToString() : "";
+                            if (name.IndexOf("CPU", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                name.IndexOf("Package", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                name.IndexOf("Tctl", StringComparison.OrdinalIgnoreCase) >= 0)
+                            {
+                                object raw = obj["Value"];
+                                if (raw != null)
+                                {
+                                    double v = Convert.ToDouble(raw);
+                                    if (v > 5.0 && v < 130.0)
+                                    {
+                                        tempC = v;
+                                        return true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch { }
+            return false;
         }
 
         private string QueryDiskActivitySafe(SystemMetrics metrics)
@@ -693,10 +1088,11 @@ namespace WinTweaker.Engine
             return "Нет данных";
         }
 
-        private static bool TrySumActiveNetworkBytes(out long totalRx, out long totalTx)
+        private static bool TrySumActiveNetworkBytes(out long totalRx, out long totalTx, out string activeAdapterName)
         {
             totalRx = 0;
             totalTx = 0;
+            activeAdapterName = "";
             bool anyOk = false;
             try
             {
@@ -710,6 +1106,7 @@ namespace WinTweaker.Engine
                     {
                         continue;
                     }
+                    if (string.IsNullOrEmpty(activeAdapterName)) activeAdapterName = ni.Name;
                     try
                     {
                         IPInterfaceStatistics stats = ni.GetIPStatistics();
@@ -745,10 +1142,21 @@ namespace WinTweaker.Engine
             try
             {
                 long totalRx, totalTx;
-                if (!TrySumActiveNetworkBytes(out totalRx, out totalTx))
+                string adapterName;
+                if (!TrySumActiveNetworkBytes(out totalRx, out totalTx, out adapterName))
                 {
                     metrics.NetworkRateDisplay = "Недоступно";
                     return;
+                }
+
+                if (!string.IsNullOrEmpty(adapterName))
+                {
+                    this._cachedNetAdapterName = adapterName;
+                    metrics.NetworkDetailDisplay = adapterName;
+                }
+                else if (!string.IsNullOrEmpty(this._cachedNetAdapterName))
+                {
+                    metrics.NetworkDetailDisplay = this._cachedNetAdapterName;
                 }
 
                 DateTime now = DateTime.UtcNow;
@@ -784,6 +1192,10 @@ namespace WinTweaker.Engine
         {
             if (this._isDisposed) return;
             this._isDisposed = true;
+            if (this._cpuUtilityCounter != null) { try { this._cpuUtilityCounter.Dispose(); } catch { } this._cpuUtilityCounter = null; }
+            if (this._cpuPerfCounter != null) { try { this._cpuPerfCounter.Dispose(); } catch { } this._cpuPerfCounter = null; }
+            if (this._cpuFreqCounter != null) { try { this._cpuFreqCounter.Dispose(); } catch { } this._cpuFreqCounter = null; }
+            if (this._processCounter != null) { try { this._processCounter.Dispose(); } catch { } this._processCounter = null; }
             if (this._diskCounter != null)
             {
                 try { this._diskCounter.Dispose(); } catch { }

@@ -5,6 +5,19 @@ using System.Text;
 
 namespace WinTweaker.Engine
 {
+    public struct GpuTelemetrySnapshot
+    {
+        public bool IsAvailable;
+        public uint TemperatureC;
+        public uint GpuLoadPercent;
+        public uint CoreClockMhz;
+        public uint MemClockMhz;
+        public double PowerWatts;
+        public uint FanPercent;
+        public double VramUsedGb;
+        public double VramTotalGb;
+    }
+
     public struct GpuTemperatureResult
     {
         public bool IsAvailable;
@@ -74,6 +87,26 @@ namespace WinTweaker.Engine
         private delegate int NvmlGetUtilDelegate(IntPtr device, out NvmlUtilization utilization);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private delegate int NvmlGetClockInfoDelegate(IntPtr device, int clockType, out uint clockMhz);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private delegate int NvmlGetPowerUsageDelegate(IntPtr device, out uint powerMw);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private delegate int NvmlGetFanSpeedDelegate(IntPtr device, out uint speedPercent);
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct NvmlMemory
+        {
+            public ulong total;
+            public ulong free;
+            public ulong used;
+        }
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private delegate int NvmlGetMemoryInfoDelegate(IntPtr device, out NvmlMemory memory);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate int NvmlShutdownDelegate();
 
         private IntPtr _hMod = IntPtr.Zero;
@@ -86,6 +119,10 @@ namespace WinTweaker.Engine
         private NvmlDeviceGetHandleDelegate _getHandleFunc;
         private NvmlGetTempDelegate _getTempFunc;
         private NvmlGetUtilDelegate _getUtilFunc;
+        private NvmlGetClockInfoDelegate _getClockFunc;
+        private NvmlGetPowerUsageDelegate _getPowerFunc;
+        private NvmlGetFanSpeedDelegate _getFanFunc;
+        private NvmlGetMemoryInfoDelegate _getMemFunc;
         private NvmlShutdownDelegate _shutdownFunc;
 
         public string FoundLibraryPath
@@ -132,6 +169,10 @@ namespace WinTweaker.Engine
                 IntPtr pHandle = GetProcAddress(this._hMod, "nvmlDeviceGetHandleByIndex_v2");
                 IntPtr pTemp = GetProcAddress(this._hMod, "nvmlDeviceGetTemperature");
                 IntPtr pUtil = GetProcAddress(this._hMod, "nvmlDeviceGetUtilizationRates");
+                IntPtr pClock = GetProcAddress(this._hMod, "nvmlDeviceGetClockInfo");
+                IntPtr pPower = GetProcAddress(this._hMod, "nvmlDeviceGetPowerUsage");
+                IntPtr pFan = GetProcAddress(this._hMod, "nvmlDeviceGetFanSpeed");
+                IntPtr pMem = GetProcAddress(this._hMod, "nvmlDeviceGetMemoryInfo");
                 IntPtr pShutdown = GetProcAddress(this._hMod, "nvmlShutdown");
 
                 if (pInit == IntPtr.Zero || pHandle == IntPtr.Zero || pTemp == IntPtr.Zero || pShutdown == IntPtr.Zero)
@@ -146,6 +187,18 @@ namespace WinTweaker.Engine
                 this._getTempFunc = (NvmlGetTempDelegate)Marshal.GetDelegateForFunctionPointer(pTemp, typeof(NvmlGetTempDelegate));
                 this._getUtilFunc = (pUtil != IntPtr.Zero)
                     ? (NvmlGetUtilDelegate)Marshal.GetDelegateForFunctionPointer(pUtil, typeof(NvmlGetUtilDelegate))
+                    : null;
+                this._getClockFunc = (pClock != IntPtr.Zero)
+                    ? (NvmlGetClockInfoDelegate)Marshal.GetDelegateForFunctionPointer(pClock, typeof(NvmlGetClockInfoDelegate))
+                    : null;
+                this._getPowerFunc = (pPower != IntPtr.Zero)
+                    ? (NvmlGetPowerUsageDelegate)Marshal.GetDelegateForFunctionPointer(pPower, typeof(NvmlGetPowerUsageDelegate))
+                    : null;
+                this._getFanFunc = (pFan != IntPtr.Zero)
+                    ? (NvmlGetFanSpeedDelegate)Marshal.GetDelegateForFunctionPointer(pFan, typeof(NvmlGetFanSpeedDelegate))
+                    : null;
+                this._getMemFunc = (pMem != IntPtr.Zero)
+                    ? (NvmlGetMemoryInfoDelegate)Marshal.GetDelegateForFunctionPointer(pMem, typeof(NvmlGetMemoryInfoDelegate))
                     : null;
                 this._shutdownFunc = (NvmlShutdownDelegate)Marshal.GetDelegateForFunctionPointer(pShutdown, typeof(NvmlShutdownDelegate));
 
@@ -227,6 +280,66 @@ namespace WinTweaker.Engine
             }
             catch { }
             return false;
+        }
+
+        public bool TryGetGpuTelemetry(out GpuTelemetrySnapshot snap)
+        {
+            snap = new GpuTelemetrySnapshot();
+            if (!this._isInitialized)
+            {
+                if (!this.Initialize()) return false;
+            }
+            if (this._device == IntPtr.Zero) return false;
+
+            try
+            {
+                uint temp = 0;
+                if (this._getTempFunc != null && this._getTempFunc(this._device, 0, out temp) == 0)
+                {
+                    snap.IsAvailable = true;
+                    snap.TemperatureC = temp;
+                }
+
+                NvmlUtilization util;
+                if (this._getUtilFunc != null && this._getUtilFunc(this._device, out util) == 0 && util.gpu <= 100)
+                {
+                    snap.IsAvailable = true;
+                    snap.GpuLoadPercent = util.gpu;
+                }
+
+                uint clk = 0;
+                if (this._getClockFunc != null)
+                {
+                    if (this._getClockFunc(this._device, 0, out clk) == 0) snap.CoreClockMhz = clk; // NVML_CLOCK_GRAPHICS
+                    if (this._getClockFunc(this._device, 2, out clk) == 0) snap.MemClockMhz = clk;  // NVML_CLOCK_MEM
+                }
+
+                uint mw = 0;
+                if (this._getPowerFunc != null && this._getPowerFunc(this._device, out mw) == 0 && mw > 0)
+                {
+                    snap.PowerWatts = mw / 1000.0;
+                }
+
+                uint fan = 0;
+                if (this._getFanFunc != null && this._getFanFunc(this._device, out fan) == 0 && fan <= 100)
+                {
+                    snap.FanPercent = fan;
+                }
+
+                NvmlMemory mem;
+                if (this._getMemFunc != null && this._getMemFunc(this._device, out mem) == 0 && mem.total > 0)
+                {
+                    double gb = 1024.0 * 1024.0 * 1024.0;
+                    snap.VramTotalGb = mem.total / gb;
+                    snap.VramUsedGb = mem.used / gb;
+                }
+
+                return snap.IsAvailable;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public void Shutdown()

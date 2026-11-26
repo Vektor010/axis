@@ -267,12 +267,16 @@ namespace WinTweaker.Engine
                 }
                 else if (kind == "REG_DWORD" || kind == "DWord")
                 {
-                    uint val = Convert.ToUInt32(currentValue);
+                    uint val = (currentValue is uint)
+                        ? (uint)currentValue
+                        : unchecked((uint)Convert.ToInt64(currentValue));
                     sb.AppendLine(string.Format("\"{0}\"=dword:{1:x8}", valueName, val));
                 }
                 else if (kind == "REG_QWORD" || kind == "QWord")
                 {
-                    ulong val64 = Convert.ToUInt64(currentValue);
+                    ulong val64 = (currentValue is ulong)
+                        ? (ulong)currentValue
+                        : unchecked((ulong)Convert.ToInt64(currentValue));
                     byte[] qBytes = BitConverter.GetBytes(val64);
                     sb.AppendLine(string.Format("\"{0}\"=hex(b):{1}", valueName, FormatRegHexList(qBytes)));
                 }

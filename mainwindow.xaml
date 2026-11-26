@@ -124,7 +124,7 @@
                                         Padding="4,0.5"
                                         Margin="6,0,0,0"
                                         VerticalAlignment="Center">
-                                    <TextBlock Text="3.3"
+                                    <TextBlock Text="3.4"
                                                FontFamily="{StaticResource FontMono}"
                                                FontSize="9"
                                                FontWeight="Bold"
@@ -569,7 +569,7 @@
                               HorizontalScrollBarVisibility="Disabled"
                               Visibility="{Binding IsOverviewSelected, Converter={StaticResource BoolToVis}}">
                     <StackPanel Margin="0,0,4,0">
-                        <!-- 2.1 Four Bento Metric Cards Row (2026 Typography + Icon Badges) -->
+                        <!-- 2.1 Four Unique Bento Primary Cards Row (CPU / GPU / RAM / Optimization — Zero Repetition) -->
                         <Grid Margin="0,0,0,10">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
@@ -578,28 +578,11 @@
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
 
-                            <!-- Metric 1: ТЕМПЕРАТУРА -->
+                            <!-- Metric 1: ПРОЦЕССОР (ЦП) -->
                             <Border Grid.Column="0" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="12" Padding="14,12" Margin="0,0,6,0">
                                 <StackPanel>
                                     <Grid>
-                                        <TextBlock Text="ТЕМПЕРАТУРА" FontSize="10.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
-                                        <Border Width="22" Height="22" CornerRadius="6" Background="{DynamicResource WarningFill}" HorizontalAlignment="Right">
-                                            <TextBlock Text="&#xE9CA;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="11" Foreground="{DynamicResource WarningBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                        </Border>
-                                    </Grid>
-                                    <Grid Margin="0,6,0,6">
-                                        <TextBlock Text="{Binding TempDisplay}" FontFamily="{StaticResource FontDisplay}" FontSize="25" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center" />
-                                        <Polyline Points="{Binding TempSparkline}" Stroke="{DynamicResource WarningBrush}" StrokeThickness="1.8" HorizontalAlignment="Right" VerticalAlignment="Center" Width="84" Height="26" />
-                                    </Grid>
-                                    <TextBlock Text="{Binding TempStatus}" FontSize="11" Foreground="{DynamicResource TextSecondary}" />
-                                </StackPanel>
-                            </Border>
-
-                            <!-- Metric 2: ЗАГРУЗКА -->
-                            <Border Grid.Column="1" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="12" Padding="14,12" Margin="6,0,6,0">
-                                <StackPanel>
-                                    <Grid>
-                                        <TextBlock Text="ЗАГРУЗКА ЦП" FontSize="10.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
+                                        <TextBlock Text="ПРОЦЕССОР (ЦП)" FontSize="10.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
                                         <Border Width="22" Height="22" CornerRadius="6" Background="{DynamicResource AccentFill}" HorizontalAlignment="Right">
                                             <TextBlock Text="&#xE950;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="11" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                         </Border>
@@ -608,28 +591,41 @@
                                         <TextBlock Text="{Binding CpuDisplay}" FontFamily="{StaticResource FontDisplay}" FontSize="25" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center" />
                                         <Polyline Points="{Binding CpuSparkline}" Stroke="{DynamicResource AccentBrush}" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Center" Width="84" Height="26" />
                                     </Grid>
-                                    <TextBlock Text="{Binding CpuStatus}" FontSize="11" Foreground="{DynamicResource TextSecondary}" />
+                                    <TextBlock Text="{Binding CpuStatus}" ToolTip="{Binding CpuStatus}" FontSize="11" Foreground="{DynamicResource TextSecondary}" TextTrimming="CharacterEllipsis" />
                                 </StackPanel>
                             </Border>
 
-                            <!-- Metric 3: ЗАДЕРЖКА -->
-                            <Border Grid.Column="2" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="12" Padding="14,12" Margin="6,0,6,0">
+                            <!-- Metric 2: ВИДЕОКАРТА (GPU: Temp + Load + Clocks/Power/VRAM) -->
+                            <Border Grid.Column="1" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="12" Padding="14,12" Margin="6,0,6,0">
                                 <StackPanel>
                                     <Grid>
-                                        <TextBlock Text="ЗАДЕРЖКА ПИНГА" FontSize="10.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
-                                        <Border Width="22" Height="22" CornerRadius="6" Background="{DynamicResource SuccessFill}" HorizontalAlignment="Right">
-                                            <TextBlock Text="&#xE968;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="11" Foreground="{DynamicResource SuccessBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        <TextBlock Text="ВИДЕОКАРТА (GPU)" FontSize="10.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
+                                        <Border CornerRadius="6" Background="{DynamicResource WarningFill}" Padding="6,1.5" HorizontalAlignment="Right">
+                                            <TextBlock Text="{Binding GpuLoadDisplay}" FontFamily="{StaticResource FontMono}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource WarningBrush}" />
                                         </Border>
                                     </Grid>
                                     <Grid Margin="0,6,0,6">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="Auto" />
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" Text="{Binding PingDisplay}" FontFamily="{StaticResource FontDisplay}" FontSize="22" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,6,0" />
-                                        <Polyline Grid.Column="1" Points="{Binding PingSparkline}" Stroke="{DynamicResource SuccessBrush}" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Center" Width="64" Height="26" />
+                                        <TextBlock Text="{Binding TempDisplay}" FontFamily="{StaticResource FontDisplay}" FontSize="25" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center" />
+                                        <Polyline Points="{Binding TempSparkline}" Stroke="{DynamicResource WarningBrush}" StrokeThickness="1.8" HorizontalAlignment="Right" VerticalAlignment="Center" Width="84" Height="26" />
                                     </Grid>
-                                    <TextBlock Text="{Binding PingStatus}" FontSize="11" Foreground="{DynamicResource TextSecondary}" />
+                                    <TextBlock Text="{Binding GpuDetailDisplay}" ToolTip="{Binding GpuDetailDisplay}" FontSize="10.5" Foreground="{DynamicResource TextSecondary}" TextTrimming="CharacterEllipsis" />
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Metric 3: ОПЕРАТИВНАЯ ПАМЯТЬ (ОЗУ) -->
+                            <Border Grid.Column="2" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="12" Padding="14,12" Margin="6,0,6,0">
+                                <StackPanel>
+                                    <Grid>
+                                        <TextBlock Text="ПАМЯТЬ (ОЗУ)" FontSize="10.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
+                                        <Border CornerRadius="6" Background="{DynamicResource SuccessFill}" Padding="6,1.5" HorizontalAlignment="Right">
+                                            <TextBlock Text="{Binding RamPercentBadge}" FontFamily="{StaticResource FontMono}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource SuccessBrush}" />
+                                        </Border>
+                                    </Grid>
+                                    <Grid Margin="0,6,0,6">
+                                        <TextBlock Text="{Binding RamDisplay}" FontFamily="{StaticResource FontDisplay}" FontSize="23" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center" />
+                                        <Polyline Points="{Binding RamSparkline}" Stroke="{DynamicResource SuccessBrush}" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Center" Width="74" Height="26" />
+                                    </Grid>
+                                    <TextBlock Text="{Binding RamStatus}" ToolTip="{Binding RamStatus}" FontSize="11" Foreground="{DynamicResource TextSecondary}" TextTrimming="CharacterEllipsis" />
                                 </StackPanel>
                             </Border>
 
@@ -764,52 +760,46 @@
                             </Border>
                         </Grid>
 
-                        <!-- 2.22 Extended Live Hardware Sensors Row (Disks / Net Throughput / Uptime / Processes / CPU Temp) -->
+                        <!-- 2.22 Secondary Live Sensors Row (Disk I/O / Network Throughput / Ping Latency / Uptime — No Repeats) -->
                         <Grid Margin="0,0,0,10">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
 
-                            <Border Grid.Column="0" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="10" Padding="11,8" Margin="0,0,5,0">
+                            <Border Grid.Column="0" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="10" Padding="12,9" Margin="0,0,6,0">
                                 <StackPanel>
-                                    <TextBlock Text="ЗАГРУЗКА GPU" FontSize="9.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" />
-                                    <TextBlock Text="{Binding GpuLoadDisplay}" FontFamily="{StaticResource FontDisplay}" FontSize="14.5" FontWeight="SemiBold" Foreground="{DynamicResource CyanAccentBrush}" Margin="0,3,0,1" />
-                                    <TextBlock Text="{Binding TempDisplay, StringFormat='Темп. GPU: {0}'}" FontSize="10" Foreground="{DynamicResource TextSecondary}" TextTrimming="CharacterEllipsis" />
-                                </StackPanel>
-                            </Border>
-
-                            <Border Grid.Column="1" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="10" Padding="11,8" Margin="5,0,5,0">
-                                <StackPanel>
-                                    <TextBlock Text="ТЕМП. ЦП (ACPI)" FontSize="9.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" />
-                                    <TextBlock Text="{Binding CpuTempDisplay}" FontFamily="{StaticResource FontDisplay}" FontSize="13.5" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" Margin="0,3,0,1" TextTrimming="CharacterEllipsis" />
-                                    <TextBlock Text="{Binding RamStatus}" FontSize="10" Foreground="{DynamicResource TextSecondary}" TextTrimming="CharacterEllipsis" />
-                                </StackPanel>
-                            </Border>
-
-                            <Border Grid.Column="2" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="10" Padding="11,8" Margin="5,0,5,0">
-                                <StackPanel>
-                                    <TextBlock Text="ДИСКИ (АКТИВНОСТЬ)" FontSize="9.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" />
-                                    <TextBlock Text="{Binding DiskActivityDisplay}" FontFamily="{StaticResource FontDisplay}" FontSize="14.5" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" Margin="0,3,0,1" />
+                                    <TextBlock Text="ДИСКИ (АКТИВНОСТЬ I/O)" FontSize="9.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" />
+                                    <TextBlock Text="{Binding DiskActivityDisplay}" FontFamily="{StaticResource FontDisplay}" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" Margin="0,3,0,1" />
                                     <TextBlock Text="{Binding DiskSpaceDisplay}" ToolTip="{Binding DiskSpaceDisplay}" FontSize="10" Foreground="{DynamicResource TextSecondary}" TextTrimming="CharacterEllipsis" />
                                 </StackPanel>
                             </Border>
 
-                            <Border Grid.Column="3" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="10" Padding="11,8" Margin="5,0,5,0">
+                            <Border Grid.Column="1" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="10" Padding="12,9" Margin="6,0,6,0">
                                 <StackPanel>
                                     <TextBlock Text="СЕТЬ RX / TX" FontSize="9.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" />
-                                    <TextBlock Text="{Binding NetworkRateDisplay}" FontFamily="{StaticResource FontMono}" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource SuccessBrush}" Margin="0,4,0,2" TextTrimming="CharacterEllipsis" />
-                                    <TextBlock Text="{Binding PingDisplay, StringFormat='Пинг: {0}'}" FontSize="10" Foreground="{DynamicResource TextSecondary}" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Text="{Binding NetworkRateDisplay}" FontFamily="{StaticResource FontMono}" FontSize="12.5" FontWeight="SemiBold" Foreground="{DynamicResource SuccessBrush}" Margin="0,4,0,2" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Text="{Binding NetworkDetailDisplay}" ToolTip="{Binding NetworkDetailDisplay}" FontSize="10" Foreground="{DynamicResource TextSecondary}" TextTrimming="CharacterEllipsis" />
                                 </StackPanel>
                             </Border>
 
-                            <Border Grid.Column="4" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="10" Padding="11,8" Margin="5,0,0,0">
+                            <Border Grid.Column="2" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="10" Padding="12,9" Margin="6,0,6,0">
+                                <StackPanel>
+                                    <TextBlock Text="ЗАДЕРЖКА ПИНГА" FontSize="9.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" />
+                                    <Grid Margin="0,3,0,1">
+                                        <TextBlock Text="{Binding PingDisplay}" FontFamily="{StaticResource FontDisplay}" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource SuccessBrush}" VerticalAlignment="Center" />
+                                        <Polyline Points="{Binding PingSparkline}" Stroke="{DynamicResource SuccessBrush}" StrokeThickness="1.6" HorizontalAlignment="Right" VerticalAlignment="Center" Width="70" Height="20" />
+                                    </Grid>
+                                    <TextBlock Text="{Binding PingStatus}" FontSize="10" Foreground="{DynamicResource TextSecondary}" TextTrimming="CharacterEllipsis" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="3" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="10" Padding="12,9" Margin="6,0,0,0">
                                 <StackPanel>
                                     <TextBlock Text="АПТАЙМ / ПРОЦЕССЫ" FontSize="9.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" />
-                                    <TextBlock Text="{Binding UptimeDisplay}" FontFamily="{StaticResource FontMono}" FontSize="13.5" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" Margin="0,3,0,1" />
+                                    <TextBlock Text="{Binding UptimeDisplay}" FontFamily="{StaticResource FontMono}" FontSize="14.5" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" Margin="0,3,0,1" />
                                     <TextBlock Text="{Binding ProcessCountDisplay, StringFormat='Процессов: {0}'}" FontSize="10" Foreground="{DynamicResource TextSecondary}" />
                                 </StackPanel>
                             </Border>
@@ -1896,7 +1886,7 @@
                                                FontSize="11" Foreground="{DynamicResource TextSecondary}" TextWrapping="Wrap" Margin="0,4,0,8" />
 
                                     <UniformGrid Columns="4" Margin="0,2,0,0">
-                                        <RadioButton Content="1 сек"
+                                        <RadioButton Content="Live (0.5с)"
                                                      GroupName="PollingIntervalGroup"
                                                      IsChecked="{Binding IsPolling1Sec, Mode=TwoWay}"
                                                      Foreground="{DynamicResource TextPrimary}"

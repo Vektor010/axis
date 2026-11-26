@@ -28942,5 +28942,4202 @@
         }
       }
     ]
+  },
+  {
+    "id": "system-disable-inventory-svc",
+    "name_ru": "Отключить службу инвентаризации совместимости (InventorySvc)",
+    "description_ru": "Отключает службу телеметрии и оценки совместимости установленных программ (compattelrunner / InventorySvc, Start = 4). Относится к безопасной основной группе служб Noverse и экономит ресурсы диска и CPU.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "system",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 362,
+      "line_to": 362
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\InventorySvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        }
+      }
+    ]
+  },
+  {
+    "id": "system-disable-pcasvc",
+    "name_ru": "Отключить помощник по совместимости программ (PcaSvc)",
+    "description_ru": "Отключает Program Compatibility Assistant (PcaSvc, Start = 4), устраняя фоновое отслеживание запускаемых программ и ведение базы совместимости в памяти.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "system",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 363,
+      "line_to": 363
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\PcaSvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        }
+      }
+    ]
+  },
+  {
+    "id": "system-disable-wuqisvc",
+    "name_ru": "Отключить службу аналитики качества Windows (wuqisvc)",
+    "description_ru": "Отключает службу сбора сводных отчётов качества и диагностики Windows (wuqisvc, Start = 4).",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "system",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 364,
+      "line_to": 364
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\wuqisvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        }
+      }
+    ]
+  },
+  {
+    "id": "system-disable-diagnostics-services",
+    "name_ru": "Отключить службы политики диагностики (DPS / Wdi* / TroubleshootingSvc)",
+    "description_ru": "Отключает 5 диагностических служб Windows (DPS, WdiServiceHost, WdiSystemHost, diagsvc, TroubleshootingSvc; Start = 4), останавливая фоновый сбор диагностических трассировок.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "system",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 117,
+      "line_to": 121
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\DPS",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        }
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\WdiServiceHost",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        }
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\WdiSystemHost",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        }
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\diagsvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        }
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\TroubleshootingSvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        }
+      }
+    ]
+  },
+  {
+    "id": "system-disable-location-service",
+    "name_ru": "Отключить службу геолокации Windows (lfsvc)",
+    "description_ru": "Отключает службу определения местоположения и геозон (lfsvc, Start = 4) для повышения приватности и снижения фоновой активности.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "system",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 214,
+      "line_to": 214
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\lfsvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        }
+      }
+    ]
+  },
+  {
+    "id": "system-disable-wer-services",
+    "name_ru": "Отключить службы отчётов об ошибках WER (WerSvc / wercplsupport)",
+    "description_ru": "Отключает службы Windows Error Reporting (WerSvc и wercplsupport, Start = 4), предотвращая формирование и отправку отчётов о сбоях программ.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "system",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 416,
+      "line_to": 417
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\WerSvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        }
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\wercplsupport",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        }
+      }
+    ]
+  },
+  {
+    "id": "system-disable-beep-driver",
+    "name_ru": "Отключить устаревший драйвер системного динамика (Beep)",
+    "description_ru": "Отключает ядерный драйвер Beep (beep.sys, Start = 4), отвечающий за устаревшие системные звуковые сигналы BIOS/API.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "system",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 27,
+      "line_to": 27
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\Beep",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        }
+      }
+    ]
+  },
+  {
+    "id": "system-disable-kdnic",
+    "name_ru": "Отключить сетевой минипорт отладчика ядра (kdnic)",
+    "description_ru": "Отключает виртуальный сетевой драйвер отладки ядра (kdnic.sys, Start = 4), не используемый на обычном игровом или рабочем ПК.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "system",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 208,
+      "line_to": 208
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\kdnic",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        }
+      }
+    ]
+  },
+  {
+    "id": "system-disable-ndiscap",
+    "name_ru": "Отключить драйвер захвата сетевых пакетов (NdisCap)",
+    "description_ru": "Отключает драйвер перехвата пакетов Microsoft NDIS Capture (ndiscap.sys, Start = 4) согласно таблице Noverse.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "network",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 545,
+      "line_to": 545
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\NdisCap",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        }
+      }
+    ]
+  },
+  {
+    "id": "system-disable-retaildemo",
+    "name_ru": "Отключить демо-режим и службы общих профилей (RetailDemo / shpamsvc)",
+    "description_ru": "Отключает службы демонстрационного стенда RetailDemo и управления общим ПК shpamsvc (Start = 4).",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "system",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 653,
+      "line_to": 654
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\RetailDemo",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        }
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\shpamsvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        }
+      }
+    ]
+  },
+  {
+    "id": "system-disable-edge-updaters",
+    "name_ru": "Отключить фоновые службы обновления Microsoft Edge",
+    "description_ru": "Отключает службы edgeupdate, edgeupdatem и MicrosoftEdgeElevationService (Start = 4), останавливая фоновое обновление компонентов Edge.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "system",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 135,
+      "line_to": 137
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\edgeupdate",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        }
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\edgeupdatem",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        }
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\MicrosoftEdgeElevationService",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        }
+      }
+    ]
+  },
+  {
+    "id": "system-disable-wisvc",
+    "name_ru": "Отключить службу программы Windows Insider (wisvc)",
+    "description_ru": "Отключает фоновую службу программы предварительной оценки Windows (wisvc, Start = 4).",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "system",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 449,
+      "line_to": 449
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\wisvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        }
+      }
+    ]
+  },
+  {
+    "id": "system-disable-telephony",
+    "name_ru": "Отключить устаревшие службы телефонии (PhoneSvc / TapiSrv)",
+    "description_ru": "Отключает службы управления телефонией и TAPI (PhoneSvc, TapiSrv; Start = 4), не нужные для современных подключений и игр.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "system",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 245,
+      "line_to": 246
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\PhoneSvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        }
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\TapiSrv",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        }
+      }
+    ]
+  },
+  {
+    "id": "system-disable-wmpnetwork",
+    "name_ru": "Отключить сетевой медиасервер WMP (WMPNetworkSvc)",
+    "description_ru": "Отключает службу общего доступа к библиотеке Windows Media Player по UPnP (WMPNetworkSvc, Start = 4).",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "network",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 505,
+      "line_to": 505
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\WMPNetworkSvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        }
+      }
+    ]
+  },
+  {
+    "id": "system-disable-rpclocator",
+    "name_ru": "Отключить устаревший локатор RPC (RpcLocator)",
+    "description_ru": "Отключает устаревшую службу совместимости Win2003 (RpcLocator, Start = 4), не задействованную в современных версиях Windows.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "system",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 129,
+      "line_to": 129
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\RpcLocator",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        }
+      }
+    ]
+  },
+  {
+    "id": "system-disable-branchcache",
+    "name_ru": "Отключить службу кэширования корпоративной сети (PeerDistSvc)",
+    "description_ru": "Отключает BranchCache (PeerDistSvc, Start = 4) — кэширование корпоративного контента в локальной подсети.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "network",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 512,
+      "line_to": 512
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\PeerDistSvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        }
+      }
+    ]
+  },
+  {
+    "id": "system-disable-ajrouter",
+    "name_ru": "Отключить маршрутизатор IoT AllJoyn (AJRouter)",
+    "description_ru": "Отключает службу маршрутизации сообщений умного дома AllJoyn (AJRouter, Start = 4).",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "network",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 63,
+      "line_to": 63
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\AJRouter",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        }
+      }
+    ]
+  },
+  {
+    "id": "system-disable-warpjit",
+    "name_ru": "Отключить JIT-компилятор программного рендера WARP (WarpJITSvc)",
+    "description_ru": "Отключает службу WarpJITSvc (Start = 4) для программного рендерера d3d10warp.dll при наличии аппаратной видеокарты.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "system",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "gaming"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 660,
+      "line_to": 660
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\WarpJITSvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        }
+      }
+    ]
+  },
+  {
+    "id": "system-disable-dusmsvc",
+    "name_ru": "Отключить службу учёта сетевого трафика (DusmSvc)",
+    "description_ru": "Отключает Data Usage Service (DusmSvc, Start = 4) — учёт лимитного трафика и ограничений фоновых данных.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "network",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 116,
+      "line_to": 116
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\DusmSvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "system-disable-nfc-wallet-sms",
+    "name_ru": "Отключить службы NFC, кошелька и режима полёта",
+    "description_ru": "Отключает службы SEMgrSvc (NFC-платежи), WalletService, SmsRouter и RmSvc (режим полёта/радиомодуль). Не рекомендуется на ноутбуках с Wi-Fi/LTE.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "system",
+    "type": "toggle",
+    "risk": "medium",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 252,
+      "line_to": 676
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\SEMgrSvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\SmsRouter",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\WalletService",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\RmSvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "system-disable-bam-driver",
+    "name_ru": "Отключить драйвер модерации фоновой активности (bam)",
+    "description_ru": "Отключает ядерный драйвер Background Activity Moderator (bam.sys, Start = 4). Ручная опция Noverse для опытных пользователей.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "system",
+    "type": "toggle",
+    "risk": "medium",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 15,
+      "line_to": 15
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\bam",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "system-disable-sysmain-service",
+    "name_ru": "Отключить службу SysMain (Superfetch)",
+    "description_ru": "Отключает службу SysMain (Start = 4). По документации Noverse также полностью отключает сжатие памяти и объединение страниц, увеличивая расход ОЗУ.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "system",
+    "type": "toggle",
+    "risk": "medium",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 336,
+      "line_to": 336
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\SysMain",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "system-disable-autoplay-service",
+    "name_ru": "Отключить службу уведомлений автозапуска (ShellHWDetection)",
+    "description_ru": "Отключает ShellHWDetection (Start = 4). Предупреждение Noverse: отключение может нарушить мгновенный старт PowerToys CmdPal после загрузки.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "peripheral",
+    "type": "toggle",
+    "risk": "medium",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 21,
+      "line_to": 21
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\ShellHWDetection",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "system-disable-clipboard-service",
+    "name_ru": "Отключить пользовательскую службу буфера обмена (cbdhsvc)",
+    "description_ru": "Отключает службу cbdhsvc (Start = 4), отвечающую за историю буфера обмена (Win+V) и синхронизацию между устройствами.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "privacy",
+    "type": "toggle",
+    "risk": "medium",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 94,
+      "line_to": 94
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\cbdhsvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "system-disable-cloudfsr",
+    "name_ru": "Отключить драйвер-фильтр облачных файлов (CldFlt)",
+    "description_ru": "Отключает мини-фильтр файловой системы cldflt.sys (Start = 4). Может нарушить работу OneDrive Files On-Demand.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "system",
+    "type": "toggle",
+    "risk": "medium",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 100,
+      "line_to": 100
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\CldFlt",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "system-disable-ndu-driver",
+    "name_ru": "Отключить драйвер мониторинга сетевых данных (Ndu)",
+    "description_ru": "Отключает Ndu.sys (Start = 4). Предупреждение Noverse: отключает графики приёма/передачи сети в Диспетчере задач Windows.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "network",
+    "type": "toggle",
+    "risk": "medium",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 361,
+      "line_to": 361
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\Ndu",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "peripheral-disable-bluetooth-services",
+    "name_ru": "Отключить все службы и драйверы Bluetooth (16 компонентов)",
+    "description_ru": "Отключает bthserv, BluetoothUserService, BTAGService, BthAvctpSvc, DeviceAssociation* и все ядерные драйверы стека Bluetooth (Start = 4). Применяйте только если Bluetooth не нужен.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "peripheral",
+    "type": "toggle",
+    "risk": "medium",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 39,
+      "line_to": 55
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\BTAGService",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\BluetoothUserService",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\BthA2dp",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\BthAvctpSvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\BthEnum",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\BthHFEnum",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\BthLEEnum",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\BthMini",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\BTHMODEM",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\BTHPORT",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\bthserv",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\BTHUSB",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\DeviceAssociationBrokerSvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\DeviceAssociationService",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\Microsoft_Bluetooth_AvrcpTransport",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\RFCOMM",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "peripheral-disable-camera-services",
+    "name_ru": "Отключить службы веб-камеры и сканеров (FrameServer / StiSvc)",
+    "description_ru": "Отключает FrameServer, FrameServerMonitor и Windows Image Acquisition StiSvc (Start = 4). Отключит веб-камеры и сканеры в ОС.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "peripheral",
+    "type": "toggle",
+    "risk": "medium",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 80,
+      "line_to": 82
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\FrameServer",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\FrameServerMonitor",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\StiSvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "system-disable-cdrom-driver",
+    "name_ru": "Отключить драйвер оптических приводов (cdrom)",
+    "description_ru": "Отключает драйвер cdrom.sys (Start = 4). Может повлиять на монтирование виртуальных ISO-образов через стандартный проводник.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "system",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 88,
+      "line_to": 88
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\cdrom",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "peripheral-disable-printer-services",
+    "name_ru": "Отключить все службы и драйверы печати (Spooler / Print*)",
+    "description_ru": "Отключает Spooler, PrintNotify, PrintWorkflowUserSvc, McpManagementService, PrintDeviceConfigurationService, PrintScanBrokerService и usbprint (Start = 4).",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "peripheral",
+    "type": "toggle",
+    "risk": "medium",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 264,
+      "line_to": 270
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\McpManagementService",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\PrintDeviceConfigurationService",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\PrintNotify",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\PrintScanBrokerService",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\PrintWorkflowUserSvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\Spooler",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\usbprint",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "system-disable-broadcast-cdp-p2p",
+    "name_ru": "Отключить трансляции Game Bar, Miracast, CDP и P2P (12 служб)",
+    "description_ru": "Отключает BcastDVRUserService, CaptureService, CDPSvc, CDPUserSvc, DevicePickerUserSvc, DevicesFlowUserSvc, NcbService, NcdAutoSetup и стек P2P/PNRP (Start = 4). Может нарушить запись экрана UWP/Game Bar и уведомления Store.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "system",
+    "type": "toggle",
+    "risk": "medium",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 61,
+      "line_to": 74
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\BcastDVRUserService",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\CaptureService",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\CDPSvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\CDPUserSvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\DevicePickerUserSvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\DevicesFlowUserSvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\NcbService",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\NcdAutoSetup",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\p2pimsvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\p2psvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\PNRPAutoReg",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\PNRPsvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "privacy-disable-xbox-services",
+    "name_ru": "Отключить службы и драйвер геймпада Xbox Live (5 компонентов)",
+    "description_ru": "Отключает XboxGipSvc, драйвер xboxgip, XblAuthManager, XblGameSave и XboxNetApiSvc (Start = 4). Прекратит работу Xbox App и сохранений Game Pass.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "privacy",
+    "type": "toggle",
+    "risk": "medium",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 469,
+      "line_to": 473
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\XboxGipSvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\xboxgip",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\XblAuthManager",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\XblGameSave",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\XboxNetApiSvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "network-disable-file-sharing-services",
+    "name_ru": "Отключить общий доступ к файлам, SMB, WebDAV и WSL 9P (12 служб)",
+    "description_ru": "Отключает LanmanServer, LanmanWorkstation, CSC/CscService, Dfsc, MRxDAV, mrxsmb/mrxsmb20, P9Rdr*, rdbss и WebClient (Start = 4). Полностью отключает сетевые папки и SMB.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "network",
+    "type": "toggle",
+    "risk": "high",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 143,
+      "line_to": 154
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\LanmanServer",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\LanmanWorkstation",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\CSC",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\CscService",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\Dfsc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\MRxDAV",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\mrxsmb",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\mrxsmb20",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\P9Rdr",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\P9RdrService",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\rdbss",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\WebClient",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "network-disable-discovery-services",
+    "name_ru": "Отключить службы сетевого обнаружения SSDP / UPnP / LLTD (8 служб)",
+    "description_ru": "Отключает fdPHost, FDResPub, SSDPSRV, upnphost, MsLldp, rspndr, lltdio и lltdsvc (Start = 4). Устройства локальной сети перестанут обнаруживаться автоматически.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "network",
+    "type": "toggle",
+    "risk": "medium",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 226,
+      "line_to": 233
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\fdPHost",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\FDResPub",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\SSDPSRV",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\upnphost",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\MsLldp",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\rspndr",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\lltdio",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\lltdsvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "privacy-disable-rdp-services",
+    "name_ru": "Отключить службы и драйверы удалённого рабочего стола (RDP)",
+    "description_ru": "Отключает SessionEnv, TermService, UmRdpService и 6 драйверов перенаправления RDP (Start = 4).",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "privacy",
+    "type": "toggle",
+    "risk": "medium",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 286,
+      "line_to": 294
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\SessionEnv",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\TermService",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\UmRdpService",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\rdpbus",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\RDPDR",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\terminpt",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\TsUsbFlt",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\TsUsbGD",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\tsusbhub",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "network-disable-vpn-ras-services",
+    "name_ru": "Отключить встроенные службы VPN, RAS и WAN Miniport (11 компонентов)",
+    "description_ru": "Отключает RemoteAccess, RasMan, RasAuto, SstpSvc и драйверы WAN Miniport/PPTP/L2TP/SSTP/IKEv2 (Start = 4). Может нарушить работу системных VPN/PPPoE.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "network",
+    "type": "toggle",
+    "risk": "high",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 489,
+      "line_to": 499
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\RemoteAccess",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\wanarp",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\wanarpv6",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\RasMan",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\RasAuto",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\PptpMiniport",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\RasAgileVpn",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\Rasl2tp",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\RasSstp",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\SstpSvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\RasAcd",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "network-disable-wifi-services",
+    "name_ru": "Отключить службы и драйверы Wi-Fi (WlanSvc / wcncsvc / WifiCx)",
+    "description_ru": "Отключает WlanSvc, wcncsvc, WFDSConMgrSvc и драйверы Wi-Fi (Start = 4). Применять ТОЛЬКО на ПК с проводным Ethernet без Wi-Fi.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "network",
+    "type": "toggle",
+    "risk": "high",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 423,
+      "line_to": 428
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\WlanSvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\vwififlt",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\wcncsvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\WFDSConMgrSvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\NativeWifiP",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\Wificx",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "privacy-disable-biometrics-signin",
+    "name_ru": "Отключить биометрию Windows Hello и MS Sign-In Assistant",
+    "description_ru": "Отключает WbioSrvc, wlidsvc и NaturalAuthentication (Start = 4), не затрагивая критичные ключи входа NgcSvc/NgcCtnrSvc. Нарушит вход по отпечатку/лицу и MS-аккаунту.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "privacy",
+    "type": "toggle",
+    "risk": "high",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 33,
+      "line_to": 312
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\WbioSrvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\wlidsvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\NaturalAuthentication",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "system-disable-store-services",
+    "name_ru": "Отключить службы Microsoft Store и развёртывания AppX (6 служб)",
+    "description_ru": "Отключает AppXSvc, camsvc, ClipSVC, InstallService, LicenseManager и PushToInstall (Start = 4). Предупреждение Noverse: ломает Microsoft Store, UWP-приложения и CmdPal.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "system",
+    "type": "toggle",
+    "risk": "high",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 342,
+      "line_to": 347
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\AppXSvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\camsvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\ClipSVC",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\InstallService",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\LicenseManager",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\PushToInstall",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "security-disable-defender-services",
+    "name_ru": "Отключить службы и драйверы Microsoft Defender (10 компонентов)",
+    "description_ru": "Отключает WinDefend, WdFilter, WdBoot, WdNisSvc, WdNisDrv, wscsvc, SecurityHealthService, Sense, MsSecCore и MDCoreSvc (Start = 4). Критически снижает защиту ОС от вирусов.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "security",
+    "type": "toggle",
+    "risk": "high",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 434,
+      "line_to": 443
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\WinDefend",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\MsSecCore",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\wscsvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\WdFilter",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\WdBoot",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\WdNisSvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\WdNisDrv",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\SecurityHealthService",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\Sense",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\MDCoreSvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "security-disable-wu-services",
+    "name_ru": "Отключить службы Центра обновления Windows (wuauserv / UsoSvc / Medic)",
+    "description_ru": "Отключает wuauserv, UsoSvc и WaaSMedicSvc (Start = 4), полностью блокируя скачивание и установку обновлений Windows.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "security",
+    "type": "toggle",
+    "risk": "high",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 461,
+      "line_to": 463
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\WaaSMedicSvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\UsoSvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\wuauserv",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "system-disable-hyperv-services",
+    "name_ru": "Отключить гостевые службы и драйверы Hyper-V (20 компонентов)",
+    "description_ru": "Отключает HvHost, hvservice, Vid, vmbus, vpci и гостевые интеграции vmic* (Start = 4). Не применять при использовании WSL2, Hyper-V или Windows Sandbox.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "system",
+    "type": "toggle",
+    "risk": "medium",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 166,
+      "line_to": 185
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\bttflt",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\gencounter",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\hvcrash",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\HvHost",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\hvservice",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\hyperkbd",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\HyperVideo",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\storflt",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\Vid",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\vmbus",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\vmgid",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\vmicguestinterface",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\vmicheartbeat",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\vmickvpexchange",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\vmicrdv",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\vmicshutdown",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\vmictimesync",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\vmicvmsession",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\vmicvss",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\vpci",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "system-disable-sensors-mr",
+    "name_ru": "Отключить службы датчиков и Windows Mixed Reality (6 служб)",
+    "description_ru": "Отключает SensorDataService, SensrSvc, SensorService, perceptionsimulation, spectrum и VacSvc (Start = 4). На ноутбуках отключит автоповорот и автояркость.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "system",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 300,
+      "line_to": 305
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\SensorDataService",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\SensrSvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\SensorService",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\perceptionsimulation",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\spectrum",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\VacSvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "system-disable-smartcard-services",
+    "name_ru": "Отключить службы смарт-карт (SCardSvr / scfilter)",
+    "description_ru": "Отключает SCardSvr, ScDeviceEnum, SCPolicySvc и драйвер scfilter (Start = 4).",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "system",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 320,
+      "line_to": 323
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\SCardSvr",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\ScDeviceEnum",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\SCPolicySvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\scfilter",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "security-disable-recovery-backup-services",
+    "name_ru": "Отключить службы теневого копирования VSS и архивации (5 служб)",
+    "description_ru": "Отключает VSS, swprv, SDRSVC, wbengine и CloudBackupRestoreSvc (Start = 4). Точки восстановления системы перестанут создаваться!",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "security",
+    "type": "toggle",
+    "risk": "high",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 276,
+      "line_to": 280
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\CloudBackupRestoreSvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\SDRSVC",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\swprv",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\VSS",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\wbengine",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "system-disable-defragsvc",
+    "name_ru": "Отключить службу оптимизации дисков (defragsvc)",
+    "description_ru": "Отключает defragsvc (Start = 4). Отключает плановую оптимизацию/TRIM накопителей Windows.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "system",
+    "type": "toggle",
+    "risk": "medium",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 531,
+      "line_to": 531
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\defragsvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "network-disable-qwave",
+    "name_ru": "Отключить службы качества AV-потоков qWave (QWAVE / QWAVEdrv)",
+    "description_ru": "Отключает службу QWAVE и драйвер QWAVEdrv (Start = 4).",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "network",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 518,
+      "line_to": 519
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\QWAVE",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\QWAVEdrv",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "network-disable-ics-hotspot",
+    "name_ru": "Отключить мобильный хот-спот и общий доступ ICS (3 службы)",
+    "description_ru": "Отключает icssvc, ALG и SharedAccess (Start = 4). Раздача интернета через точку доступа Windows работать не будет.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "network",
+    "type": "toggle",
+    "risk": "medium",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 537,
+      "line_to": 539
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\icssvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\ALG",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\SharedAccess",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "network-disable-netbios-drivers",
+    "name_ru": "Отключить службы и драйверы NetBIOS (lmhosts / NetBIOS / NetBT)",
+    "description_ru": "Отключает TCP/IP NetBIOS Helper (lmhosts) и драйверы NetBIOS / NetBT (Start = 4).",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "network",
+    "type": "toggle",
+    "risk": "medium",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 353,
+      "line_to": 571
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\lmhosts",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\NetBIOS",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\NetBT",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "privacy-disable-userdata-sync",
+    "name_ru": "Отключить службы пользовательских данных и контактов (UserDataSvc / UnistoreSvc)",
+    "description_ru": "Отключает UnistoreSvc, UserDataSvc, ConsentUxUserSvc, MessagingService и PimIndexMaintenanceSvc (Start = 4).",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "privacy",
+    "type": "toggle",
+    "risk": "medium",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 397,
+      "line_to": 401
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\UnistoreSvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\UserDataSvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\ConsentUxUserSvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\MessagingService",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\PimIndexMaintenanceSvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "system-disable-wpdbusenum",
+    "name_ru": "Отключить перечислитель переносных устройств MTP (WPDBusEnum)",
+    "description_ru": "Отключает WPDBusEnum (Start = 4). Может нарушить синхронизацию телефонов и съёмных медиа-накопителей.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "peripheral",
+    "type": "toggle",
+    "risk": "medium",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 506,
+      "line_to": 506
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\WPDBusEnum",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "peripheral-disable-gameinput",
+    "name_ru": "Отключить службу Microsoft GameInput (GameInputSvc)",
+    "description_ru": "Отключает службу GameInputSvc (Start = 4). Требуется некоторым новым играм из Microsoft Store / Xbox App для геймпадов.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "peripheral",
+    "type": "toggle",
+    "risk": "medium",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 160,
+      "line_to": 160
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\GameInputSvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "peripheral-disable-steelseries-all",
+    "name_ru": "Отключить дополнительные драйверы SteelSeries GG / Sonar",
+    "description_ru": "Отключает виртуальный аудиодрайвер SteelSeries_Sonar_VAD, SteelSeriesGGUpdateServiceProxy и ssdevfactory (Start = 4).",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "peripheral",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 593,
+      "line_to": 595
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\SteelSeries_Sonar_VAD",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\SteelSeriesGGUpdateServiceProxy",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\ssdevfactory",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "peripheral-logitech-lamparray-service",
+    "name_ru": "Отключить драйвер виртуального HID и службу RGB Logitech LampArray",
+    "description_ru": "Отключает logi_joy_vir_hid и logi_lamparray_service (Start = 4) согласно таблице Noverse.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "peripheral",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 586,
+      "line_to": 587
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\logi_joy_vir_hid",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\logi_lamparray_service",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "misc-disable-epic-services",
+    "name_ru": "Отключить фоновые службы Epic Games (Updater / OnlineServices)",
+    "description_ru": "Отключает фоновые службы EpicGamesUpdater и EpicOnlineServices (Start = 4), если клиент не используется в фоне.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "misc",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 577,
+      "line_to": 578
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\EpicGamesUpdater",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\EpicOnlineServices",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "misc-disable-vbox-services",
+    "name_ru": "Отключить службы и драйверы Oracle VirtualBox (5 компонентов)",
+    "description_ru": "Отключает VBoxNetAdp, VBoxNetLwf, VBoxSup, VBoxUSBMon и VBoxSDS (Start = 4) при простое VirtualBox.",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "misc",
+    "type": "toggle",
+    "risk": "medium",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 479,
+      "line_to": 483
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\VBoxNetAdp",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\VBoxNetLwf",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\VBoxSup",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\VBoxUSBMon",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\VBoxSDS",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "system-disable-timesync-services",
+    "name_ru": "Отключить авто-часовой пояс и мобильное время (tzautoupdate / autotimesvc)",
+    "description_ru": "Отключает службу автоматической смены часового пояса tzautoupdate и autotimesvc (Start = 4).",
+    "group": "Службы и драйверы (Noverse)",
+    "category": "system",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-services-drivers.md",
+      "line_from": 376,
+      "line_to": 377
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\autotimesvc",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Services\\tzautoupdate",
+        "name": "Start",
+        "type": "REG_DWORD",
+        "apply": 4,
+        "revert": {
+          "mode": "snapshot"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "system-disable-search-highlights-24h2",
+    "name_ru": "Отключить Search Highlights в панели поиска (Win 11 24H2+)",
+    "description_ru": "Отключает рекламные подборки и динамический баннер в окне поиска Windows 11 24H2+ через современный параметр IsDynamicSearchBoxEnabled = 0 (Noverse disable-windows-search.md).",
+    "group": "Поиск и интерфейс",
+    "category": "system",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-windows-search.md",
+      "line_from": 52,
+      "line_to": 57
+    },
+    "registry": [
+      {
+        "hive": "HKCU",
+        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\SearchSettings",
+        "name": "IsDynamicSearchBoxEnabled",
+        "type": "REG_DWORD",
+        "apply": 0,
+        "revert": {
+          "mode": "set",
+          "value": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "privacy-disable-troubleshooter-auto",
+    "name_ru": "Отключить автозапуск средств устранения неполадок (UserPreference)",
+    "description_ru": "Устанавливает WindowsMitigation\\UserPreference = 1 (не запускать автоматические средства диагностики Windows в фоне).",
+    "group": "Диагностика и отчёты",
+    "category": "privacy",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "privacy/docs/troubleshooter-preference.md",
+      "line_from": 20,
+      "line_to": 28
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Microsoft\\WindowsMitigation",
+        "name": "UserPreference",
+        "type": "REG_DWORD",
+        "apply": 1,
+        "revert": {
+          "mode": "set",
+          "value": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "visibility-hide-cloud-files-quick-access",
+    "name_ru": "Скрыть облачные файлы OneDrive в быстром доступе Проводника",
+    "description_ru": "Устанавливает ShowCloudFilesInQuickAccess = 0, убирая сторонние облачные файлы из раздела Быстрый доступ Проводника Windows.",
+    "group": "Проводник и оболочка",
+    "category": "visibility",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "visibility/docs/explorer-options.md",
+      "line_from": 141,
+      "line_to": 148
+    },
+    "registry": [
+      {
+        "hive": "HKCU",
+        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer",
+        "name": "ShowCloudFilesInQuickAccess",
+        "type": "REG_DWORD",
+        "apply": 0,
+        "revert": {
+          "mode": "set",
+          "value": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "visibility-disable-sync-provider-notifications",
+    "name_ru": "Отключить рекламу и баннеры синхронизации OneDrive в Проводнике",
+    "description_ru": "Отключает ShowSyncProviderNotifications (0), убирая встроенные рекламные уведомления поставщиков синхронизации внутри окон Проводника.",
+    "group": "Проводник и оболочка",
+    "category": "visibility",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "visibility/docs/explorer-options.md",
+      "line_from": 254,
+      "line_to": 261
+    },
+    "registry": [
+      {
+        "hive": "HKCU",
+        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "name": "ShowSyncProviderNotifications",
+        "type": "REG_DWORD",
+        "apply": 0,
+        "revert": {
+          "mode": "set",
+          "value": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "security-disable-apphost-smartscreen",
+    "name_ru": "Отключить фильтр SmartScreen для приложений Store (AppHost)",
+    "description_ru": "Устанавливает EnableWebContentEvaluation = 0 для AppHost. Понижает уровень защиты при запуске веб-контента в UWP-приложениях.",
+    "group": "Защита ОС и SmartScreen",
+    "category": "security",
+    "type": "toggle",
+    "risk": "high",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "security/docs/windows-defender.md",
+      "line_from": 214,
+      "line_to": 217
+    },
+    "registry": [
+      {
+        "hive": "HKCU",
+        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\AppHost",
+        "name": "EnableWebContentEvaluation",
+        "type": "REG_DWORD",
+        "apply": 0,
+        "apply_block": "Enabled",
+        "revert": {
+          "mode": "set",
+          "value": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "security-disable-vulnerable-driver-blocklist",
+    "name_ru": "Отключить список блокировки уязвимых драйверов Microsoft",
+    "description_ru": "Устанавливает VulnerableDriverBlocklistEnable = 0 (требуется некоторым инструментам низкоуровневой отладки/античитам, но снижает защиту ядра).",
+    "group": "Защита ОС и SmartScreen",
+    "category": "security",
+    "type": "toggle",
+    "risk": "high",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "security/docs/windows-defender.md",
+      "line_from": 221,
+      "line_to": 223
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Control\\CI\\Config",
+        "name": "VulnerableDriverBlocklistEnable",
+        "type": "REG_DWORD",
+        "apply": 0,
+        "apply_block": "Enabled",
+        "revert": {
+          "mode": "set",
+          "value": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "system-tasks-disable-ceip",
+    "name_ru": "Отключить задачи программы улучшения качества CEIP (6 задач)",
+    "description_ru": "Отключает запланированные задачи сбора телеметрии CEIP (Autochk Proxy, UsbCeip, Consolidator, Uploader и серверные коллекторы) через Task Scheduler.",
+    "group": "Планировщик задач (Noverse)",
+    "category": "system",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-scheduled-tasks.md",
+      "line_from": 11,
+      "line_to": 16
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\TaskCache\\Tree\\Microsoft\\Windows\\Autochk",
+        "name": "Proxy",
+        "type": "REG_SZ",
+        "apply": "Disabled",
+        "revert": {
+          "mode": "delete"
+        }
+      }
+    ]
+  },
+  {
+    "id": "system-tasks-disable-error-reporting",
+    "name_ru": "Отключить задачу отправки отчётов об ошибках (QueueReporting)",
+    "description_ru": "Отключает задачу планировщика Windows Error Reporting\\QueueReporting (wermgr.exe -upload).",
+    "group": "Планировщик задач (Noverse)",
+    "category": "privacy",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-scheduled-tasks.md",
+      "line_from": 22,
+      "line_to": 22
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\TaskCache\\Tree\\Microsoft\\Windows\\Windows Error Reporting",
+        "name": "QueueReporting",
+        "type": "REG_SZ",
+        "apply": "Disabled",
+        "revert": {
+          "mode": "delete"
+        }
+      }
+    ]
+  },
+  {
+    "id": "system-tasks-disable-feedback",
+    "name_ru": "Отключить задачи отзывов и опросов SIUF (DmClient)",
+    "description_ru": "Отключает задачи обратной связи Microsoft (DmClient и DmClientOnScenarioDownload).",
+    "group": "Планировщик задач (Noverse)",
+    "category": "privacy",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-scheduled-tasks.md",
+      "line_from": 70,
+      "line_to": 71
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\TaskCache\\Tree\\Microsoft\\Windows\\Feedback\\Siuf",
+        "name": "DmClient",
+        "type": "REG_SZ",
+        "apply": "Disabled",
+        "revert": {
+          "mode": "delete"
+        }
+      }
+    ]
+  },
+  {
+    "id": "system-tasks-disable-app-experience",
+    "name_ru": "Отключить задачи телеметрии совместимости Application Experience (6 задач)",
+    "description_ru": "Отключает тяжеловесную телеметрию compattelrunner / Microsoft Compatibility Appraiser, MareBackup, PcaPatchDbTask, SdbinstMergeDbTask и StartupAppTask.",
+    "group": "Планировщик задач (Noverse)",
+    "category": "system",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-scheduled-tasks.md",
+      "line_from": 77,
+      "line_to": 82
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\TaskCache\\Tree\\Microsoft\\Windows\\Application Experience",
+        "name": "MareBackup",
+        "type": "REG_SZ",
+        "apply": "Disabled",
+        "revert": {
+          "mode": "delete"
+        }
+      }
+    ]
+  },
+  {
+    "id": "system-tasks-disable-census",
+    "name_ru": "Отключить задачи телеметрии устройств (Device Census)",
+    "description_ru": "Отключает задачи инвентаризации оборудования devicecensus.exe (Device и Device User).",
+    "group": "Планировщик задач (Noverse)",
+    "category": "privacy",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-scheduled-tasks.md",
+      "line_from": 108,
+      "line_to": 109
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\TaskCache\\Tree\\Microsoft\\Windows\\Device Information",
+        "name": "Device",
+        "type": "REG_SZ",
+        "apply": "Disabled",
+        "revert": {
+          "mode": "delete"
+        }
+      }
+    ]
+  },
+  {
+    "id": "system-tasks-disable-maps",
+    "name_ru": "Отключить задачи автообновления карт (MapsUpdateTask / MapsToastTask)",
+    "description_ru": "Отключает фоновую проверку обновлений и уведомления автономных карт Windows.",
+    "group": "Планировщик задач (Noverse)",
+    "category": "privacy",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-scheduled-tasks.md",
+      "line_from": 134,
+      "line_to": 135
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\TaskCache\\Tree\\Microsoft\\Windows\\Maps",
+        "name": "MapsUpdateTask",
+        "type": "REG_SZ",
+        "apply": "Disabled",
+        "revert": {
+          "mode": "delete"
+        }
+      }
+    ]
+  },
+  {
+    "id": "system-tasks-disable-sleep-study",
+    "name_ru": "Отключить задачу анализа энергопотребления Sleep Study (AnalyzeSystem)",
+    "description_ru": "Отключает задачу Power Efficiency Diagnostics\\AnalyzeSystem в планировщике Windows.",
+    "group": "Планировщик задач (Noverse)",
+    "category": "power",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-scheduled-tasks.md",
+      "line_from": 141,
+      "line_to": 141
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\TaskCache\\Tree\\Microsoft\\Windows\\Power Efficiency Diagnostics",
+        "name": "AnalyzeSystem",
+        "type": "REG_SZ",
+        "apply": "Disabled",
+        "revert": {
+          "mode": "delete"
+        }
+      }
+    ]
+  },
+  {
+    "id": "system-tasks-disable-diag-telemetry",
+    "name_ru": "Отключить задачи фоновой диагностики, OneSettings и Speech (10 задач)",
+    "description_ru": "Отключает RecommendedTroubleshootingScanner, Diagnosis\\Scheduled, UnexpectedCodePath, DiskDiagnosticDataCollector, OneSettings RefreshCache, AccountHealth, Location\\WindowsActionDialog, RetailDemo, SpeechModelDownloadTask и RemoteAssistanceTask.",
+    "group": "Планировщик задач (Noverse)",
+    "category": "privacy",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-scheduled-tasks.md",
+      "line_from": 91,
+      "line_to": 219
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\TaskCache\\Tree\\Microsoft\\Windows\\Diagnosis",
+        "name": "RecommendedTroubleshootingScanner",
+        "type": "REG_SZ",
+        "apply": "Disabled",
+        "revert": {
+          "mode": "delete"
+        }
+      }
+    ]
+  },
+  {
+    "id": "system-tasks-disable-windows-ai",
+    "name_ru": "Отключить задачи Windows AI и Recall в планировщике (3 задачи)",
+    "description_ru": "Отключает задачи инициализации и политики WindowsAI\\Recall и WindowsAI\\Settings в планировщике Windows.",
+    "group": "Планировщик задач (Noverse)",
+    "category": "privacy",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-scheduled-tasks.md",
+      "line_from": 240,
+      "line_to": 242
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\TaskCache\\Tree\\Microsoft\\Windows\\WindowsAI\\Recall",
+        "name": "InitialConfiguration",
+        "type": "REG_SZ",
+        "apply": "Disabled",
+        "revert": {
+          "mode": "delete"
+        }
+      }
+    ]
+  },
+  {
+    "id": "system-tasks-disable-office-telemetry",
+    "name_ru": "Отключить задачи телеметрии Microsoft Office (4 задачи)",
+    "description_ru": "Отключает OfficeTelemetryAgentLogOn и OfficeTelemetryAgentFallBack (2016/Modern).",
+    "group": "Планировщик задач (Noverse)",
+    "category": "misc",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [
+      "recommended"
+    ],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-scheduled-tasks.md",
+      "line_from": 53,
+      "line_to": 56
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\TaskCache\\Tree\\Microsoft\\Office",
+        "name": "OfficeTelemetryAgentFallBack",
+        "type": "REG_SZ",
+        "apply": "Disabled",
+        "revert": {
+          "mode": "delete"
+        }
+      }
+    ]
+  },
+  {
+    "id": "system-tasks-disable-defrag",
+    "name_ru": "Отключить плановую оптимизацию дисков в планировщике (ScheduledDefrag)",
+    "description_ru": "Отключает регулярный запуск defrag.exe -c -h -o -$ (TRIM SSD / дефрагментация HDD). Ручная опция.",
+    "group": "Планировщик задач (Noverse)",
+    "category": "system",
+    "type": "toggle",
+    "risk": "medium",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-scheduled-tasks.md",
+      "line_from": 90,
+      "line_to": 90
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\TaskCache\\Tree\\Microsoft\\Windows\\Defrag",
+        "name": "ScheduledDefrag",
+        "type": "REG_SZ",
+        "apply": "Disabled",
+        "revert": {
+          "mode": "delete"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "system-tasks-disable-maintenance-misc",
+    "name_ru": "Отключить системные задачи обслуживания, Chkdsk и MemoryDiagnostic (15 задач)",
+    "description_ru": "Отключает SilentCleanup, StorageSense, DiskFootprint, MemoryDiagnostic, ProactiveScan (Chkdsk), RegIdleBackup, DsSvcCleanup и фоновое обслуживание AppX.",
+    "group": "Планировщик задач (Noverse)",
+    "category": "system",
+    "type": "toggle",
+    "risk": "medium",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-scheduled-tasks.md",
+      "line_from": 88,
+      "line_to": 213
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\TaskCache\\Tree\\Microsoft\\Windows\\ApplicationData",
+        "name": "DsSvcCleanup",
+        "type": "REG_SZ",
+        "apply": "Disabled",
+        "revert": {
+          "mode": "delete"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "system-tasks-disable-offline-files-workfolders",
+    "name_ru": "Отключить задачи автономных файлов и Work Folders (4 задачи)",
+    "description_ru": "Отключает синхронизацию Offline Files и рабочих папок Work Folders в планировщике.",
+    "group": "Планировщик задач (Noverse)",
+    "category": "network",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-scheduled-tasks.md",
+      "line_from": 28,
+      "line_to": 249
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\TaskCache\\Tree\\Microsoft\\Windows\\Offline Files",
+        "name": "Background Synchronization",
+        "type": "REG_SZ",
+        "apply": "Disabled",
+        "revert": {
+          "mode": "delete"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "system-tasks-disable-printing-wifi-tasks",
+    "name_ru": "Отключить задачи печати и фонового Wi-Fi / WWAN (8 задач)",
+    "description_ru": "Отключает PrintJobCleanupTask, PrinterCleanupTask, EduPrintProv, WiFiTask, WlanSvc и WwanSvc задачи.",
+    "group": "Планировщик задач (Noverse)",
+    "category": "peripheral",
+    "type": "toggle",
+    "risk": "medium",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-scheduled-tasks.md",
+      "line_from": 35,
+      "line_to": 47
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\TaskCache\\Tree\\Microsoft\\Windows\\Printing",
+        "name": "PrintJobCleanupTask",
+        "type": "REG_SZ",
+        "apply": "Disabled",
+        "revert": {
+          "mode": "delete"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "system-tasks-disable-localization-timesync",
+    "name_ru": "Отключить задачи синхронизации языка и расписания времени (6 задач)",
+    "description_ru": "Отключает установку/очистку языковых пакетов (LanguageComponentsInstaller) и задачи Time Synchronization.",
+    "group": "Планировщик задач (Noverse)",
+    "category": "system",
+    "type": "toggle",
+    "risk": "low",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-scheduled-tasks.md",
+      "line_from": 125,
+      "line_to": 148
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\TaskCache\\Tree\\Microsoft\\Windows\\International",
+        "name": "Synchronize Language Settings",
+        "type": "REG_SZ",
+        "apply": "Disabled",
+        "revert": {
+          "mode": "delete"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "system-tasks-disable-wu-store-tasks",
+    "name_ru": "Отключить задачи Windows Update, Orchestrator, Store и BitLocker (20 задач)",
+    "description_ru": "Отключает все задачи сканирования/установки обновлений WindowsUpdate, UpdateOrchestrator, InstallService и BitLocker в планировщике.",
+    "group": "Планировщик задач (Noverse)",
+    "category": "security",
+    "type": "toggle",
+    "risk": "high",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-scheduled-tasks.md",
+      "line_from": 115,
+      "line_to": 180
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\TaskCache\\Tree\\Microsoft\\Windows\\InstallService",
+        "name": "ScanForUpdates",
+        "type": "REG_SZ",
+        "apply": "Disabled",
+        "revert": {
+          "mode": "delete"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "system-tasks-disable-system-restore",
+    "name_ru": "Отключить автосоздание точек восстановления в планировщике (SR)",
+    "description_ru": "Отключает задачу SystemRestore\\SR (автоматическое фоновое создание точек восстановления).",
+    "group": "Планировщик задач (Noverse)",
+    "category": "security",
+    "type": "toggle",
+    "risk": "high",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-scheduled-tasks.md",
+      "line_from": 225,
+      "line_to": 225
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\TaskCache\\Tree\\Microsoft\\Windows\\SystemRestore",
+        "name": "SR",
+        "type": "REG_SZ",
+        "apply": "Disabled",
+        "revert": {
+          "mode": "delete"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
+  },
+  {
+    "id": "security-tasks-disable-defender",
+    "name_ru": "Отключить плановые проверки Windows Defender в планировщике (4 задачи)",
+    "description_ru": "Отключает Scheduled Scan, Cache Maintenance, Cleanup и Verification защитника Windows.",
+    "group": "Планировщик задач (Noverse)",
+    "category": "security",
+    "type": "toggle",
+    "risk": "high",
+    "presets": [],
+    "min_build": null,
+    "needs_review": true,
+    "source": {
+      "file": "system/docs/disable-scheduled-tasks.md",
+      "line_from": 231,
+      "line_to": 234
+    },
+    "registry": [
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\TaskCache\\Tree\\Microsoft\\Windows\\Windows Defender",
+        "name": "Windows Defender Cache Maintenance",
+        "type": "REG_SZ",
+        "apply": "Disabled",
+        "revert": {
+          "mode": "delete"
+        },
+        "apply_block": "Enabled"
+      }
+    ]
   }
 ]

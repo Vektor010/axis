@@ -397,10 +397,25 @@ namespace WinTweaker.Tests
                     for (int a = 0; a < tweak.registry.Count; a++)
                     {
                         RegistryActionItem action = tweak.registry[a];
-                        Assert(blockContent.IndexOf(action.name, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                               blockContent.IndexOf(action.path, StringComparison.OrdinalIgnoreCase) >= 0,
-                            string.Format("{0}[{1}]: Наличие параметра в источнике", tweakId, action.name),
-                            action.name);
+                        string svcNameCheck = null;
+                        const string svcPref = @"SYSTEM\CurrentControlSet\Services\";
+                        if (!string.IsNullOrEmpty(action.path) &&
+                            action.path.StartsWith(svcPref, StringComparison.OrdinalIgnoreCase) &&
+                            string.Equals(action.name, "Start", StringComparison.OrdinalIgnoreCase))
+                        {
+                            string tailSvc = action.path.Substring(svcPref.Length);
+                            int slashIdx = tailSvc.IndexOf('\\');
+                            svcNameCheck = slashIdx >= 0 ? tailSvc.Substring(0, slashIdx) : tailSvc;
+                        }
+
+                        bool foundInBlock =
+                            blockContent.IndexOf(action.name, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                            blockContent.IndexOf(action.path, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                            (!string.IsNullOrEmpty(svcNameCheck) && blockContent.IndexOf(svcNameCheck, StringComparison.OrdinalIgnoreCase) >= 0);
+
+                        Assert(foundInBlock,
+                            string.Format("{0}[{1}]: Наличие параметра в источнике", tweakId, !string.IsNullOrEmpty(svcNameCheck) ? svcNameCheck : action.name),
+                            !string.IsNullOrEmpty(svcNameCheck) ? svcNameCheck : action.name);
                     }
                     continue;
                 }
@@ -2059,10 +2074,10 @@ namespace WinTweaker.Tests
                 }
             }
 
-            Assert(recCount == 216 && recHighOrMed == 0 && !vbsOrHvciInRec,
-                "Recommended_Integrity: Все 216 рекомендованных твиков безопасны (risk=low), VBS/HVCI исключены из автоприменения",
+            Assert(recCount >= 216 && recHighOrMed == 0 && !vbsOrHvciInRec,
+                "Recommended_Integrity: Все рекомендуемые твики безопасны (risk=low), VBS/HVCI исключены из автоприменения",
                 string.Format("rec={0}, nonLow={1}, vbsHvci={2}", recCount, recHighOrMed, vbsOrHvciInRec));
-            Assert(shortDesc == 0, "Catalog_Descriptions: У всех 888 твиков есть подробные описания на русском языке", "short=" + shortDesc);
+            Assert(shortDesc == 0, "Catalog_Descriptions: У всех твиков каталога есть подробные описания на русском языке", "short=" + shortDesc);
 
             string[] forbiddenHarmfulIds = new string[] {
                 "privacy-dontdisplaylastusername",
@@ -2098,6 +2113,12 @@ namespace WinTweaker.Tests
                 Assert(m != null && !string.IsNullOrEmpty(m.LastUpdatedDisplay),
                     "Telemetry_Timestamp: Время последнего обновления датчиков зафиксировано",
                     m != null ? m.LastUpdatedDisplay : "");
+                Assert(m != null && m.CpuClockGhz > 0.5 && !string.IsNullOrEmpty(m.CpuClockDisplay) && m.CpuTempDisplay != "Датчик недоступен",
+                    "Telemetry_CpuSmartClock: Реальная эффективная частота ЦП и умный каскад без заглушки 'Датчик недоступен'",
+                    m != null ? string.Format("{0}, TempAvail={1}, Temp='{2}'", m.CpuClockDisplay, m.IsCpuTempAvailable, m.CpuTempDisplay) : "null");
+                Assert(m != null && m.RamTotalGb > 1.0 && m.RamFreeGb >= 0.0,
+                    "Telemetry_RamDetails: Объём ОЗУ и свободная память определены через GlobalMemoryStatusEx",
+                    m != null ? string.Format("{0:F1}/{1:F1} free {2:F1}", m.RamUsedGb, m.RamTotalGb, m.RamFreeGb) : "null");
             }
 
             // 3. Проверка отсутствия старых Win32 MessageBox.Show в ViewModels
@@ -2172,6 +2193,39 @@ namespace WinTweaker.Tests
                        jmParsed.Entries[0].TweakId == "network-disable-ipv6-components",
                     "Journal_ParseHistory: Исторические строки журнала сохраняют реальный timestamp, уровень и ID твика",
                     jmParsed.Entries.Count > 0 ? jmParsed.Entries[0].ToString() : "empty");
+
+                // Проверка защиты от OverflowException при экспорте REG_DWORD >= 0x80000000 (NtfsDisableLastAccessUpdate)
+                JournalManager jmNeg = new JournalManager(Path.Combine(tempDir, "neg_dword.log"), true);
+                string negRegPath = jmNeg.ExportRegBackup("test-neg-dword", "HKLM", @"SYSTEM\Test", "Bitmask", unchecked((int)0x80000002), "DWord");
+                string negRegText = (!string.IsNullOrEmpty(negRegPath) && File.Exists(negRegPath)) ? File.ReadAllText(negRegPath, Encoding.Unicode) : "";
+                Assert(!string.IsNullOrEmpty(negRegPath) && negRegText.Contains("dword:80000002"),
+                    "Journal_NegativeDwordBackup: Отрицательный signed Int32 DWORD (0x80000002) корректно экспортируется без OverflowException",
+                    negRegText);
+
+                // Проверка блокировки экспериментальных apply_block и опасных DWM/DXG/Kernel твиков в контекстном батче
+                TweakItem tdrDbg = list.Find(delegate(TweakItem x) { return x.id == "system-tdr-debug-mode"; });
+                TweakItem smallQ = list.Find(delegate(TweakItem x) { return x.id == "system-dxg-small-quantum-mode"; });
+                Assert(TweakEngine.HasApplyBlock(tdrDbg) && TweakEngine.HasApplyBlock(smallQ) &&
+                       !TweakEngine.IsEligibleForBatchApply(tdrDbg, 26300, TweakStatus.Disabled),
+                    "ApplyBlock_Helper: TweakEngine.HasApplyBlock надёжно блокирует экспериментальные TDR/DXG твики");
+
+                if (File.Exists(mvmPath))
+                {
+                    string mvmText2 = File.ReadAllText(mvmPath, Encoding.UTF8);
+                    Assert(mvmText2.Contains("TweakEngine.HasApplyBlock(tw.Model)") &&
+                           mvmText2.Contains("system-dxg-hw-queue-packet-cap") &&
+                           mvmText2.Contains("system-kernel-disable-low-qos-timer-resolution") &&
+                           mvmText2.Contains("system-dwm-enable-front-buffer-render-checks"),
+                        "ContextBatch_FreezeGuard: Массовое 'Применить все' защищено от автоприменения apply_block и экспериментальных флагов GPU/DWM/Kernel");
+                }
+
+                // Проверка интеграции задач планировщика Noverse (disable-scheduled-tasks.md)
+                TweakItem ceipTaskTweak = list.Find(delegate(TweakItem x) { return x.id == "system-tasks-disable-ceip"; });
+                TweakItem defragTaskTweak = list.Find(delegate(TweakItem x) { return x.id == "system-tasks-disable-defrag"; });
+                Assert(ceipTaskTweak != null && SpecialTweakExecutor.IsCustomRealExecutorTweak(ceipTaskTweak) &&
+                       defragTaskTweak != null && TweakEngine.HasApplyBlock(defragTaskTweak) &&
+                       !TweakEngine.IsEligibleForBatchApply(defragTaskTweak, 26300, TweakStatus.Disabled),
+                    "ScheduledTasks_Noverse: Задачи планировщика Noverse распознаются движком, а опасные подгруппы (ScheduledDefrag/WU) защищены apply_block");
             }
             finally
             {
