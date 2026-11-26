@@ -654,46 +654,46 @@
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
 
-                            <!-- Big 60-second Oscilloscope Telemetry Chart -->
-                            <Border Grid.Column="0" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="12" Padding="14,11" Margin="0,0,6,0">
-                                <StackPanel>
-                                    <Grid Margin="0,0,0,8">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="Auto" />
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" Text="НАГРУЗКА (60 СЕК)" FontSize="10.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" Margin="0,0,8,0" />
-                                        <TextBlock Grid.Column="1" Text="{Binding ChartTitle}" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" HorizontalAlignment="Right" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,8,0" />
-                                        <Button Grid.Column="2"
+                            <!-- Big 60-second Telemetry Chart (Equal Height + Clean Minimalism + Zero Lag) -->
+                            <Border Grid.Column="0" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="12" Padding="14,11" Margin="0,0,6,0" VerticalAlignment="Stretch">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <Grid Grid.Row="0" Margin="0,0,0,8">
+                                        <TextBlock Text="НАГРУЗКА (60 СЕК)" FontSize="10.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
+                                        <Button HorizontalAlignment="Right"
                                                 Command="{Binding ToggleChartScaleCommand}"
                                                 Style="{StaticResource FluentButtonStyle}"
                                                 Padding="7,2"
                                                 FontFamily="{StaticResource FontMono}"
                                                 FontSize="9.5"
-                                                ToolTip="Переключить умный авто-масштаб (АВТО) и фиксированную шкалу 0–100%">
+                                                ToolTip="Переключить авто-масштаб (АВТО) и фиксированную шкалу 0–100%">
                                             <TextBlock Text="{Binding ChartScaleButtonText}" />
                                         </Button>
                                     </Grid>
 
-                                    <!-- Chart Canvas Area with Y-Axis % Scale, 4x4 Grid, Smooth Gradient Curves & Hover Inspector -->
-                                    <Border Background="{DynamicResource SearchBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="8" Padding="4,2">
-                                        <Grid x:Name="ChartPlotGrid" Height="138" ClipToBounds="True" Background="Transparent"
+                                    <!-- Chart Canvas Area with Y-Axis % Scale, 4x4 Grid, Smooth Gradient Curves & Per-Series Hover Inspector -->
+                                    <Border Grid.Row="1" Background="{DynamicResource SearchBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="8" Padding="4,2">
+                                        <Grid x:Name="ChartPlotGrid" Height="116" ClipToBounds="True" Background="Transparent"
                                               SizeChanged="ChartPlotGrid_SizeChanged"
                                               MouseMove="ChartPlotGrid_MouseMove"
                                               MouseLeave="ChartPlotGrid_MouseLeave">
 
-                                            <!-- Y-Axis Scale Gutter Labels (exact match to 10..118px plot box) -->
+                                            <!-- Y-Axis Scale Gutter Labels (exact match to 8..96px plot box) -->
                                             <Canvas IsHitTestVisible="False">
-                                                <TextBlock Canvas.Left="2" Canvas.Top="4" Width="28" TextAlignment="Right" Text="{Binding ChartYLabel100}" FontFamily="{StaticResource FontMono}" FontSize="9" Foreground="{DynamicResource TextSecondary}" Opacity="0.85" />
-                                                <TextBlock Canvas.Left="2" Canvas.Top="31" Width="28" TextAlignment="Right" Text="{Binding ChartYLabel75}" FontFamily="{StaticResource FontMono}" FontSize="9" Foreground="{DynamicResource TextSecondary}" Opacity="0.7" />
-                                                <TextBlock Canvas.Left="2" Canvas.Top="58" Width="28" TextAlignment="Right" Text="{Binding ChartYLabel50}" FontFamily="{StaticResource FontMono}" FontSize="9" Foreground="{DynamicResource TextSecondary}" Opacity="0.7" />
-                                                <TextBlock Canvas.Left="2" Canvas.Top="85" Width="28" TextAlignment="Right" Text="{Binding ChartYLabel25}" FontFamily="{StaticResource FontMono}" FontSize="9" Foreground="{DynamicResource TextSecondary}" Opacity="0.7" />
-                                                <TextBlock Canvas.Left="2" Canvas.Top="109" Width="28" TextAlignment="Right" Text="0%" FontFamily="{StaticResource FontMono}" FontSize="9" Foreground="{DynamicResource TextSecondary}" Opacity="0.85" />
+                                                <TextBlock Canvas.Left="2" Canvas.Top="2" Width="28" TextAlignment="Right" Text="{Binding ChartYLabel100}" FontFamily="{StaticResource FontMono}" FontSize="9" Foreground="{DynamicResource TextSecondary}" Opacity="0.85" />
+                                                <TextBlock Canvas.Left="2" Canvas.Top="24" Width="28" TextAlignment="Right" Text="{Binding ChartYLabel75}" FontFamily="{StaticResource FontMono}" FontSize="9" Foreground="{DynamicResource TextSecondary}" Opacity="0.7" />
+                                                <TextBlock Canvas.Left="2" Canvas.Top="46" Width="28" TextAlignment="Right" Text="{Binding ChartYLabel50}" FontFamily="{StaticResource FontMono}" FontSize="9" Foreground="{DynamicResource TextSecondary}" Opacity="0.7" />
+                                                <TextBlock Canvas.Left="2" Canvas.Top="68" Width="28" TextAlignment="Right" Text="{Binding ChartYLabel25}" FontFamily="{StaticResource FontMono}" FontSize="9" Foreground="{DynamicResource TextSecondary}" Opacity="0.7" />
+                                                <TextBlock Canvas.Left="2" Canvas.Top="90" Width="28" TextAlignment="Right" Text="0%" FontFamily="{StaticResource FontMono}" FontSize="9" Foreground="{DynamicResource TextSecondary}" Opacity="0.85" />
                                             </Canvas>
 
                                             <!-- 4x4 Proportional Dashed Telemetry Grid -->
-                                            <Grid Margin="34,10,8,20" IsHitTestVisible="False">
+                                            <Grid Margin="34,8,8,20" IsHitTestVisible="False">
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="*" />
                                                     <RowDefinition Height="*" />
@@ -718,68 +718,37 @@
                                                 <Line Grid.RowSpan="4" Grid.Column="3" X1="0" X2="0" Y1="0" Y2="1" Stretch="Fill" Stroke="{DynamicResource CardBorder}" StrokeThickness="0.8" StrokeDashArray="2,4" Opacity="0.35" HorizontalAlignment="Left" />
                                             </Grid>
 
-                                            <!-- Translucent Vertical-Gradient Area Fills -->
-                                            <Polygon Points="{Binding CpuChartAreaPoints}" Fill="{DynamicResource AccentBrush}" Opacity="0.28" IsHitTestVisible="False">
-                                                <Polygon.OpacityMask>
-                                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                                        <GradientStop Color="#FF000000" Offset="0.0" />
-                                                        <GradientStop Color="#14000000" Offset="1.0" />
-                                                    </LinearGradientBrush>
-                                                </Polygon.OpacityMask>
-                                            </Polygon>
-                                            <Polygon Points="{Binding RamChartAreaPoints}" Fill="{DynamicResource SuccessBrush}" Opacity="0.20" IsHitTestVisible="False">
-                                                <Polygon.OpacityMask>
-                                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                                        <GradientStop Color="#FF000000" Offset="0.0" />
-                                                        <GradientStop Color="#10000000" Offset="1.0" />
-                                                    </LinearGradientBrush>
-                                                </Polygon.OpacityMask>
-                                            </Polygon>
-                                            <Polygon Points="{Binding GpuChartAreaPoints}" Fill="{DynamicResource WarningBrush}" Opacity="0.24" IsHitTestVisible="False">
-                                                <Polygon.OpacityMask>
-                                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                                        <GradientStop Color="#FF000000" Offset="0.0" />
-                                                        <GradientStop Color="#10000000" Offset="1.0" />
-                                                    </LinearGradientBrush>
-                                                </Polygon.OpacityMask>
-                                            </Polygon>
+                                            <!-- Lightweight Area Fills (zero OpacityMask overhead = 60fps smooth) -->
+                                            <Polygon Points="{Binding CpuChartAreaPoints}" Fill="{DynamicResource AccentBrush}" Opacity="0.11" IsHitTestVisible="False" />
+                                            <Polygon Points="{Binding RamChartAreaPoints}" Fill="{DynamicResource SuccessBrush}" Opacity="0.08" IsHitTestVisible="False" />
+                                            <Polygon Points="{Binding GpuChartAreaPoints}" Fill="{DynamicResource WarningBrush}" Opacity="0.10" IsHitTestVisible="False" />
 
-                                            <!-- Smooth Spline Telemetry Curves -->
-                                            <Polyline Points="{Binding CpuChartPoints}" Stroke="{DynamicResource AccentBrush}" StrokeThickness="2.2" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round" IsHitTestVisible="False" />
-                                            <Polyline Points="{Binding RamChartPoints}" Stroke="{DynamicResource SuccessBrush}" StrokeThickness="1.9" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round" IsHitTestVisible="False" />
-                                            <Polyline Points="{Binding GpuChartPoints}" Stroke="{DynamicResource WarningBrush}" StrokeThickness="2.0" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round" IsHitTestVisible="False" />
+                                            <!-- Crisp Curves -->
+                                            <Polyline Points="{Binding CpuChartPoints}" Stroke="{DynamicResource AccentBrush}" StrokeThickness="2.0" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round" IsHitTestVisible="False" />
+                                            <Polyline Points="{Binding RamChartPoints}" Stroke="{DynamicResource SuccessBrush}" StrokeThickness="1.8" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round" IsHitTestVisible="False" />
+                                            <Polyline Points="{Binding GpuChartPoints}" Stroke="{DynamicResource WarningBrush}" StrokeThickness="1.9" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round" IsHitTestVisible="False" />
 
-                                            <!-- Live Current-Value Endpoint Glow Dots -->
+                                            <!-- Live Current-Value Endpoint Dots -->
                                             <Canvas Visibility="{Binding HasChartDots, Converter={StaticResource BoolToVis}}" IsHitTestVisible="False">
-                                                <Ellipse Canvas.Left="{Binding CpuDotLeft}" Canvas.Top="{Binding CpuDotTop}" Width="7" Height="7" Fill="{DynamicResource AccentBrush}" Stroke="{DynamicResource SearchBg}" StrokeThickness="1.3" />
-                                                <Ellipse Canvas.Left="{Binding RamDotLeft}" Canvas.Top="{Binding RamDotTop}" Width="6.5" Height="6.5" Fill="{DynamicResource SuccessBrush}" Stroke="{DynamicResource SearchBg}" StrokeThickness="1.2" />
-                                                <Ellipse Canvas.Left="{Binding GpuDotLeft}" Canvas.Top="{Binding GpuDotTop}" Width="7" Height="7" Fill="{DynamicResource WarningBrush}" Stroke="{DynamicResource SearchBg}" StrokeThickness="1.3" />
+                                                <Ellipse Canvas.Left="{Binding CpuDotLeft}" Canvas.Top="{Binding CpuDotTop}" Width="6" Height="6" Fill="{DynamicResource AccentBrush}" Stroke="{DynamicResource SearchBg}" StrokeThickness="1.2" />
+                                                <Ellipse Canvas.Left="{Binding RamDotLeft}" Canvas.Top="{Binding RamDotTop}" Width="6" Height="6" Fill="{DynamicResource SuccessBrush}" Stroke="{DynamicResource SearchBg}" StrokeThickness="1.2" />
+                                                <Ellipse Canvas.Left="{Binding GpuDotLeft}" Canvas.Top="{Binding GpuDotTop}" Width="6" Height="6" Fill="{DynamicResource WarningBrush}" Stroke="{DynamicResource SearchBg}" StrokeThickness="1.2" />
                                             </Canvas>
 
-                                            <!-- Interactive Crosshair Hover Inspector -->
+                                            <!-- Interactive Single-Series Crosshair Hover Inspector -->
                                             <Canvas x:Name="ChartHoverCanvas" Visibility="Collapsed" IsHitTestVisible="False">
-                                                <Line x:Name="ChartCrosshairLine" X1="0" X2="0" Y1="8" Y2="118" Stroke="{DynamicResource TextSecondary}" StrokeThickness="1" StrokeDashArray="3,3" Opacity="0.7" />
-                                                <Ellipse x:Name="ChartHoverCpuDot" Width="8" Height="8" Fill="{DynamicResource AccentBrush}" Stroke="{DynamicResource TextPrimary}" StrokeThickness="1.5" />
-                                                <Ellipse x:Name="ChartHoverRamDot" Width="8" Height="8" Fill="{DynamicResource SuccessBrush}" Stroke="{DynamicResource TextPrimary}" StrokeThickness="1.5" />
-                                                <Ellipse x:Name="ChartHoverGpuDot" Width="8" Height="8" Fill="{DynamicResource WarningBrush}" Stroke="{DynamicResource TextPrimary}" StrokeThickness="1.5" />
-                                                <Border x:Name="ChartHoverBadge" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="6" Padding="8,3" Opacity="0.96">
+                                                <Line x:Name="ChartCrosshairLine" X1="0" X2="0" Y1="8" Y2="96" Stroke="{DynamicResource TextSecondary}" StrokeThickness="1" StrokeDashArray="3,3" Opacity="0.6" />
+                                                <Ellipse x:Name="ChartHoverDot" Width="8" Height="8" Fill="{DynamicResource AccentBrush}" Stroke="{DynamicResource TextPrimary}" StrokeThickness="1.5" />
+                                                <Border x:Name="ChartHoverBadge" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="6" Padding="7,2.5" Opacity="0.96">
                                                     <TextBlock x:Name="ChartHoverReadoutText" FontFamily="{StaticResource FontMono}" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" />
                                                 </Border>
                                             </Canvas>
 
-                                            <!-- Bottom X-Axis Time Axis Labels -->
+                                            <!-- Bottom X-Axis Aligned Time Labels -->
                                             <Grid Margin="34,0,8,2" VerticalAlignment="Bottom" IsHitTestVisible="False">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*" />
-                                                    <ColumnDefinition Width="*" />
-                                                    <ColumnDefinition Width="*" />
-                                                    <ColumnDefinition Width="*" />
-                                                </Grid.ColumnDefinitions>
-                                                <TextBlock Grid.Column="0" Text="{Binding ChartTimeStartLabel}" FontFamily="{StaticResource FontMono}" FontSize="8.8" Foreground="{DynamicResource TextSecondary}" Opacity="0.75" HorizontalAlignment="Left" />
-                                                <TextBlock Grid.Column="1" Text="{Binding ChartTimeQuarterLabel}" FontFamily="{StaticResource FontMono}" FontSize="8.8" Foreground="{DynamicResource TextSecondary}" Opacity="0.65" HorizontalAlignment="Left" Margin="-10,0,0,0" />
-                                                <TextBlock Grid.Column="2" Text="{Binding ChartTimeMidLabel}" FontFamily="{StaticResource FontMono}" FontSize="8.8" Foreground="{DynamicResource TextSecondary}" Opacity="0.65" HorizontalAlignment="Left" Margin="-10,0,0,0" />
-                                                <TextBlock Grid.Column="3" Text="{Binding ChartTimeThreeQuarterLabel}" FontFamily="{StaticResource FontMono}" FontSize="8.8" Foreground="{DynamicResource TextSecondary}" Opacity="0.65" HorizontalAlignment="Left" Margin="-10,0,0,0" />
-                                                <TextBlock Grid.Column="3" Text="Сейчас" FontFamily="{StaticResource FontMono}" FontSize="8.8" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" Opacity="0.9" HorizontalAlignment="Right" />
+                                                <TextBlock Text="{Binding ChartTimeStartLabel}" FontFamily="{StaticResource FontMono}" FontSize="8.8" Foreground="{DynamicResource TextSecondary}" Opacity="0.75" HorizontalAlignment="Left" />
+                                                <TextBlock Text="{Binding ChartTimeMidLabel}" FontFamily="{StaticResource FontMono}" FontSize="8.8" Foreground="{DynamicResource TextSecondary}" Opacity="0.65" HorizontalAlignment="Center" />
+                                                <TextBlock Text="Сейчас" FontFamily="{StaticResource FontMono}" FontSize="8.8" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" Opacity="0.9" HorizontalAlignment="Right" />
                                             </Grid>
 
                                             <Border Visibility="{Binding IsCollectingData, Converter={StaticResource BoolToVis}}"
@@ -792,25 +761,22 @@
                                         </Grid>
                                     </Border>
 
-                                    <!-- Live Legend + Peak Readouts + Last Updated -->
-                                    <Grid Margin="0,6,0,0">
-                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                            <Rectangle Width="9" Height="9" Fill="{DynamicResource AccentBrush}" RadiusX="2" RadiusY="2" VerticalAlignment="Center" Margin="0,0,5,0" />
-                                            <TextBlock Text="{Binding CpuLegendText}" FontFamily="{StaticResource FontMono}" FontSize="10" Foreground="{DynamicResource TextPrimary}" Margin="0,0,12,0" />
+                                    <!-- Minimal Clean Legend -->
+                                    <StackPanel Grid.Row="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,7,0,0">
+                                        <Rectangle Width="9" Height="9" Fill="{DynamicResource AccentBrush}" RadiusX="2" RadiusY="2" VerticalAlignment="Center" Margin="0,0,5,0" />
+                                        <TextBlock Text="ЦП" FontSize="11" Foreground="{DynamicResource TextSecondary}" Margin="0,0,14,0" />
 
-                                            <Rectangle Width="9" Height="9" Fill="{DynamicResource SuccessBrush}" RadiusX="2" RadiusY="2" VerticalAlignment="Center" Margin="0,0,5,0" />
-                                            <TextBlock Text="{Binding RamLegendText}" FontFamily="{StaticResource FontMono}" FontSize="10" Foreground="{DynamicResource TextPrimary}" Margin="0,0,12,0" />
+                                        <Rectangle Width="9" Height="9" Fill="{DynamicResource SuccessBrush}" RadiusX="2" RadiusY="2" VerticalAlignment="Center" Margin="0,0,5,0" />
+                                        <TextBlock Text="ОЗУ" FontSize="11" Foreground="{DynamicResource TextSecondary}" Margin="0,0,14,0" />
 
-                                            <Rectangle Width="9" Height="9" Fill="{DynamicResource WarningBrush}" RadiusX="2" RadiusY="2" VerticalAlignment="Center" Margin="0,0,5,0" />
-                                            <TextBlock Text="{Binding GpuLegendText}" FontFamily="{StaticResource FontMono}" FontSize="10" Foreground="{DynamicResource TextPrimary}" />
-                                        </StackPanel>
-                                        <TextBlock Text="{Binding LastUpdatedDisplay}" FontFamily="{StaticResource FontMono}" FontSize="10" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Right" VerticalAlignment="Center" />
-                                    </Grid>
-                                </StackPanel>
+                                        <Rectangle Width="9" Height="9" Fill="{DynamicResource WarningBrush}" RadiusX="2" RadiusY="2" VerticalAlignment="Center" Margin="0,0,5,0" />
+                                        <TextBlock Text="GPU" FontSize="11" Foreground="{DynamicResource TextSecondary}" />
+                                    </StackPanel>
+                                </Grid>
                             </Border>
 
-                            <!-- System Specs Card -->
-                            <Border Grid.Column="1" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="12" Padding="16,12" Margin="6,0,0,0">
+                            <!-- System Specs Card (Equal Height Stretch) -->
+                            <Border Grid.Column="1" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}" BorderThickness="1" CornerRadius="12" Padding="14,11" Margin="6,0,0,0" VerticalAlignment="Stretch">
                                 <StackPanel>
                                     <Grid Margin="0,0,0,8">
                                         <TextBlock Text="СИСТЕМА" FontSize="10.5" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />

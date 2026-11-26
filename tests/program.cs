@@ -2244,9 +2244,10 @@ namespace WinTweaker.Tests
                         System.Windows.Media.PointCollection cpuPts = (System.Windows.Media.PointCollection)vmType.GetProperty("CpuChartPoints").GetValue(vmChart, null);
 
                         System.Reflection.MethodInfo sampleMi = vmType.GetMethod("TrySampleChartAtX");
-                        object[] sArgs = new object[] { 260.0, 0.0, 0.0, 0.0, 0.0, "" };
+                        object[] sArgs = new object[] { 260.0, 20.0, 0, "", 0.0, 0.0, "" };
                         bool sampled = (bool)sampleMi.Invoke(vmChart, sArgs);
-                        string hoverReadout = sArgs[5] as string ?? "";
+                        string seriesKey = sArgs[3] as string ?? "";
+                        string hoverReadout = sArgs[6] as string ?? "";
 
                         System.Windows.Input.ICommand toggleScaleCmd = (System.Windows.Input.ICommand)vmType.GetProperty("ToggleChartScaleCommand").GetValue(vmChart, null);
                         toggleScaleCmd.Execute(null);
@@ -2255,13 +2256,13 @@ namespace WinTweaker.Tests
                         string lbl100After = (string)vmType.GetProperty("ChartYLabel100").GetValue(vmChart, null);
 
                         bool ok = isAuto && yMax > 0 && yMax < 100.0 && ((int)yMax % 4) == 0 &&
-                                  !string.IsNullOrEmpty(lbl100) && !string.IsNullOrEmpty(cpuLeg) &&
-                                  cpuPts != null && cpuPts.Count > 60 &&
-                                  sampled && hoverReadout.Contains("ЦП") && hoverReadout.Contains("GPU") &&
+                                  !string.IsNullOrEmpty(lbl100) && cpuLeg == "ЦП" &&
+                                  cpuPts != null && cpuPts.Count == 60 &&
+                                  sampled && !string.IsNullOrEmpty(seriesKey) && hoverReadout.Contains("•") &&
                                   !isAutoAfter && Math.Abs(yMaxAfter - 100.0) < 0.01 && lbl100After == "100%";
                         Assert(ok,
-                            "Chart_EngineeringScale_And_Hover: Адаптивная шкала (делится на 4), сглаживание, подписи пиков, crosshair-инспектор и 0–100% работают",
-                            string.Format("auto={0}, yMax={1}, pts={2}, hover='{3}', yMaxAfter={4}", isAuto, yMax, cpuPts != null ? cpuPts.Count : 0, hoverReadout, yMaxAfter));
+                            "Chart_EngineeringScale_And_Hover: Адаптивная шкала (делится на 4), конвейерный график без лагов, точечный hover на одну кривую и 0–100% работают",
+                            string.Format("auto={0}, yMax={1}, pts={2}, series={3}, hover='{4}', yMaxAfter={5}", isAuto, yMax, cpuPts != null ? cpuPts.Count : 0, seriesKey, hoverReadout, yMaxAfter));
                     }
                     finally
                     {

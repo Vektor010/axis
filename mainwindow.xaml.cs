@@ -347,6 +347,9 @@ namespace WinTweaker
             }
         }
 
+        private int _lastHoverSampleIdx = -1;
+        private string _lastHoverSeries = "";
+
         private void ChartPlotGrid_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             if (this._viewModel != null && e.NewSize.Width > 0)
@@ -359,23 +362,41 @@ namespace WinTweaker
         {
             if (this._viewModel == null || this.ChartPlotGrid == null || this.ChartHoverCanvas == null) return;
             Point pos = e.GetPosition(this.ChartPlotGrid);
-            double snapX, cpuY, ramY, gpuY;
+            int sampleIdx;
+            string seriesKey;
+            double snapX, snapY;
             string readout;
-            if (!this._viewModel.TrySampleChartAtX(pos.X, out snapX, out cpuY, out ramY, out gpuY, out readout))
+            if (!this._viewModel.TrySampleChartAtX(pos.X, pos.Y, out sampleIdx, out seriesKey, out snapX, out snapY, out readout))
             {
-                this.ChartHoverCanvas.Visibility = Visibility.Collapsed;
+                if (this.ChartHoverCanvas.Visibility == Visibility.Visible)
+                {
+                    this.ChartHoverCanvas.Visibility = Visibility.Collapsed;
+                    this._lastHoverSampleIdx = -1;
+                    this._lastHoverSeries = "";
+                }
                 return;
+            }
+
+            if (sampleIdx == this._lastHoverSampleIdx && seriesKey == this._lastHoverSeries && this.ChartHoverCanvas.Visibility == Visibility.Visible)
+            {
+                return;
+            }
+            this._lastHoverSampleIdx = sampleIdx;
+            this._lastHoverSeries = seriesKey;
+
+            string brushKey = seriesKey == "ram" ? "SuccessBrush" : (seriesKey == "gpu" ? "WarningBrush" : "AccentBrush");
+            var seriesBrush = this.TryFindResource(brushKey) as System.Windows.Media.Brush;
+            if (seriesBrush != null)
+            {
+                this.ChartHoverDot.Fill = seriesBrush;
+                this.ChartHoverBadge.BorderBrush = seriesBrush;
             }
 
             this.ChartCrosshairLine.X1 = snapX;
             this.ChartCrosshairLine.X2 = snapX;
 
-            System.Windows.Controls.Canvas.SetLeft(this.ChartHoverCpuDot, snapX - 4.0);
-            System.Windows.Controls.Canvas.SetTop(this.ChartHoverCpuDot, cpuY - 4.0);
-            System.Windows.Controls.Canvas.SetLeft(this.ChartHoverRamDot, snapX - 4.0);
-            System.Windows.Controls.Canvas.SetTop(this.ChartHoverRamDot, ramY - 4.0);
-            System.Windows.Controls.Canvas.SetLeft(this.ChartHoverGpuDot, snapX - 4.0);
-            System.Windows.Controls.Canvas.SetTop(this.ChartHoverGpuDot, gpuY - 4.0);
+            System.Windows.Controls.Canvas.SetLeft(this.ChartHoverDot, snapX - 4.0);
+            System.Windows.Controls.Canvas.SetTop(this.ChartHoverDot, snapY - 4.0);
 
             this.ChartHoverReadoutText.Text = readout;
             this.ChartHoverBadge.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
@@ -386,13 +407,17 @@ namespace WinTweaker
             {
                 badgeLeft = Math.Max(36.0, snapX - badgeW - 8.0);
             }
+            double badgeTop = snapY - 26.0;
+            if (badgeTop < 4.0) badgeTop = Math.Min(72.0, snapY + 8.0);
             System.Windows.Controls.Canvas.SetLeft(this.ChartHoverBadge, badgeLeft);
-            System.Windows.Controls.Canvas.SetTop(this.ChartHoverBadge, 4.0);
+            System.Windows.Controls.Canvas.SetTop(this.ChartHoverBadge, badgeTop);
             this.ChartHoverCanvas.Visibility = Visibility.Visible;
         }
 
         private void ChartPlotGrid_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
         {
+            this._lastHoverSampleIdx = -1;
+            this._lastHoverSeries = "";
             if (this.ChartHoverCanvas != null)
             {
                 this.ChartHoverCanvas.Visibility = Visibility.Collapsed;
