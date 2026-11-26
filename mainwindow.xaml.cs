@@ -124,7 +124,7 @@ namespace WinTweaker
             {
                 this._viewModel.PropertyChanged += delegate(object sender, System.ComponentModel.PropertyChangedEventArgs pArgs)
                 {
-                    if (pArgs.PropertyName == "SelectedNavItem" || pArgs.PropertyName == "SelectedCategory" || pArgs.PropertyName == "SearchQuery")
+                    if (pArgs.PropertyName == "SelectedNavItem" || pArgs.PropertyName == "SelectedCategory")
                     {
                         if (this.IsVisible && this._viewModel.IsTweaksSelected)
                         {
@@ -207,6 +207,11 @@ namespace WinTweaker
         {
             base.OnClosed(e);
             this.UnsubscribeRegistryWatchers();
+            if (this._viewModel != null)
+            {
+                this._viewModel.ThemeChanged -= this.OnThemeChanged;
+                this._viewModel.Dispose();
+            }
         }
 
         protected override void OnContentRendered(EventArgs e)

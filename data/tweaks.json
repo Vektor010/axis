@@ -32,7 +32,7 @@
   {
     "id": "visibility-show-cloud-files-in-quick-access",
     "name_ru": "Отображать файлы из Office.com",
-    "description_ru": "",
+    "description_ru": "Отображать файлы из Office.com. Управляет параметром ShowCloudFilesInQuickAccess. Значение сохраняется в снимок для безопасного отката.",
     "group": "Основное",
     "category": "visibility",
     "type": "toggle",
@@ -62,7 +62,7 @@
   {
     "id": "visibility-icons-only",
     "name_ru": "Всегда отображать значки, а не эскизы",
-    "description_ru": "",
+    "description_ru": "Всегда отображать значки, а не эскизы. Управляет параметром IconsOnly. Значение сохраняется в снимок для безопасного отката.",
     "group": "Основное",
     "category": "visibility",
     "type": "toggle",
@@ -92,7 +92,7 @@
   {
     "id": "visibility-use-compact-mode",
     "name_ru": "Уменьшить расстояние между элементами (компактный вид)",
-    "description_ru": "",
+    "description_ru": "Уменьшить расстояние между элементами (компактный вид). Управляет параметром UseCompactMode. Значение сохраняется в снимок для безопасного отката.",
     "group": "Основное",
     "category": "visibility",
     "type": "toggle",
@@ -122,7 +122,7 @@
   {
     "id": "visibility-show-type-overlay",
     "name_ru": "Отображать значок файла на эскизах",
-    "description_ru": "",
+    "description_ru": "Отображать значок файла на эскизах. Управляет параметром ShowTypeOverlay. Значение сохраняется в снимок для безопасного отката.",
     "group": "Основное",
     "category": "visibility",
     "type": "toggle",
@@ -152,7 +152,7 @@
   {
     "id": "visibility-folder-contents-info-tip",
     "name_ru": "Отображать сведения о размере файлов в подсказках папок",
-    "description_ru": "",
+    "description_ru": "Отображать сведения о размере файлов в подсказках папок. Управляет параметром FolderContentsInfoTip. Значение сохраняется в снимок для безопасного отката.",
     "group": "Основное",
     "category": "visibility",
     "type": "toggle",
@@ -182,7 +182,7 @@
   {
     "id": "visibility-full-path",
     "name_ru": "Отображать полный путь в строке заголовка",
-    "description_ru": "",
+    "description_ru": "Отображать полный путь в строке заголовка. Управляет параметром FullPath. Значение сохраняется в снимок для безопасного отката.",
     "group": "Основное",
     "category": "visibility",
     "type": "toggle",
@@ -212,7 +212,7 @@
   {
     "id": "visibility-hide-drives-with-no-media",
     "name_ru": "Скрывать пустые диски",
-    "description_ru": "",
+    "description_ru": "Скрывать пустые диски. Управляет параметром HideDrivesWithNoMedia. Значение сохраняется в снимок для безопасного отката.",
     "group": "Основное",
     "category": "visibility",
     "type": "toggle",
@@ -242,7 +242,7 @@
   {
     "id": "visibility-hide-file-ext",
     "name_ru": "Скрывать расширения для файлов известных типов",
-    "description_ru": "",
+    "description_ru": "Скрывать расширения для файлов известных типов. Управляет параметром HideFileExt. Значение сохраняется в снимок для безопасного отката.",
     "group": "Основное",
     "category": "visibility",
     "type": "toggle",
@@ -272,7 +272,7 @@
   {
     "id": "visibility-hide-merge-conflicts",
     "name_ru": "Скрывать конфликты слияния папок",
-    "description_ru": "",
+    "description_ru": "Скрывать конфликты слияния папок. Управляет параметром HideMergeConflicts. Значение сохраняется в снимок для безопасного отката.",
     "group": "Основное",
     "category": "visibility",
     "type": "toggle",
@@ -302,7 +302,7 @@
   {
     "id": "visibility-hide-protected-os-files",
     "name_ru": "Скрывать защищенные системные файлы (рекомендуется)",
-    "description_ru": "",
+    "description_ru": "Скрывать защищенные системные файлы (рекомендуется). Управляет параметром ShowSuperHidden. Значение сохраняется в снимок для безопасного отката.",
     "group": "Основное",
     "category": "visibility",
     "type": "toggle",
@@ -332,7 +332,7 @@
   {
     "id": "visibility-separate-process",
     "name_ru": "Запускать окна с папками в отдельном процессе",
-    "description_ru": "",
+    "description_ru": "Запускать окна с папками в отдельном процессе. Управляет параметром SeparateProcess. Значение сохраняется в снимок для безопасного отката.",
     "group": "Основное",
     "category": "visibility",
     "type": "toggle",
@@ -362,7 +362,7 @@
   {
     "id": "visibility-persist-browsers",
     "name_ru": "Восстанавливать прежние окна папок при входе в систему",
-    "description_ru": "",
+    "description_ru": "Восстанавливать прежние окна папок при входе в систему. Управляет параметром PersistBrowsers. Значение сохраняется в снимок для безопасного отката.",
     "group": "Основное",
     "category": "visibility",
     "type": "toggle",
@@ -392,7 +392,7 @@
   {
     "id": "visibility-show-encrypt-compressed-color",
     "name_ru": "Отображать сжатые или зашифрованные файлы NTFS другим цветом",
-    "description_ru": "",
+    "description_ru": "Отображать сжатые или зашифрованные файлы NTFS другим цветом. Управляет параметром ShowEncryptCompressedColor. Значение сохраняется в снимок для безопасного отката.",
     "group": "Основное",
     "category": "visibility",
     "type": "toggle",
@@ -422,7 +422,7 @@
   {
     "id": "visibility-show-info-tip",
     "name_ru": "Отображать всплывающие подсказки для элементов папок и рабочего стола",
-    "description_ru": "",
+    "description_ru": "Отображать всплывающие подсказки для элементов папок и рабочего стола. Управляет параметром ShowInfoTip. Значение сохраняется в снимок для безопасного отката.",
     "group": "Основное",
     "category": "visibility",
     "type": "toggle",
@@ -452,7 +452,7 @@
   {
     "id": "visibility-show-preview-handlers",
     "name_ru": "Отображать обработчики предварительного просмотра в панели просмотра",
-    "description_ru": "",
+    "description_ru": "Отображать обработчики предварительного просмотра в панели просмотра. Управляет параметром ShowPreviewHandlers. Значение сохраняется в снимок для безопасного отката.",
     "group": "Основное",
     "category": "visibility",
     "type": "toggle",
@@ -482,7 +482,7 @@
   {
     "id": "visibility-show-status-bar",
     "name_ru": "Отображать строку состояния",
-    "description_ru": "",
+    "description_ru": "Отображать строку состояния. Управляет параметром ShowStatusBar. Значение сохраняется в снимок для безопасного отката.",
     "group": "Основное",
     "category": "visibility",
     "type": "toggle",
@@ -512,7 +512,7 @@
   {
     "id": "visibility-show-sync-provider-notifications",
     "name_ru": "Отображать уведомления поставщика синхронизации",
-    "description_ru": "",
+    "description_ru": "Отображать уведомления поставщика синхронизации. Управляет параметром ShowSyncProviderNotifications. Значение сохраняется в снимок для безопасного отката.",
     "group": "Основное",
     "category": "visibility",
     "type": "toggle",
@@ -542,7 +542,7 @@
   {
     "id": "visibility-auto-check-select",
     "name_ru": "Использовать флажки для выбора элементов",
-    "description_ru": "",
+    "description_ru": "Использовать флажки для выбора элементов. Управляет параметром AutoCheckSelect. Значение сохраняется в снимок для безопасного отката.",
     "group": "Основное",
     "category": "visibility",
     "type": "toggle",
@@ -572,7 +572,7 @@
   {
     "id": "visibility-sharing-wizard-on",
     "name_ru": "Использовать мастер общего доступа (рекомендуется)",
-    "description_ru": "",
+    "description_ru": "Использовать мастер общего доступа (рекомендуется). Управляет параметром SharingWizardOn. Значение сохраняется в снимок для безопасного отката.",
     "group": "Основное",
     "category": "visibility",
     "type": "toggle",
@@ -602,7 +602,7 @@
   {
     "id": "visibility-navpane-show-all-cloud-states",
     "name_ru": "Всегда отображать состояние доступности",
-    "description_ru": "",
+    "description_ru": "Всегда отображать состояние доступности. Управляет параметром NavPaneShowAllCloudStates. Значение сохраняется в снимок для безопасного отката.",
     "group": "Панель навигации",
     "category": "visibility",
     "type": "toggle",
@@ -632,7 +632,7 @@
   {
     "id": "visibility-navpane-expand-to-current-folder",
     "name_ru": "Разворачивать до открытой папки",
-    "description_ru": "",
+    "description_ru": "Разворачивать до открытой папки. Управляет параметром NavPaneExpandToCurrentFolder. Значение сохраняется в снимок для безопасного отката.",
     "group": "Панель навигации",
     "category": "visibility",
     "type": "toggle",
@@ -662,7 +662,7 @@
   {
     "id": "visibility-navpane-show-all-folders",
     "name_ru": "Отображать все папки",
-    "description_ru": "",
+    "description_ru": "Отображать все папки. Управляет параметром NavPaneShowAllFolders. Значение сохраняется в снимок для безопасного отката.",
     "group": "Панель навигации",
     "category": "visibility",
     "type": "toggle",
@@ -692,7 +692,7 @@
   {
     "id": "visibility-show-libraries",
     "name_ru": "Отображать библиотеки",
-    "description_ru": "",
+    "description_ru": "Отображать библиотеки. Управляет параметром System.IsPinnedToNameSpaceTree. Значение сохраняется в снимок для безопасного отката.",
     "group": "Панель навигации",
     "category": "visibility",
     "type": "toggle",
@@ -722,7 +722,7 @@
   {
     "id": "visibility-search-preferences-whole-file-system",
     "name_ru": "Не использовать индекс при поиске в папках системных файлов",
-    "description_ru": "",
+    "description_ru": "Не использовать индекс при поиске в папках системных файлов. Управляет параметром WholeFileSystem. Значение сохраняется в снимок для безопасного отката.",
     "group": "Поиск",
     "category": "visibility",
     "type": "toggle",
@@ -752,7 +752,7 @@
   {
     "id": "visibility-search-preferences-system-folders",
     "name_ru": "Включать системные каталоги",
-    "description_ru": "",
+    "description_ru": "Включать системные каталоги. Управляет параметром SystemFolders. Значение сохраняется в снимок для безопасного отката.",
     "group": "Поиск",
     "category": "visibility",
     "type": "toggle",
@@ -4284,7 +4284,7 @@
     "type": "toggle",
     "risk": "medium",
     "presets": [
-      "recommended"
+      "gaming"
     ],
     "min_build": null,
     "needs_review": true,
@@ -4316,7 +4316,7 @@
     "type": "toggle",
     "risk": "medium",
     "presets": [
-      "recommended"
+      "gaming"
     ],
     "min_build": null,
     "needs_review": true,

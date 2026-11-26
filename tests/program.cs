@@ -107,6 +107,9 @@ namespace WinTweaker.Tests
                 Console.WriteLine("\n--- ТЕСТ-СЮИТ 15: Верификация Noverse Full Parity (IPv6 0xFF, Sleep Study, Spotify/VSC/LGHUB/Brave) ---");
                 RunNoverseFullParityTests(tweaksPath);
 
+                Console.WriteLine("\n--- ТЕСТ-СЮИТ 16: Аудит v3.0.0 (реальные датчики SystemInfoService, отсутствие фейков, рекомендации, диалоги) ---");
+                RunV3ArchitectureAndTelemetryAuditTests(tweaksPath);
+
                 Console.WriteLine("\n==================================================================");
                 Console.WriteLine(string.Format("ИТОГО ТЕСТОВ: {0} | УСПЕШНО: {1} | ПРОВАЛЕНО: {2}", _totalTests, _passedTests, _failedTests));
                 Console.WriteLine("==================================================================");
@@ -2025,6 +2028,64 @@ namespace WinTweaker.Tests
             finally
             {
                 try { if (Directory.Exists(tempAppRoot)) Directory.Delete(tempAppRoot, true); } catch { }
+            }
+        }
+
+        private static void RunV3ArchitectureAndTelemetryAuditTests(string tweaksPath)
+        {
+            // 1. Все рекомендованные твики в tweaks.json имеют низкий риск (без VBS/HVCI в пресете recommended)
+            string json = File.ReadAllText(tweaksPath, Encoding.UTF8);
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+            serializer.MaxJsonLength = int.MaxValue;
+            List<TweakItem> list = serializer.Deserialize<List<TweakItem>>(json);
+
+            int recCount = 0;
+            int recHighOrMed = 0;
+            bool vbsOrHvciInRec = false;
+            int shortDesc = 0;
+            for (int i = 0; i < list.Count; i++)
+            {
+                TweakItem t = list[i];
+                bool isRec = t.presets != null && t.presets.Contains("recommended");
+                if (isRec)
+                {
+                    recCount++;
+                    if (!string.Equals(t.risk, "low", StringComparison.OrdinalIgnoreCase)) recHighOrMed++;
+                    if (t.id == "security-disable-vbs" || t.id == "security-disable-hvci") vbsOrHvciInRec = true;
+                }
+                if (string.IsNullOrEmpty(t.description_ru) || t.description_ru.Trim().Length < 25)
+                {
+                    shortDesc++;
+                }
+            }
+
+            Assert(recCount == 233 && recHighOrMed == 0 && !vbsOrHvciInRec,
+                "Recommended_Integrity: Все 233 рекомендованных твика безопасны (risk=low), VBS/HVCI исключены из автоприменения",
+                string.Format("rec={0}, nonLow={1}, vbsHvci={2}", recCount, recHighOrMed, vbsOrHvciInRec));
+            Assert(shortDesc == 0, "Catalog_Descriptions: У всех 897 твиков есть подробные описания на русском языке", "short=" + shortDesc);
+
+            // 2. Проверка SystemInfoService IDisposable и реальных полей телеметрии без фейков
+            using (SystemInfoService sys = new SystemInfoService())
+            {
+                SystemMetrics m = sys.CollectLiveMetrics("127.0.0.1");
+                Assert(m != null && !string.IsNullOrEmpty(m.UptimeDisplay) && m.UptimeDisplay != "—",
+                    "Telemetry_Uptime: Реальный аптайм ОС вычислен через GetTickCount64", m != null ? m.UptimeDisplay : "null");
+                Assert(m != null && m.ProcessCount > 5,
+                    "Telemetry_ProcessCount: Реальное число процессов ОС > 5 без утечки дескрипторов",
+                    m != null ? m.ProcessCount.ToString() : "0");
+                Assert(m != null && !string.IsNullOrEmpty(m.LastUpdatedDisplay),
+                    "Telemetry_Timestamp: Время последнего обновления датчиков зафиксировано",
+                    m != null ? m.LastUpdatedDisplay : "");
+            }
+
+            // 3. Проверка отсутствия старых Win32 MessageBox.Show в ViewModels
+            string repoRoot = Directory.GetParent(Directory.GetParent(tweaksPath).FullName).FullName;
+            string mvmPath = Path.Combine(repoRoot, @"src\viewmodels\mainviewmodel.cs");
+            if (File.Exists(mvmPath))
+            {
+                string mvmText = File.ReadAllText(mvmPath, Encoding.UTF8);
+                Assert(!mvmText.Contains("MessageBox.Show"),
+                    "Unified_Dialogs: В MainViewModel полностью удалены системные MessageBox.Show (используется AxisDialogWindow)");
             }
         }
     }

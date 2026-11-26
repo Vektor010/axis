@@ -5,6 +5,16 @@ All notable changes to AXIS will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - 2026-11-26
+
+### Global Audit, Unified Dark-Blue Design System, Real Telemetry & Batch Engine
+- **Unified Black-Graphite & Blue UI + Custom Modal Dialogs (`AxisDialogWindow`)**: Rebuilt palette in obsidian/graphite with Cobalt Blue (`#3B82F6` / `#2563EB`) accents across all views and replaced all 12 legacy Win32 `MessageBox.Show` calls with custom WPF dark-blue confirmation, preview, result report, error, and Tweak Inspector («Подробнее») dialogs.
+- **Tweak Cards & Recommended Catalog Audit (`233` low-risk recommended of `897`)**: Excluded `security-disable-vbs` and `security-disable-hvci` from automatic `recommended` preset (moving them to `gaming`), enriched all 25 short descriptions, added dedicated **«Рекомендуемые»** sidebar category and toolbar segment filter, batch checkboxes, and clean card actions (**«Применить»**, **«Откатить»**, **«Подробнее»**).
+- **Real Hardware Dashboard Telemetry (`SystemInfoService` + NVML `nvmlDeviceGetUtilizationRates`)**: Removed synthetic chart startup series, added live GPU Load (%), ACPI CPU Temp (honest `"Датчик недоступен"` when absent), Disk Activity (%) & Space, Network RX/TX throughput, OS Uptime (`GetTickCount64`), active Process Count (all handles strictly disposed), and last-updated timestamp.
+- **Centralized Mass Operations**: Implemented **«Применить выбранные»**, **«Применить все»** (safe recommended), and **«Откатить все»** (snapshot-backed only) with conflict detection, OS build compatibility checks, admin rights warning, itemized previews, and structured reports.
+- **Memory & Thread Leak Fixes**: Implemented `IDisposable` across `MainViewModel` and `SystemInfoService`, added `Interlocked` overlap guard in `PollLiveMetrics()`, eliminated startup `NvmlTemperatureSource` leak, stopped stopping/restarting hundreds of `RegistryWatcher` handles on every search keystroke.
+- **Verification**: Suite 16 added (`8,159` assertions PASS, 0 FAIL, `dist/Axis.exe` 1.38 MB).
+
 ## [2.2.0] - 2026-11-26
 
 ### Complete Noverse Docs & App Guides 1:1 Sync + Full IPv6 Disable

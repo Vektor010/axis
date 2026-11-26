@@ -63,6 +63,16 @@ namespace WinTweaker.Engine
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate int NvmlGetTempDelegate(IntPtr device, int sensorType, out uint temp);
 
+        [StructLayout(LayoutKind.Sequential)]
+        private struct NvmlUtilization
+        {
+            public uint gpu;
+            public uint memory;
+        }
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private delegate int NvmlGetUtilDelegate(IntPtr device, out NvmlUtilization utilization);
+
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate int NvmlShutdownDelegate();
 
@@ -75,6 +85,7 @@ namespace WinTweaker.Engine
         private NvmlInitDelegate _initFunc;
         private NvmlDeviceGetHandleDelegate _getHandleFunc;
         private NvmlGetTempDelegate _getTempFunc;
+        private NvmlGetUtilDelegate _getUtilFunc;
         private NvmlShutdownDelegate _shutdownFunc;
 
         public string FoundLibraryPath
@@ -120,6 +131,7 @@ namespace WinTweaker.Engine
                 IntPtr pInit = GetProcAddress(this._hMod, "nvmlInit_v2");
                 IntPtr pHandle = GetProcAddress(this._hMod, "nvmlDeviceGetHandleByIndex_v2");
                 IntPtr pTemp = GetProcAddress(this._hMod, "nvmlDeviceGetTemperature");
+                IntPtr pUtil = GetProcAddress(this._hMod, "nvmlDeviceGetUtilizationRates");
                 IntPtr pShutdown = GetProcAddress(this._hMod, "nvmlShutdown");
 
                 if (pInit == IntPtr.Zero || pHandle == IntPtr.Zero || pTemp == IntPtr.Zero || pShutdown == IntPtr.Zero)
@@ -132,6 +144,9 @@ namespace WinTweaker.Engine
                 this._initFunc = (NvmlInitDelegate)Marshal.GetDelegateForFunctionPointer(pInit, typeof(NvmlInitDelegate));
                 this._getHandleFunc = (NvmlDeviceGetHandleDelegate)Marshal.GetDelegateForFunctionPointer(pHandle, typeof(NvmlDeviceGetHandleDelegate));
                 this._getTempFunc = (NvmlGetTempDelegate)Marshal.GetDelegateForFunctionPointer(pTemp, typeof(NvmlGetTempDelegate));
+                this._getUtilFunc = (pUtil != IntPtr.Zero)
+                    ? (NvmlGetUtilDelegate)Marshal.GetDelegateForFunctionPointer(pUtil, typeof(NvmlGetUtilDelegate))
+                    : null;
                 this._shutdownFunc = (NvmlShutdownDelegate)Marshal.GetDelegateForFunctionPointer(pShutdown, typeof(NvmlShutdownDelegate));
 
                 int res = this._initFunc();
@@ -190,6 +205,28 @@ namespace WinTweaker.Engine
             {
                 return GpuTemperatureResult.Fail(string.Format("Сбой при вызове nvmlDeviceGetTemperature: {0}", ex.Message));
             }
+        }
+
+        public bool TryGetGpuUtilization(out uint gpuPercent)
+        {
+            gpuPercent = 0;
+            if (!this._isInitialized)
+            {
+                if (!this.Initialize()) return false;
+            }
+            if (this._getUtilFunc == null || this._device == IntPtr.Zero) return false;
+            try
+            {
+                NvmlUtilization util;
+                int res = this._getUtilFunc(this._device, out util);
+                if (res == 0 && util.gpu <= 100)
+                {
+                    gpuPercent = util.gpu;
+                    return true;
+                }
+            }
+            catch { }
+            return false;
         }
 
         public void Shutdown()

@@ -291,112 +291,112 @@ namespace WinTweaker
         private static System.Collections.Generic.Dictionary<string, Brush> BuildDarkPalette()
         {
             var d = new System.Collections.Generic.Dictionary<string, Brush>(35);
-            d["WindowBg"] = CreateFrozenBrush("#0B0B12");
-            d["SidebarBg"] = CreateFrozenBrush("#0F0F17");
-            d["SidebarBorder"] = CreateFrozenBrush("#242434");
-            d["CardBg"] = CreateFrozenBrush("#12121B");
-            d["CardBgHover"] = CreateFrozenBrush("#181826");
-            d["CardBorder"] = CreateFrozenBrush("#242434");
-            d["CardBorderHover"] = CreateFrozenBrush("#363650");
+            d["WindowBg"] = CreateFrozenBrush("#07090E");
+            d["SidebarBg"] = CreateFrozenBrush("#0B0F17");
+            d["SidebarBorder"] = CreateFrozenBrush("#1D263B");
+            d["CardBg"] = CreateFrozenBrush("#111622");
+            d["CardBgHover"] = CreateFrozenBrush("#171F30");
+            d["CardBorder"] = CreateFrozenBrush("#1F2A40");
+            d["CardBorderHover"] = CreateFrozenBrush("#32456B");
 
-            d["TextPrimary"] = CreateFrozenBrush("#E8E8F2");
-            d["TextSecondary"] = CreateFrozenBrush("#8B8BA3");
+            d["TextPrimary"] = CreateFrozenBrush("#ECF2FF");
+            d["TextSecondary"] = CreateFrozenBrush("#8B99B5");
 
-            d["AccentBrush"] = CreateFrozenBrush("#8B7CF6");
-            d["AccentFill"] = CreateFrozenBrush("#268B7CF6");
-            d["AccentBorder"] = CreateFrozenBrush("#8B7CF6");
+            d["AccentBrush"] = CreateFrozenBrush("#3B82F6");
+            d["AccentFill"] = CreateFrozenBrush("#243B82F6");
+            d["AccentBorder"] = CreateFrozenBrush("#3B82F6");
 
-            d["CyanAccentBrush"] = CreateFrozenBrush("#22D3EE");
-            d["CyanFill"] = CreateFrozenBrush("#2222D3EE");
-            d["AccentGradient"] = CreateFrozenGradient("#7C3AED", "#6366F1");
-            d["HeroCardBg"] = CreateFrozenGradient("#17142B", "#11111C");
+            d["CyanAccentBrush"] = CreateFrozenBrush("#38BDF8");
+            d["CyanFill"] = CreateFrozenBrush("#2038BDF8");
+            d["AccentGradient"] = CreateFrozenGradient("#2563EB", "#3B82F6");
+            d["HeroCardBg"] = CreateFrozenGradient("#0E1729", "#0B0F1A");
 
             d["SuccessBrush"] = CreateFrozenBrush("#22C55E");
-            d["SuccessFill"] = CreateFrozenBrush("#2622C55E");
+            d["SuccessFill"] = CreateFrozenBrush("#2422C55E");
             d["SuccessBorder"] = CreateFrozenBrush("#22C55E");
 
             d["DangerBrush"] = CreateFrozenBrush("#EF4444");
-            d["DangerFill"] = CreateFrozenBrush("#26EF4444");
+            d["DangerFill"] = CreateFrozenBrush("#24EF4444");
             d["DangerBorder"] = CreateFrozenBrush("#EF4444");
 
             d["WarningBrush"] = CreateFrozenBrush("#F59E0B");
-            d["WarningFill"] = CreateFrozenBrush("#26F59E0B");
+            d["WarningFill"] = CreateFrozenBrush("#24F59E0B");
             d["WarningBorder"] = CreateFrozenBrush("#F59E0B");
 
-            d["ToggleBgOff"] = CreateFrozenBrush("#242434");
-            d["ToggleThumbOff"] = CreateFrozenBrush("#8B8BA3");
-            d["ToggleBorder"] = CreateFrozenBrush("#35354D");
-            d["ToggleBgHover"] = CreateFrozenBrush("#2E2E42");
-            d["ToggleBorderHover"] = CreateFrozenBrush("#4B4B69");
+            d["ToggleBgOff"] = CreateFrozenBrush("#1E283D");
+            d["ToggleThumbOff"] = CreateFrozenBrush("#8B99B5");
+            d["ToggleBorder"] = CreateFrozenBrush("#2D3B57");
+            d["ToggleBgHover"] = CreateFrozenBrush("#26334D");
+            d["ToggleBorderHover"] = CreateFrozenBrush("#41567F");
 
-            d["ButtonBg"] = CreateFrozenBrush("#181824");
-            d["ButtonBgHover"] = CreateFrozenBrush("#222233");
-            d["ButtonBgPressed"] = CreateFrozenBrush("#14141F");
-            d["ButtonBorder"] = CreateFrozenBrush("#2E2E42");
+            d["ButtonBg"] = CreateFrozenBrush("#151C2C");
+            d["ButtonBgHover"] = CreateFrozenBrush("#1E283E");
+            d["ButtonBgPressed"] = CreateFrozenBrush("#101624");
+            d["ButtonBorder"] = CreateFrozenBrush("#293754");
 
-            d["NavHoverBg"] = CreateFrozenBrush("#1A1A26");
-            d["NavSelectedBg"] = CreateFrozenBrush("#232334");
-            d["SearchBg"] = CreateFrozenBrush("#141420");
-            d["SearchBorder"] = CreateFrozenBrush("#28283C");
-            d["ScrollThumbBg"] = CreateFrozenBrush("#3B3B52");
-            d["BadgeBg"] = CreateFrozenBrush("#1A1A28");
-            d["HeaderBg"] = CreateFrozenBrush("#101018");
+            d["NavHoverBg"] = CreateFrozenBrush("#151D2E");
+            d["NavSelectedBg"] = CreateFrozenBrush("#1B263B");
+            d["SearchBg"] = CreateFrozenBrush("#0E131D");
+            d["SearchBorder"] = CreateFrozenBrush("#232F46");
+            d["ScrollThumbBg"] = CreateFrozenBrush("#334466");
+            d["BadgeBg"] = CreateFrozenBrush("#161F30");
+            d["HeaderBg"] = CreateFrozenBrush("#0D121C");
             return d;
         }
 
         private static System.Collections.Generic.Dictionary<string, Brush> BuildLightPalette()
         {
             var d = new System.Collections.Generic.Dictionary<string, Brush>(35);
-            d["WindowBg"] = CreateFrozenBrush("#F3F3F8");
-            d["SidebarBg"] = CreateFrozenBrush("#EAEAF2");
-            d["SidebarBorder"] = CreateFrozenBrush("#E1E1EC");
+            d["WindowBg"] = CreateFrozenBrush("#F1F5F9");
+            d["SidebarBg"] = CreateFrozenBrush("#E8EEF7");
+            d["SidebarBorder"] = CreateFrozenBrush("#D3DCEB");
             d["CardBg"] = CreateFrozenBrush("#FFFFFF");
-            d["CardBgHover"] = CreateFrozenBrush("#F6F6FC");
-            d["CardBorder"] = CreateFrozenBrush("#E1E1EC");
-            d["CardBorderHover"] = CreateFrozenBrush("#CECEDD");
+            d["CardBgHover"] = CreateFrozenBrush("#F6F9FE");
+            d["CardBorder"] = CreateFrozenBrush("#D8E1EF");
+            d["CardBorderHover"] = CreateFrozenBrush("#B6C6DF");
 
-            d["TextPrimary"] = CreateFrozenBrush("#1B1B28");
-            d["TextSecondary"] = CreateFrozenBrush("#6B6B80");
+            d["TextPrimary"] = CreateFrozenBrush("#0F172A");
+            d["TextSecondary"] = CreateFrozenBrush("#5B6B86");
 
-            d["AccentBrush"] = CreateFrozenBrush("#7C3AED");
-            d["AccentFill"] = CreateFrozenBrush("#207C3AED");
-            d["AccentBorder"] = CreateFrozenBrush("#7C3AED");
+            d["AccentBrush"] = CreateFrozenBrush("#2563EB");
+            d["AccentFill"] = CreateFrozenBrush("#1F2563EB");
+            d["AccentBorder"] = CreateFrozenBrush("#2563EB");
 
-            d["CyanAccentBrush"] = CreateFrozenBrush("#0891B2");
-            d["CyanFill"] = CreateFrozenBrush("#200891B2");
-            d["AccentGradient"] = CreateFrozenGradient("#7C3AED", "#4F46E5");
-            d["HeroCardBg"] = CreateFrozenGradient("#F5F3FF", "#FFFFFF");
+            d["CyanAccentBrush"] = CreateFrozenBrush("#0284C7");
+            d["CyanFill"] = CreateFrozenBrush("#1F0284C7");
+            d["AccentGradient"] = CreateFrozenGradient("#2563EB", "#1D4ED8");
+            d["HeroCardBg"] = CreateFrozenGradient("#EFF6FF", "#FFFFFF");
 
-            d["SuccessBrush"] = CreateFrozenBrush("#22C55E");
-            d["SuccessFill"] = CreateFrozenBrush("#2622C55E");
-            d["SuccessBorder"] = CreateFrozenBrush("#22C55E");
+            d["SuccessBrush"] = CreateFrozenBrush("#16A34A");
+            d["SuccessFill"] = CreateFrozenBrush("#2216A34A");
+            d["SuccessBorder"] = CreateFrozenBrush("#16A34A");
 
-            d["DangerBrush"] = CreateFrozenBrush("#EF4444");
-            d["DangerFill"] = CreateFrozenBrush("#26EF4444");
-            d["DangerBorder"] = CreateFrozenBrush("#EF4444");
+            d["DangerBrush"] = CreateFrozenBrush("#DC2626");
+            d["DangerFill"] = CreateFrozenBrush("#22DC2626");
+            d["DangerBorder"] = CreateFrozenBrush("#DC2626");
 
-            d["WarningBrush"] = CreateFrozenBrush("#F59E0B");
-            d["WarningFill"] = CreateFrozenBrush("#26F59E0B");
-            d["WarningBorder"] = CreateFrozenBrush("#F59E0B");
+            d["WarningBrush"] = CreateFrozenBrush("#D97706");
+            d["WarningFill"] = CreateFrozenBrush("#22D97706");
+            d["WarningBorder"] = CreateFrozenBrush("#D97706");
 
-            d["ToggleBgOff"] = CreateFrozenBrush("#E2E2ED");
-            d["ToggleThumbOff"] = CreateFrozenBrush("#6B6B80");
-            d["ToggleBorder"] = CreateFrozenBrush("#D0D0DE");
-            d["ToggleBgHover"] = CreateFrozenBrush("#D8D8E5");
-            d["ToggleBorderHover"] = CreateFrozenBrush("#B8B8CC");
+            d["ToggleBgOff"] = CreateFrozenBrush("#DCE4F0");
+            d["ToggleThumbOff"] = CreateFrozenBrush("#64748B");
+            d["ToggleBorder"] = CreateFrozenBrush("#C4D1E4");
+            d["ToggleBgHover"] = CreateFrozenBrush("#CED8E8");
+            d["ToggleBorderHover"] = CreateFrozenBrush("#A4B6D3");
 
             d["ButtonBg"] = CreateFrozenBrush("#FFFFFF");
-            d["ButtonBgHover"] = CreateFrozenBrush("#F0F0F7");
-            d["ButtonBgPressed"] = CreateFrozenBrush("#E4E4EE");
-            d["ButtonBorder"] = CreateFrozenBrush("#D5D5E2");
+            d["ButtonBgHover"] = CreateFrozenBrush("#EEF3FB");
+            d["ButtonBgPressed"] = CreateFrozenBrush("#E0E8F5");
+            d["ButtonBorder"] = CreateFrozenBrush("#CBD5E1");
 
-            d["NavHoverBg"] = CreateFrozenBrush("#DFDFEC");
-            d["NavSelectedBg"] = CreateFrozenBrush("#D4D4E4");
+            d["NavHoverBg"] = CreateFrozenBrush("#DDE6F3");
+            d["NavSelectedBg"] = CreateFrozenBrush("#CFDCF0");
             d["SearchBg"] = CreateFrozenBrush("#FFFFFF");
-            d["SearchBorder"] = CreateFrozenBrush("#D2D2E0");
-            d["ScrollThumbBg"] = CreateFrozenBrush("#C4C4D4");
-            d["BadgeBg"] = CreateFrozenBrush("#E8E8F2");
-            d["HeaderBg"] = CreateFrozenBrush("#F8F8FC");
+            d["SearchBorder"] = CreateFrozenBrush("#CBD5E1");
+            d["ScrollThumbBg"] = CreateFrozenBrush("#B5C4DB");
+            d["BadgeBg"] = CreateFrozenBrush("#E7EEF9");
+            d["HeaderBg"] = CreateFrozenBrush("#F8FAFC");
             return d;
         }
 

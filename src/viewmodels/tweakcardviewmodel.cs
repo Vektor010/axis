@@ -28,7 +28,9 @@ namespace WinTweaker.ViewModels
         private string _statusMessage;
         private string _sourceLocation;
         private bool _isExpanded;
+        private bool _isSelectedForBatch;
         private int _sourceIndex;
+        private readonly Action _onSelectionChanged;
 
         public int SourceIndex
         {
@@ -104,6 +106,45 @@ namespace WinTweaker.ViewModels
         {
             get { return this._isExpanded; }
             set { this._isExpanded = value; this.OnPropertyChanged("IsExpanded"); }
+        }
+
+        public bool IsSelectedForBatch
+        {
+            get { return this._isSelectedForBatch; }
+            set
+            {
+                if (this._isSelectedForBatch != value)
+                {
+                    this._isSelectedForBatch = value;
+                    this.OnPropertyChanged("IsSelectedForBatch");
+                    if (this._onSelectionChanged != null) this._onSelectionChanged();
+                }
+            }
+        }
+
+        public string CategoryDisplayName
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(this._category)) return "Система";
+                switch (this._category.ToLowerInvariant())
+                {
+                    case "security": return "Безопасность";
+                    case "visibility": return "Проводник";
+                    case "system": return "Система";
+                    case "privacy": return "Приватность";
+                    case "network": return "Сеть";
+                    case "nvidia": return "NVIDIA";
+                    case "steam": return "Steam";
+                    case "peripheral": return "Периферия";
+                    case "power": return "Питание";
+                    case "cleanup": return "Очистка";
+                    case "affinities": return "Аффинити";
+                    case "policies": return "Политики";
+                    case "misc": return "Дополнительно";
+                    default: return this._category;
+                }
+            }
         }
 
         public bool NeedsReview
@@ -216,11 +257,7 @@ namespace WinTweaker.ViewModels
         {
             get
             {
-                if (this._id != null && this._id.Contains("dns"))
-                {
-                    return (this._status == TweakStatus.Enabled) ? "Сбросить снова" : "Сбросить";
-                }
-                return (this._status == TweakStatus.Enabled) ? "Очистить снова" : "Очистить";
+                return (this._status == TweakStatus.Enabled) ? "Применить" : "Применить";
             }
         }
 
@@ -230,9 +267,9 @@ namespace WinTweaker.ViewModels
             {
                 if (this.IsActionTweak)
                 {
-                    return "Выполнить очистку";
+                    return "Применить";
                 }
-                return "Откатить твик";
+                return "Откатить";
             }
         }
 
@@ -381,7 +418,7 @@ namespace WinTweaker.ViewModels
                 if (this._status == TweakStatus.Enabled) return "#22C55E";
                 if (this._status == TweakStatus.PartiallyEnabled) return "#F59E0B";
                 if (this._status == TweakStatus.Unavailable) return "#64748B";
-                return "#8B5CF6";
+                return "#3B82F6";
             }
         }
 
@@ -553,15 +590,17 @@ namespace WinTweaker.ViewModels
 
         public ICommand ToggleCommand { get; private set; }
         public ICommand ToggleExpandCommand { get; private set; }
+        public ICommand OpenDetailsCommand { get; private set; }
         public ICommand RevertTweakCommand { get; private set; }
         public ICommand ApplyTweakCommand { get; private set; }
         public ICommand ExecuteActionCommand { get; private set; }
 
-        public TweakCardViewModel(TweakItem model, TweakEngine engine, Action onStateChanged)
+        public TweakCardViewModel(TweakItem model, TweakEngine engine, Action onStateChanged, Action onSelectionChanged = null)
         {
             this._model = model;
             this._engine = engine;
             this._onStateChanged = onStateChanged;
+            this._onSelectionChanged = onSelectionChanged;
             this._isExpanded = false;
 
             if (model != null)
@@ -593,10 +632,16 @@ namespace WinTweaker.ViewModels
 
             this.ToggleCommand = new RelayCommand(this.OnToggleClicked);
             this.ToggleExpandCommand = new RelayCommand(this.OnToggleExpand);
+            this.OpenDetailsCommand = new RelayCommand(this.OnOpenDetails);
             this.RevertTweakCommand = new RelayCommand(this.OnRevertTweak);
             this.ApplyTweakCommand = new RelayCommand(this.OnApplyTweak);
             this.ExecuteActionCommand = new RelayCommand(this.OnExecuteAction);
             this.RefreshFromEngine();
+        }
+
+        private void OnOpenDetails(object obj)
+        {
+            WinTweaker.UI.AxisDialogWindow.ShowTweakDetails(this);
         }
 
         public void ToggleExpand()

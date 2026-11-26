@@ -91,7 +91,7 @@ namespace WinTweaker.ViewModels
         }
     }
 
-    public class MainViewModel : ObservableObject
+    public class MainViewModel : ObservableObject, IDisposable
     {
         private readonly List<TweakCardViewModel> _allTweaks;
         private readonly BatchObservableCollection<TweakCardViewModel> _filteredTweaks;
@@ -130,8 +130,11 @@ namespace WinTweaker.ViewModels
         private GameModeState _gameModeState;
 
         private DispatcherTimer _liveTimer;
+        private int _isPollingMetrics;
+        private volatile bool _isDisposed;
         private readonly List<double> _cpuHistory;
         private readonly List<double> _ramHistory;
+        private readonly List<double> _gpuHistory;
         private readonly List<double> _pingHistory;
 
         // Metric Card properties
@@ -159,6 +162,19 @@ namespace WinTweaker.ViewModels
         private string _chartTitle;
         private PointCollection _cpuChartPoints;
         private PointCollection _ramChartPoints;
+        private PointCollection _gpuChartPoints;
+
+        // Extended Real Hardware Telemetry (CPU Temp, GPU Load, Disk, Net, Uptime, Processes)
+        private string _cpuTempDisplay;
+        private string _gpuLoadDisplay;
+        private double _gpuLoadPercent;
+        private string _diskActivityDisplay;
+        private string _diskSpaceDisplay;
+        private string _networkRateDisplay;
+        private string _uptimeDisplay;
+        private string _processCountDisplay;
+        private string _lastUpdatedDisplay;
+        private string _lastDiagnosticSummary;
 
         // System Specs properties
         private string _cpuSpec;
@@ -341,7 +357,9 @@ namespace WinTweaker.ViewModels
                 this.OnPropertyChanged("IsFilterEnabled");
                 this.OnPropertyChanged("IsFilterDisabled");
                 this.OnPropertyChanged("IsFilterNeedsReview");
+                this.OnPropertyChanged("IsFilterRecommended");
                 this.ApplyFilter();
+                this.OnPropertyChanged("HasNoSearchResults");
             }
         }
 
@@ -367,6 +385,12 @@ namespace WinTweaker.ViewModels
         {
             get { return this._filterSegment == 3; }
             set { if (value) this.FilterSegment = 3; }
+        }
+
+        public bool IsFilterRecommended
+        {
+            get { return this._filterSegment == 4; }
+            set { if (value) this.FilterSegment = 4; }
         }
 
         public ObservableCollection<SortOptionItem> SortOptions
@@ -561,7 +585,17 @@ namespace WinTweaker.ViewModels
         public string SegmentEnabledText { get; private set; }
         public string SegmentDisabledText { get; private set; }
         public string SegmentNeedsReviewText { get; private set; }
+        public string SegmentRecommendedText { get; private set; }
         public string TweaksTotalText { get; private set; }
+        public int RecommendedTotalCount { get; private set; }
+        public int RecommendedAppliedCount { get; private set; }
+        public int RecommendedRemainingCount { get; private set; }
+        public int SelectedBatchCount { get; private set; }
+        public bool HasSelectedForBatch { get { return this.SelectedBatchCount > 0; } }
+        public string ApplySelectedButtonText { get { return this.SelectedBatchCount > 0 ? string.Format("Применить выбранные ({0})", this.SelectedBatchCount) : "Применить выбранные"; } }
+        public string AppVersionDisplay { get { return "v3.0.0 • 2026"; } }
+        public string DatabaseStatsDisplay { get { return string.Format("{0} твиков • 12 категорий", this.TotalTweaksCount); } }
+        public string EngineSummaryFooterText { get { return string.Format("AXIS Engine v3.0 • {0} твиков, изолированные снимки state.json и прямой WinAPI без внешних зависимостей.", this.TotalTweaksCount); } }
 
         public bool CanApplyRecommended
         {
@@ -790,6 +824,72 @@ namespace WinTweaker.ViewModels
             set { this._ramChartPoints = value; this.OnPropertyChanged("RamChartPoints"); }
         }
 
+        public PointCollection GpuChartPoints
+        {
+            get { return this._gpuChartPoints; }
+            set { this._gpuChartPoints = value; this.OnPropertyChanged("GpuChartPoints"); }
+        }
+
+        public string CpuTempDisplay
+        {
+            get { return this._cpuTempDisplay; }
+            set { this._cpuTempDisplay = value; this.OnPropertyChanged("CpuTempDisplay"); }
+        }
+
+        public string GpuLoadDisplay
+        {
+            get { return this._gpuLoadDisplay; }
+            set { this._gpuLoadDisplay = value; this.OnPropertyChanged("GpuLoadDisplay"); }
+        }
+
+        public double GpuLoadPercent
+        {
+            get { return this._gpuLoadPercent; }
+            set { this._gpuLoadPercent = value; this.OnPropertyChanged("GpuLoadPercent"); }
+        }
+
+        public string DiskActivityDisplay
+        {
+            get { return this._diskActivityDisplay; }
+            set { this._diskActivityDisplay = value; this.OnPropertyChanged("DiskActivityDisplay"); }
+        }
+
+        public string DiskSpaceDisplay
+        {
+            get { return this._diskSpaceDisplay; }
+            set { this._diskSpaceDisplay = value; this.OnPropertyChanged("DiskSpaceDisplay"); }
+        }
+
+        public string NetworkRateDisplay
+        {
+            get { return this._networkRateDisplay; }
+            set { this._networkRateDisplay = value; this.OnPropertyChanged("NetworkRateDisplay"); }
+        }
+
+        public string UptimeDisplay
+        {
+            get { return this._uptimeDisplay; }
+            set { this._uptimeDisplay = value; this.OnPropertyChanged("UptimeDisplay"); }
+        }
+
+        public string ProcessCountDisplay
+        {
+            get { return this._processCountDisplay; }
+            set { this._processCountDisplay = value; this.OnPropertyChanged("ProcessCountDisplay"); }
+        }
+
+        public string LastUpdatedDisplay
+        {
+            get { return this._lastUpdatedDisplay; }
+            set { this._lastUpdatedDisplay = value; this.OnPropertyChanged("LastUpdatedDisplay"); }
+        }
+
+        public string LastDiagnosticSummary
+        {
+            get { return this._lastDiagnosticSummary; }
+            set { this._lastDiagnosticSummary = value; this.OnPropertyChanged("LastDiagnosticSummary"); }
+        }
+
         // System Specs Properties
         public string CpuSpec
         {
@@ -1003,8 +1103,12 @@ namespace WinTweaker.ViewModels
         // Commands
         public ICommand ToggleSidebarCommand { get; private set; }
         public ICommand ToggleThemeCommand { get; private set; }
+        public ICommand ApplySelectedCommand { get; private set; }
         public ICommand ApplyAllRecommendedCommand { get; private set; }
         public ICommand RevertAllCommand { get; private set; }
+        public ICommand SelectAllVisibleCommand { get; private set; }
+        public ICommand ClearSelectionCommand { get; private set; }
+        public ICommand ShowRecommendedCommand { get; private set; }
         public ICommand RefreshAllCommand { get; private set; }
         public ICommand SelectCategoryCommand { get; private set; }
         public ICommand SelectNavCommand { get; private set; }
@@ -1050,7 +1154,18 @@ namespace WinTweaker.ViewModels
 
             this._cpuHistory = new List<double>();
             this._ramHistory = new List<double>();
+            this._gpuHistory = new List<double>();
             this._pingHistory = new List<double>();
+
+            this._cpuTempDisplay = "Опрос...";
+            this._gpuLoadDisplay = "Опрос...";
+            this._diskActivityDisplay = "Опрос...";
+            this._diskSpaceDisplay = "—";
+            this._networkRateDisplay = "0 КБ/с";
+            this._uptimeDisplay = "—";
+            this._processCountDisplay = "—";
+            this._lastUpdatedDisplay = "Ожидание...";
+            this._lastDiagnosticSummary = "Оценка конфигурации...";
 
             // CollectionViewSource for grouped list
             this._filteredTweaksView = CollectionViewSource.GetDefaultView(this._filteredTweaks);
@@ -1059,8 +1174,12 @@ namespace WinTweaker.ViewModels
             this.ToggleSidebarCommand = new RelayCommand(this.OnToggleSidebar);
             this.ToggleThemeCommand = new RelayCommand(this.OnToggleTheme);
             this.ToggleTweaksCategoriesCommand = new RelayCommand(this.OnToggleTweaksCategories);
+            this.ApplySelectedCommand = new RelayCommand(this.OnApplySelected);
             this.ApplyAllRecommendedCommand = new RelayCommand(this.OnApplyAllRecommended);
             this.RevertAllCommand = new RelayCommand(this.OnRevertAll);
+            this.SelectAllVisibleCommand = new RelayCommand(this.OnSelectAllVisible);
+            this.ClearSelectionCommand = new RelayCommand(this.OnClearSelection);
+            this.ShowRecommendedCommand = new RelayCommand(this.OnShowRecommended);
             this.RefreshAllCommand = new RelayCommand(this.OnRefreshAll);
             this.SelectCategoryCommand = new RelayCommand(this.OnSelectCategory);
             this.SelectNavCommand = new RelayCommand(this.OnSelectNav);
@@ -1221,74 +1340,18 @@ namespace WinTweaker.ViewModels
                     double ramPercent = (double)mem.dwMemoryLoad;
                     this.RamDisplay = string.Format("{0:F1} ГБ", usedGb);
                     this.RamStatus = string.Format("Занято {0:F0}% из {1:F1} ГБ", ramPercent, totalGb);
-
-                    if (this._ramHistory.Count == 0)
-                    {
-                        for (int i = 0; i < 10; i++)
-                        {
-                            this._ramHistory.Add(ramPercent);
-                        }
-                    }
+                    this._ramHistory.Add(ramPercent);
                 }
 
-                // Температура GPU (NVIDIA NVML)
-                try
-                {
-                    var nvml = new NvmlTemperatureSource();
-                    var gTemp = nvml.GetGpuTemperature();
-                    if (gTemp.IsAvailable)
-                    {
-                        this.TempDisplay = string.Format("{0}°C", gTemp.TemperatureC);
-                        this.TempStatus = "GPU (NVIDIA)";
-                    }
-                    else
-                    {
-                        this.TempDisplay = "—";
-                        this.TempStatus = "Датчик недоступен";
-                    }
-                }
-                catch
-                {
-                    this.TempDisplay = "—";
-                    this.TempStatus = "Датчик недоступен";
-                }
-
-                // Базовые начальные точки ЦП для отображения графика с первого момента
-                if (this._cpuHistory.Count == 0)
-                {
-                    for (int i = 0; i < 10; i++)
-                    {
-                        this._cpuHistory.Add(4.0 + (i % 3) * 2.0);
-                    }
-                    this.CpuDisplay = "5%";
-                    this.CpuStatus = string.Format("{0} потоков", Environment.ProcessorCount);
-                }
-
-                this.ChartTitle = string.Format("ЦП: {0} | Память: {1}", this.CpuDisplay, this.RamDisplay);
-                this.IsCollectingData = false;
+                // Первый реальный замер всех датчиков без создания лишних экземпляров NVML
+                SystemMetrics initMetrics = this._systemInfoService.CollectLiveMetrics(this._pingCustomHost);
+                this.UpdateLiveMetricsUI(initMetrics);
             }
             catch { }
 
-            this.CpuSparkline = this.CreateSparklinePoints(this._cpuHistory);
-            this.RamSparkline = this.CreateSparklinePoints(this._ramHistory);
-            this.PingSparkline = this.CreateSparklinePoints(this._pingHistory);
-            this.TempSparkline = this.CreateFlatSparkline();
-            this.TweaksSparkline = this.CreateFlatSparkline();
-            this.CpuChartPoints = this.CreateChartPoints(this._cpuHistory);
-            this.RamChartPoints = this.CreateChartPoints(this._ramHistory);
-
             this.UpdateRestorePointStatus();
             this.RefreshNativeKernelDiagnostics();
-
-            // Асинхронное фоновое обновление пинга и точных дифференциалов
-            Task.Run(() =>
-            {
-                SystemMetrics m = this._systemInfoService.CollectLiveMetrics(this._pingCustomHost);
-                Application.Current.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    this.UpdateLiveMetricsUI(m);
-                }));
-            });
+            this.PollLiveMetrics();
         }
 
         private void RefreshNativeKernelDiagnostics()
@@ -1453,24 +1516,44 @@ namespace WinTweaker.ViewModels
 
         private void PollLiveMetrics()
         {
+            if (this._isDisposed || this._systemInfoService == null) return;
+            if (System.Threading.Interlocked.CompareExchange(ref this._isPollingMetrics, 1, 0) != 0)
+            {
+                return;
+            }
+
             string host = this._pingCustomHost;
             Task.Run(() =>
             {
-                SystemMetrics m = this._systemInfoService.CollectLiveMetrics(host);
-                Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+                try
                 {
-                    this.UpdateLiveMetricsUI(m);
-                }));
+                    if (this._isDisposed) return;
+                    SystemMetrics m = this._systemInfoService.CollectLiveMetrics(host);
+                    if (this._isDisposed || Application.Current == null) return;
+                    Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        if (!this._isDisposed)
+                        {
+                            this.UpdateLiveMetricsUI(m);
+                        }
+                    }));
+                }
+                finally
+                {
+                    System.Threading.Interlocked.Exchange(ref this._isPollingMetrics, 0);
+                }
             });
         }
 
         private void UpdateLiveMetricsUI(SystemMetrics m)
         {
+            if (m == null) return;
+
             // 1. CPU
             this._cpuHistory.Add(m.CpuLoadPercent);
             if (this._cpuHistory.Count > 60) this._cpuHistory.RemoveAt(0);
             this.CpuDisplay = string.Format("{0:F0}%", m.CpuLoadPercent);
-            this.CpuStatus = string.Format("{0} потоков", Environment.ProcessorCount);
+            this.CpuStatus = string.Format("{0} потоков • Т: {1}", Environment.ProcessorCount, m.CpuTempDisplay);
             this.CpuSparkline = this.CreateSparklinePoints(this._cpuHistory);
 
             // 2. RAM
@@ -1489,21 +1572,38 @@ namespace WinTweaker.ViewModels
             this.PingStatus = m.PingMs >= 0 ? string.Format("до {0}", target) : "Нет ответа";
             this.PingSparkline = this.CreateSparklinePoints(this._pingHistory);
 
-            // 4. Temp
+            // 4. Temp & GPU Utilization
             this.TempDisplay = m.TempDisplay;
-            this.TempStatus = m.TempStatus;
+            this.TempStatus = m.IsGpuLoadAvailable
+                ? string.Format("{0} • Нагрузка: {1}", m.TempStatus, m.GpuLoadDisplay)
+                : m.TempStatus;
+            this.CpuTempDisplay = m.CpuTempDisplay;
+            this.GpuLoadPercent = m.GpuLoadPercent;
+            this.GpuLoadDisplay = m.GpuLoadDisplay;
+            this._gpuHistory.Add(m.IsGpuLoadAvailable ? m.GpuLoadPercent : 0.0);
+            if (this._gpuHistory.Count > 60) this._gpuHistory.RemoveAt(0);
             this.OnPropertyChanged("IsTempAvailable");
 
-            // 5. Big Chart
-            this.ChartTitle = string.Format("ЦП: {0:F1}% | Память: {1:F1} / {2:F1} ГБ ({3:F0}%)",
-                m.CpuLoadPercent, m.RamUsedGb, m.RamTotalGb, m.RamLoadPercent);
+            // 5. Real Hardware Sensors Bar (Disk / Network / Uptime / Processes / Last Update)
+            this.DiskActivityDisplay = m.DiskActivityDisplay;
+            this.DiskSpaceDisplay = m.DiskSpaceDisplay;
+            this.NetworkRateDisplay = m.NetworkRateDisplay;
+            this.UptimeDisplay = m.UptimeDisplay;
+            this.ProcessCountDisplay = m.ProcessCount > 0 ? m.ProcessCount.ToString() : "—";
+            this.LastUpdatedDisplay = "Обновлено: " + m.LastUpdatedDisplay;
+
+            // 6. Big Chart
+            this.ChartTitle = m.IsGpuLoadAvailable
+                ? string.Format("ЦП: {0:F1}% | ОЗУ: {1:F1}/{2:F1} ГБ | GPU: {3}", m.CpuLoadPercent, m.RamUsedGb, m.RamTotalGb, m.GpuLoadDisplay)
+                : string.Format("ЦП: {0:F1}% | ОЗУ: {1:F1}/{2:F1} ГБ ({3:F0}%)", m.CpuLoadPercent, m.RamUsedGb, m.RamTotalGb, m.RamLoadPercent);
             this.CpuChartPoints = this.CreateChartPoints(this._cpuHistory);
             this.RamChartPoints = this.CreateChartPoints(this._ramHistory);
-            this.IsCollectingData = this._cpuHistory.Count < 5;
+            this.GpuChartPoints = this.CreateChartPoints(this._gpuHistory);
+            this.IsCollectingData = this._cpuHistory.Count < 3;
             this.OnPropertyChanged("HasAtLeast5Points");
             this.OnPropertyChanged("IsCollectingData");
 
-            // 6. Update counts
+            // 7. Update counts
             this.UpdateSummary();
             this.UpdateRecentJournal();
             this.OnPropertyChanged("AttentionCount");
@@ -1590,7 +1690,7 @@ namespace WinTweaker.ViewModels
                 {
                     for (int i = 0; i < items.Count; i++)
                     {
-                        TweakCardViewModel vm = new TweakCardViewModel(items[i], this._engine, this.OnTweakStateChanged);
+                        TweakCardViewModel vm = new TweakCardViewModel(items[i], this._engine, this.OnTweakStateChanged, this.OnBatchSelectionChanged);
                         vm.SourceIndex = i;
                         this._allTweaks.Add(vm);
                     }
@@ -1612,12 +1712,21 @@ namespace WinTweaker.ViewModels
         {
             this._categories.Clear();
 
-            // Total count
+            // Total & Recommended pseudo-categories
             int total = this._allTweaks.Count;
+            int recCount = 0;
+            for (int i = 0; i < this._allTweaks.Count; i++)
+            {
+                if (this._allTweaks[i].IsRecommended) recCount++;
+            }
+
             CategoryItemViewModel allCat = new CategoryItemViewModel("all", "Все твики", "\uE71D", total);
             allCat.IsSelected = true;
             this._selectedCategory = allCat;
             this._categories.Add(allCat);
+
+            CategoryItemViewModel recCat = new CategoryItemViewModel("recommended", "Рекомендуемые", "\uE73E", recCount);
+            this._categories.Add(recCat);
 
             // Group by category from data
             Dictionary<string, int> catCounts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
@@ -1695,12 +1804,16 @@ namespace WinTweaker.ViewModels
             {
                 TweakCardViewModel tw = this._allTweaks[i];
 
-                if (catId != "all" && !string.Equals(tw.Category, catId, StringComparison.OrdinalIgnoreCase))
+                if (catId == "recommended")
+                {
+                    if (!tw.IsRecommended) continue;
+                }
+                else if (catId != "all" && !string.Equals(tw.Category, catId, StringComparison.OrdinalIgnoreCase))
                 {
                     continue;
                 }
 
-                // FilterSegment: 0=All, 1=Enabled, 2=Disabled, 3=NeedsReview
+                // FilterSegment: 0=All, 1=Enabled, 2=Disabled, 3=NeedsReview, 4=Recommended
                 if (this._filterSegment == 1 && tw.Status != TweakStatus.Enabled)
                 {
                     continue;
@@ -1710,6 +1823,10 @@ namespace WinTweaker.ViewModels
                     continue;
                 }
                 if (this._filterSegment == 3 && !tw.NeedsReview)
+                {
+                    continue;
+                }
+                if (this._filterSegment == 4 && !tw.IsRecommended)
                 {
                     continue;
                 }
@@ -1843,8 +1960,10 @@ namespace WinTweaker.ViewModels
 
         public void Populate60SecondsHistory()
         {
+            if (this._isRealMode) return;
             this._cpuHistory.Clear();
             this._ramHistory.Clear();
+            this._gpuHistory.Clear();
             this._pingHistory.Clear();
 
             double[] cpuSamples = new double[] {
@@ -1881,26 +2000,55 @@ namespace WinTweaker.ViewModels
             this.OnPropertyChanged("IsCollectingData");
         }
 
+        private void OnBatchSelectionChanged()
+        {
+            int sel = 0;
+            for (int i = 0; i < this._allTweaks.Count; i++)
+            {
+                if (this._allTweaks[i].IsSelectedForBatch) sel++;
+            }
+            this.SelectedBatchCount = sel;
+            this.OnPropertyChanged("SelectedBatchCount");
+            this.OnPropertyChanged("HasSelectedForBatch");
+            this.OnPropertyChanged("ApplySelectedButtonText");
+        }
+
         private void UpdateSummary()
         {
             int total = this._allTweaks.Count;
             int enabled = 0;
             int disabled = 0;
             int review = 0;
+            int recTotal = 0;
+            int recApplied = 0;
+            int recRemaining = 0;
+            int selCount = 0;
+            int currentBuild = Environment.OSVersion.Version.Build;
 
             for (int i = 0; i < this._allTweaks.Count; i++)
             {
-                if (this._allTweaks[i].Status == TweakStatus.Enabled)
+                var tw = this._allTweaks[i];
+                if (tw.Status == TweakStatus.Enabled)
                 {
                     enabled++;
                 }
-                else if (this._allTweaks[i].Status == TweakStatus.Disabled)
+                else if (tw.Status == TweakStatus.Disabled)
                 {
                     disabled++;
                 }
-                if (this._allTweaks[i].NeedsReview)
+                if (tw.NeedsReview)
                 {
                     review++;
+                }
+                if (tw.IsSelectedForBatch)
+                {
+                    selCount++;
+                }
+                if (tw.IsRecommended)
+                {
+                    recTotal++;
+                    if (tw.Status == TweakStatus.Enabled) recApplied++;
+                    else if (tw.Risk == TweakRisk.Low && TweakEngine.IsEligibleForBatchApply(tw.Model, currentBuild, tw.Status)) recRemaining++;
                 }
             }
 
@@ -1908,15 +2056,24 @@ namespace WinTweaker.ViewModels
             this.EnabledTweaksCount = enabled;
             this.DisabledTweaksCount = disabled;
             this.NeedsReviewCount = review;
+            this.RecommendedTotalCount = recTotal;
+            this.RecommendedAppliedCount = recApplied;
+            this.RecommendedRemainingCount = recRemaining;
+            this.SelectedBatchCount = selCount;
 
             this.SegmentAllText = string.Format("Все ({0})", total);
+            this.SegmentRecommendedText = string.Format("Рекомендуемые ({0})", recTotal);
             this.SegmentEnabledText = string.Format("Включено ({0})", enabled);
             this.SegmentDisabledText = string.Format("Выключено ({0})", disabled);
             this.SegmentNeedsReviewText = string.Format("Внимание ({0})", review);
 
+            this.LastDiagnosticSummary = string.Format(
+                "Рекомендации: {0} из {1} активно (осталось применить: {2}) • Требуют внимания: {3}",
+                recApplied, recTotal, recRemaining, review);
+
             this.SummaryText = string.Format("Активно: {0} из {1}", enabled, total);
             this.TweaksDisplay = enabled.ToString();
-            this.TweaksTotalText = string.Format("из {0}", total);
+            this.TweaksTotalText = string.Format("из {0} • рек. {1}/{2}", total, recApplied, recTotal);
             this.TweaksStatus = string.Format("из {0}", total);
 
             this.OnPropertyChanged("CanApplyRecommended");
@@ -1925,13 +2082,23 @@ namespace WinTweaker.ViewModels
             this.OnPropertyChanged("EnabledTweaksCount");
             this.OnPropertyChanged("DisabledTweaksCount");
             this.OnPropertyChanged("NeedsReviewCount");
+            this.OnPropertyChanged("RecommendedTotalCount");
+            this.OnPropertyChanged("RecommendedAppliedCount");
+            this.OnPropertyChanged("RecommendedRemainingCount");
+            this.OnPropertyChanged("SelectedBatchCount");
+            this.OnPropertyChanged("HasSelectedForBatch");
+            this.OnPropertyChanged("ApplySelectedButtonText");
             this.OnPropertyChanged("OptimizationPercent");
             this.OnPropertyChanged("OptimizationPercentText");
             this.OnPropertyChanged("SegmentAllText");
+            this.OnPropertyChanged("SegmentRecommendedText");
             this.OnPropertyChanged("SegmentEnabledText");
             this.OnPropertyChanged("SegmentDisabledText");
             this.OnPropertyChanged("SegmentNeedsReviewText");
             this.OnPropertyChanged("TweaksTotalText");
+            this.OnPropertyChanged("LastDiagnosticSummary");
+            this.OnPropertyChanged("DatabaseStatsDisplay");
+            this.OnPropertyChanged("EngineSummaryFooterText");
         }
 
         private void UpdateRecentJournal()
@@ -2085,15 +2252,78 @@ namespace WinTweaker.ViewModels
             this.SearchQuery = "";
         }
 
-        private async void OnApplyAllRecommended(object obj)
+        private void OnShowRecommended(object obj)
         {
-            if (!this.CanApplyRecommended)
+            for (int n = 0; n < this._navItems.Count; n++)
             {
-                MessageBox.Show("Пресеты пока не заданы.", "Применение рекомендуемых", MessageBoxButton.OK, MessageBoxImage.Information);
+                if (this._navItems[n].Id == "tweaks")
+                {
+                    this.SelectedNavItem = this._navItems[n];
+                    break;
+                }
+            }
+            for (int c = 0; c < this._categories.Count; c++)
+            {
+                if (this._categories[c].Id == "recommended")
+                {
+                    this.SelectedCategory = this._categories[c];
+                    break;
+                }
+            }
+            this.FilterSegment = 0;
+        }
+
+        private void OnSelectAllVisible(object obj)
+        {
+            for (int i = 0; i < this._filteredTweaks.Count; i++)
+            {
+                var tw = this._filteredTweaks[i];
+                if (!tw.IsActionTweak && tw.Status != TweakStatus.Unavailable)
+                {
+                    tw.IsSelectedForBatch = true;
+                }
+            }
+        }
+
+        private void OnClearSelection(object obj)
+        {
+            for (int i = 0; i < this._allTweaks.Count; i++)
+            {
+                this._allTweaks[i].IsSelectedForBatch = false;
+            }
+        }
+
+        private void OnApplySelected(object obj)
+        {
+            List<TweakCardViewModel> rawSelected = new List<TweakCardViewModel>();
+            for (int i = 0; i < this._allTweaks.Count; i++)
+            {
+                if (this._allTweaks[i].IsSelectedForBatch)
+                {
+                    rawSelected.Add(this._allTweaks[i]);
+                }
+            }
+
+            if (rawSelected.Count == 0)
+            {
+                WinTweaker.UI.AxisDialogWindow.ShowInfo(
+                    "Применить выбранные",
+                    "Сначала отметьте галочками нужные твики в списке, затем нажмите «Применить выбранные».",
+                    "Ни одного твика не выбрано");
                 return;
             }
 
-            // Находим все рекомендуемые безопасные переключатели (исключая разовые cleanup/action, NVIDIA и высокорисковые)
+            this.ExecuteBatchApplyAsync(rawSelected, "Применение выбранных твиков", false);
+        }
+
+        private void OnApplyAllRecommended(object obj)
+        {
+            if (!this.CanApplyRecommended)
+            {
+                WinTweaker.UI.AxisDialogWindow.ShowInfo("Применение рекомендаций", "Пресеты пока не заданы.");
+                return;
+            }
+
             int currentBuild = Environment.OSVersion.Version.Build;
             List<TweakCardViewModel> targets = new List<TweakCardViewModel>();
             for (int i = 0; i < this._allTweaks.Count; i++)
@@ -2110,112 +2340,246 @@ namespace WinTweaker.ViewModels
 
             if (targets.Count == 0)
             {
-                MessageBox.Show("Все рекомендуемые безопасные твики уже применены!", "Применение рекомендуемых", MessageBoxButton.OK, MessageBoxImage.Information);
+                WinTweaker.UI.AxisDialogWindow.ShowInfo(
+                    "Рекомендуемые твики",
+                    string.Format("Все безопасные рекомендуемые твики уже применены ({0} из {1} активны).",
+                        this.RecommendedAppliedCount, this.RecommendedTotalCount),
+                    "Оптимизация актуальна");
                 return;
             }
 
-            string confirmMsg = string.Format(
-                "Применить безопасные рекомендуемые твики ({0} шт.)?\n\n" +
-                "• Каждый параметр будет сохранён в снимок для 100% безопасного отката.\n" +
-                "• Высокорискованные и системно-опасные твики исключены.\n" +
-                "• Операция выполняется безопасно в фоновом потоке без зависания интерфейса.",
-                targets.Count);
+            this.ExecuteBatchApplyAsync(targets, "Применение всех рекомендуемых твиков", true);
+        }
 
-            MessageBoxResult confirm = MessageBox.Show(
-                confirmMsg,
-                "Подтверждение применения",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Question);
+        private async void ExecuteBatchApplyAsync(List<TweakCardViewModel> rawCandidates, string dialogTitle, bool isRecommendedAll)
+        {
+            int currentBuild = Environment.OSVersion.Version.Build;
+            List<TweakCardViewModel> validTargets = new List<TweakCardViewModel>();
+            List<string> skippedWarnings = new List<string>();
+            Dictionary<string, string> keyAssignments = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-            if (confirm != MessageBoxResult.Yes) return;
+            for (int i = 0; i < rawCandidates.Count; i++)
+            {
+                TweakCardViewModel tw = rawCandidates[i];
+                if (tw.Model == null || tw.Model.registry == null || tw.Model.registry.Count == 0)
+                {
+                    skippedWarnings.Add(string.Format("[Пропущено] {0} — отсутствуют действия реестра", tw.Name));
+                    continue;
+                }
+                if (tw.Model.min_build.HasValue && currentBuild < tw.Model.min_build.Value)
+                {
+                    skippedWarnings.Add(string.Format("[Несовместимо] {0} — требуется сборка Windows {1}+", tw.Name, tw.Model.min_build.Value));
+                    continue;
+                }
+                if (tw.Status == TweakStatus.Unavailable)
+                {
+                    skippedWarnings.Add(string.Format("[Недоступно] {0} — оборудование/приложение не найдено", tw.Name));
+                    continue;
+                }
 
-            this.StatusNotification = string.Format("Применение {0} рекомендуемых твиков...", targets.Count);
+                bool hasApplyBlock = false;
+                bool hasConflict = false;
+                for (int r = 0; r < tw.Model.registry.Count; r++)
+                {
+                    var act = tw.Model.registry[r];
+                    if (isRecommendedAll && !string.IsNullOrEmpty(act.apply_block))
+                    {
+                        hasApplyBlock = true;
+                        break;
+                    }
+                    string keySig = string.Format("{0}\\{1}\\{2}", act.hive ?? "", act.path ?? "", act.name ?? "");
+                    string valSig = act.apply != null ? act.apply.ToString() : "";
+                    if (keySig.IndexOf(@"\00XX", StringComparison.OrdinalIgnoreCase) < 0 &&
+                        keySig.IndexOf(@"\...", StringComparison.OrdinalIgnoreCase) < 0)
+                    {
+                        string existingVal;
+                        if (keyAssignments.TryGetValue(keySig, out existingVal) &&
+                            !string.Equals(existingVal, valSig, StringComparison.OrdinalIgnoreCase))
+                        {
+                            hasConflict = true;
+                            break;
+                        }
+                        keyAssignments[keySig] = valSig;
+                    }
+                }
+
+                if (hasApplyBlock)
+                {
+                    skippedWarnings.Add(string.Format("[Ограничение] {0} — заблокирован для автопакета (apply_block)", tw.Name));
+                    continue;
+                }
+                if (hasConflict)
+                {
+                    skippedWarnings.Add(string.Format("[Конфликт ключей] {0} — конфликтует с другим выбранным твиком", tw.Name));
+                    continue;
+                }
+
+                validTargets.Add(tw);
+            }
+
+            if (validTargets.Count == 0)
+            {
+                WinTweaker.UI.AxisDialogWindow.ShowWarning(
+                    dialogTitle,
+                    "Ни один из выбранных твиков не подходит для применения из-за ограничений совместимости или конфликтов.",
+                    "Нет подходящих операций",
+                    skippedWarnings);
+                return;
+            }
+
+            List<string> previewItems = new List<string>();
+            int rebootCount = 0;
+            for (int i = 0; i < validTargets.Count; i++)
+            {
+                if (validTargets[i].RequiresReboot) rebootCount++;
+                string rebootTag = validTargets[i].RequiresReboot ? " [перезагрузка]" : "";
+                previewItems.Add(string.Format("{0}. {1} ({2}){3}", i + 1, validTargets[i].Name, validTargets[i].CategoryDisplayName, rebootTag));
+            }
+            for (int i = 0; i < skippedWarnings.Count; i++)
+            {
+                previewItems.Add(skippedWarnings[i]);
+            }
+
+            StringBuilder msg = new StringBuilder();
+            msg.AppendFormat("Будет безопасно применено твиков: {0}.", validTargets.Count);
+            if (isRecommendedAll)
+            {
+                msg.AppendFormat(" (Всего рекомендовано: {0}, уже активно: {1}).", this.RecommendedTotalCount, this.RecommendedAppliedCount);
+            }
+            msg.AppendLine();
+            msg.AppendLine("• Исходные значения сохраняются в state.json перед изменением для точного отката.");
+            if (this._isRealMode && !IsUserAdmin())
+            {
+                msg.AppendLine("• ВНИМАНИЕ: приложение запущено без прав администратора — твики в HKLM/службах могут завершиться ошибкой доступа.");
+            }
+            if (rebootCount > 0)
+            {
+                msg.AppendFormat("• Для {0} твик(ов) потребуется перезагрузка ПК для вступления изменений в силу.", rebootCount);
+            }
+
+            bool confirmed = WinTweaker.UI.AxisDialogWindow.ShowConfirm(
+                dialogTitle,
+                string.Format("К применению: {0} • Пропущено: {1}", validTargets.Count, skippedWarnings.Count),
+                msg.ToString().Trim(),
+                previewItems,
+                "Применить",
+                "Отмена");
+
+            if (!confirmed) return;
+
+            this.StatusNotification = string.Format("Применение {0} твиков...", validTargets.Count);
 
             int appliedCount = 0;
             int errorCount = 0;
+            List<string> resultLines = new List<string>();
 
             await Task.Run(() =>
             {
-                for (int i = 0; i < targets.Count; i++)
+                for (int i = 0; i < validTargets.Count; i++)
                 {
-                    TweakCardViewModel tw = targets[i];
+                    TweakCardViewModel tw = validTargets[i];
                     try
                     {
                         bool ok = this._engine.Apply(tw.Model);
                         if (ok)
                         {
                             appliedCount++;
+                            resultLines.Add("[OK] " + tw.Name);
                         }
                         else
                         {
                             errorCount++;
+                            resultLines.Add("[ОШИБКА] " + tw.Name + " — не удалось применить");
                         }
                     }
-                    catch
+                    catch (Exception ex)
                     {
                         errorCount++;
+                        resultLines.Add("[ОШИБКА] " + tw.Name + ": " + ex.Message);
                     }
                 }
             });
 
-            // На UI потоке обновляем статус карточек и общую сводку один раз
-            for (int i = 0; i < targets.Count; i++)
+            for (int i = 0; i < validTargets.Count; i++)
             {
-                targets[i].RefreshStatus();
+                validTargets[i].RefreshStatus();
+                validTargets[i].IsSelectedForBatch = false;
             }
 
             this.OnTweakStateChanged();
 
-            string resultMsg = string.Format("Успешно применено: {0} твиков.", appliedCount);
-            if (errorCount > 0)
-            {
-                resultMsg += string.Format(" (ошибок: {0})", errorCount);
-            }
-            this.StatusNotification = resultMsg;
+            string statusMsg = string.Format("Применено: {0}", appliedCount);
+            if (errorCount > 0) statusMsg += string.Format(", ошибок: {0}", errorCount);
+            this.StatusNotification = statusMsg;
 
-            MessageBox.Show(
-                string.Format("Применение завершено!\n\nУспешно активировано твиков: {0}\nИсходные значения сохранены для отката.", appliedCount),
-                "Применение рекомендуемых",
-                MessageBoxButton.OK,
-                MessageBoxImage.Information);
+            WinTweaker.UI.AxisDialogWindow.ShowBatchReport(
+                dialogTitle,
+                string.Format("Успешно: {0} • Ошибок: {1} • Пропущено: {2}", appliedCount, errorCount, skippedWarnings.Count),
+                string.Format("Применение завершено. Исходные значения успешно применённых параметров сохранены в state.json.{0}",
+                    rebootCount > 0 && appliedCount > 0 ? "\nДля полного эффекта рекомендуется перезагрузить компьютер." : ""),
+                resultLines,
+                errorCount > 0);
         }
 
         private async void OnRevertAll(object obj)
         {
             List<TweakCardViewModel> targets = new List<TweakCardViewModel>();
+            int withoutSnapshotCount = 0;
             for (int i = 0; i < this._allTweaks.Count; i++)
             {
                 TweakCardViewModel tw = this._allTweaks[i];
-                if (tw.Status == TweakStatus.Enabled && tw.CanRevert)
+                if (tw.Status == TweakStatus.Enabled && !tw.IsActionTweak)
                 {
-                    targets.Add(tw);
+                    if (tw.HasSnapshotRecord && tw.CanRevert)
+                    {
+                        targets.Add(tw);
+                    }
+                    else
+                    {
+                        withoutSnapshotCount++;
+                    }
                 }
             }
 
             if (targets.Count == 0)
             {
-                MessageBox.Show("Нет активных твиков со снимками для отката.", "Откат твиков", MessageBoxButton.OK, MessageBoxImage.Information);
+                string extra = withoutSnapshotCount > 0
+                    ? string.Format("\n\nОбнаружено {0} активных параметров без сохранённого снимка AXIS (изменены до использования программы или вручную) — они не будут затронуты.", withoutSnapshotCount)
+                    : "";
+                WinTweaker.UI.AxisDialogWindow.ShowInfo(
+                    "Откат твиков",
+                    "Нет применённых твиков с сохранённым исходным снимком для безопасного отката." + extra,
+                    "Снимки не найдены");
                 return;
             }
 
+            List<string> revertPreview = new List<string>();
+            for (int i = 0; i < targets.Count; i++)
+            {
+                revertPreview.Add(string.Format("{0}. {1} ({2})", i + 1, targets[i].Name, targets[i].CategoryDisplayName));
+            }
+
             string confirmMsg = string.Format(
-                "Откатить все активные твики к исходному состоянию ({0} шт.)?\n\n" +
-                "• Все значения реестра будут возвращены к системным до оптимизации.\n" +
-                "• Операция выполняется безопасно в фоновом потоке без зависания интерфейса.",
-                targets.Count);
+                "Вернуть {0} твик(ов) к точным исходным значениям, сохранённым в state.json?\n" +
+                "• Параметры, чьё исходное состояние не сохранялось ({1} шт.), изменены не будут.",
+                targets.Count, withoutSnapshotCount);
 
-            MessageBoxResult confirm = MessageBox.Show(
+            bool confirmed = WinTweaker.UI.AxisDialogWindow.ShowConfirm(
+                "Подтверждение массового отката",
+                string.Format("Будет откачено: {0} • Без снимка (не трогаются): {1}", targets.Count, withoutSnapshotCount),
                 confirmMsg,
-                "Подтверждение отката",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Warning);
+                revertPreview,
+                "Откатить все",
+                "Отмена",
+                true);
 
-            if (confirm != MessageBoxResult.Yes) return;
+            if (!confirmed) return;
 
-            this.StatusNotification = string.Format("Откат {0} активных твиков...", targets.Count);
+            this.StatusNotification = string.Format("Откат {0} твиков...", targets.Count);
 
             int revertedCount = 0;
             int errorCount = 0;
+            List<string> resultLines = new List<string>();
 
             await Task.Run(() =>
             {
@@ -2228,20 +2592,22 @@ namespace WinTweaker.ViewModels
                         if (ok)
                         {
                             revertedCount++;
+                            resultLines.Add("[ОТКАТ OK] " + tw.Name);
                         }
                         else
                         {
                             errorCount++;
+                            resultLines.Add("[ОШИБКА] " + tw.Name);
                         }
                     }
-                    catch
+                    catch (Exception ex)
                     {
                         errorCount++;
+                        resultLines.Add("[ОШИБКА] " + tw.Name + ": " + ex.Message);
                     }
                 }
             });
 
-            // На UI потоке обновляем статус карточек и общую сводку один раз
             for (int i = 0; i < targets.Count; i++)
             {
                 targets[i].RefreshStatus();
@@ -2249,18 +2615,16 @@ namespace WinTweaker.ViewModels
 
             this.OnTweakStateChanged();
 
-            string resultMsg = string.Format("Успешно откачено: {0} твиков.", revertedCount);
-            if (errorCount > 0)
-            {
-                resultMsg += string.Format(" (ошибок: {0})", errorCount);
-            }
+            string resultMsg = string.Format("Откачено: {0}", revertedCount);
+            if (errorCount > 0) resultMsg += string.Format(", ошибок: {0}", errorCount);
             this.StatusNotification = resultMsg;
 
-            MessageBox.Show(
-                string.Format("Откат завершен!\n\nУспешно возвращено к исходному состоянию: {0} твиков.", revertedCount),
-                "Откат твиков",
-                MessageBoxButton.OK,
-                MessageBoxImage.Information);
+            WinTweaker.UI.AxisDialogWindow.ShowBatchReport(
+                "Отчёт о массовом откате",
+                string.Format("Восстановлено: {0} • Ошибок: {1} • Не затронуто без снимка: {2}", revertedCount, errorCount, withoutSnapshotCount),
+                "Операция возврата к сохранённым исходным значениям завершена.",
+                resultLines,
+                errorCount > 0);
         }
 
         private void OnRefreshAll(object obj)
@@ -2378,7 +2742,7 @@ namespace WinTweaker.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Не удалось открыть окно параметров: " + ex.Message, "Защита системы", MessageBoxButton.OK, MessageBoxImage.Warning);
+                WinTweaker.UI.AxisDialogWindow.ShowWarning("Защита системы", "Не удалось открыть окно параметров защиты: " + ex.Message);
             }
         }
 
@@ -2415,20 +2779,19 @@ namespace WinTweaker.ViewModels
                     string desktop = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
                     string target = Path.Combine(desktop, string.Format("axis_backup_{0:yyyyMMdd_HHmmss}.json", DateTime.Now));
                     File.Copy(this._stateManager.StateFilePath, target, true);
-                    MessageBox.Show(
-                        "Резервная копия снимка состояния успешно создана на Рабочем столе:\n" + target,
+                    WinTweaker.UI.AxisDialogWindow.ShowInfo(
                         "Экспорт снимка AXIS",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Information);
+                        "Резервная копия снимка состояния успешно создана на Рабочем столе:\n" + target,
+                        "state.json сохранён");
                 }
                 else
                 {
-                    MessageBox.Show("Снимки пока не созданы (нет активных твиков с историей).", "Экспорт снимка", MessageBoxButton.OK, MessageBoxImage.Information);
+                    WinTweaker.UI.AxisDialogWindow.ShowInfo("Экспорт снимка", "Снимки пока не созданы (нет активных твиков с историей).");
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Ошибка при экспорте: " + ex.Message, "Экспорт снимка", MessageBoxButton.OK, MessageBoxImage.Error);
+                WinTweaker.UI.AxisDialogWindow.ShowError("Экспорт снимка", "Ошибка при экспорте: " + ex.Message);
             }
         }
 
@@ -2438,7 +2801,7 @@ namespace WinTweaker.ViewModels
             {
                 StringBuilder sb = new StringBuilder();
                 sb.AppendLine("==================================================================");
-                sb.AppendLine("        AXIS 2.0 (2026) — ДИАГНОСТИЧЕСКИЙ ОТЧЕТ СИСТЕМЫ           ");
+                sb.AppendLine("        AXIS 3.0 (2026) — ДИАГНОСТИЧЕСКИЙ ОТЧЕТ СИСТЕМЫ           ");
                 sb.AppendLine("==================================================================");
                 sb.AppendLine(string.Format("Время отчета: {0:yyyy-MM-dd HH:mm:ss}", DateTime.Now));
                 sb.AppendLine(string.Format("ОС:           {0}", this._osSpec));
@@ -2472,7 +2835,7 @@ namespace WinTweaker.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Ошибка копирования отчета: " + ex.Message, "Отчет", MessageBoxButton.OK, MessageBoxImage.Warning);
+                WinTweaker.UI.AxisDialogWindow.ShowWarning("Отчет", "Ошибка копирования отчета: " + ex.Message);
             }
         }
 
@@ -2488,6 +2851,25 @@ namespace WinTweaker.ViewModels
                 this.PingCustomHost = host;
             }
             this.OnSaveSettings(null);
+        }
+
+        public void Dispose()
+        {
+            if (this._isDisposed) return;
+            this._isDisposed = true;
+            if (this._liveTimer != null)
+            {
+                try
+                {
+                    this._liveTimer.Stop();
+                    this._liveTimer.Tick -= this.OnLiveTimerTick;
+                }
+                catch { }
+            }
+            if (this._systemInfoService != null)
+            {
+                try { this._systemInfoService.Dispose(); } catch { }
+            }
         }
     }
 }
