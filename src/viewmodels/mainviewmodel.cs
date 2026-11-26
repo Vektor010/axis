@@ -629,9 +629,9 @@ namespace WinTweaker.ViewModels
         {
             get { return this.RevertableCount > 0 ? string.Format("Откатить все ({0})", this.RevertableCount) : "Откатить все"; }
         }
-        public string AppVersionDisplay { get { return "v3.2.1 • 2026"; } }
+        public string AppVersionDisplay { get { return "v3.2.2 • 2026"; } }
         public string DatabaseStatsDisplay { get { return string.Format("{0} твиков • 12 категорий", this.TotalTweaksCount); } }
-        public string EngineSummaryFooterText { get { return string.Format("AXIS Engine v3.2.1 • {0} твиков, изолированные снимки state.json и прямой WinAPI без внешних зависимостей.", this.TotalTweaksCount); } }
+        public string EngineSummaryFooterText { get { return string.Format("AXIS Engine v3.2.2 • {0} твиков, изолированные снимки state.json и прямой WinAPI без внешних зависимостей.", this.TotalTweaksCount); } }
 
         public bool CanApplyRecommended
         {
@@ -2438,6 +2438,15 @@ namespace WinTweaker.ViewModels
 
         private static readonly HashSet<string> ManualOnlyPreferenceIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
+            "visibility-taskbar-never-combine",
+            "visibility-taskbar-align-left",
+            "visibility-widgets",
+            "visibility-task-view",
+            "visibility-pen-menu",
+            "visibility-share-any-window-from-my-taskbar",
+            "visibility-show-flashing-on-taskbar-apps",
+            "visibility-taskbarsd",
+            "visibility-slideshowincludecameraroll",
             "visibility-navpane-show-all-folders",
             "visibility-show-frequently-used-folders",
             "visibility-show-recently-used-files",

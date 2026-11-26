@@ -1,8 +1,8 @@
 # PROJECT_STATE.md — Current Operational State
 
 **Last Updated**: 2026-11-26  
-**Version**: v3.2.1 (Permanently Removed Harmful Logon/Username, Desktop Checkbox & Bloat-Enabling Tweaks)  
-**Binary Output**: `dist/Axis.exe` (1.40 MB, standalone x64, 888 tweaks, 216 curated recommended, 8,163 PASS)
+**Version**: v3.2.2 (Keep Stock Square Taskbar Icons by Default; Manual-Only Taskbar Layout Preferences)  
+**Binary Output**: `dist/Axis.exe` (1.39 MB, standalone x64, 888 tweaks, 216 curated recommended, 8,037 PASS)
 
 ---
 

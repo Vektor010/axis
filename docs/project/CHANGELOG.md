@@ -5,6 +5,11 @@ All notable changes to AXIS will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.2.2] - 2026-11-26
+
+### Preserve Stock Compact Square Taskbar Icons by Default
+- Excluded `visibility-taskbar-never-combine` (`TaskbarGlomLevel=2`) and purely cosmetic taskbar layout toggles (`visibility-taskbar-align-left`, `visibility-widgets`, `visibility-task-view`, `visibility-pen-menu`, `visibility-share-any-window-from-my-taskbar`, `visibility-show-flashing-on-taskbar-apps`, `visibility-taskbarsd`, `visibility-slideshowincludecameraroll`) from batch apply (`Применить все / раздел / рекомендуемые`) so compact square taskbar buttons (`TaskbarGlomLevel=0` / stock) remain intact unless toggled manually.
+
 ## [3.2.1] - 2026-11-26
 
 ### Permanent Removal of Harmful Logon Prompt, Desktop Checkbox & Bloat-Enabling Tweaks (`888` total)
