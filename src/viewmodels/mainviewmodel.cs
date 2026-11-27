@@ -2927,7 +2927,13 @@ namespace WinTweaker.ViewModels
             "system-mmcss-lazy-mode-timeout",
             "system-mmcss-scheduler-period",
             "system-mmcss-max-threads-process",
-            "system-mmcss-max-threads-total"
+            "system-mmcss-max-threads-total",
+            // Параметры доступности (моно-звук, инверсия цветов, озвучивание клавиш — только ручное включение)
+            "system-mono-audio",
+            "system-invert-colors",
+            "system-toggle-keys",
+            "system-always-show-scrollbars",
+            "system-keyboard-shortcut-for-color-filters"
         };
 
         internal static bool IsEligibleForContextBatchApply(TweakCardViewModel tw)
