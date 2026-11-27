@@ -3,8 +3,8 @@
 [English](README.md) | [Русский](README.ru.md)
 
 [![Release: v3.4.0](https://img.shields.io/badge/Release-v3.4.0-2563eb.svg)](https://github.com/Vektor010/axis/releases)
-[![Tests: 8852 PASS](https://img.shields.io/badge/Tests-8852%20PASS-22c55e.svg)](tests/)
-[![Tweaks: 969](https://img.shields.io/badge/Tweaks-969-3b82f6.svg)](data/tweaks.json)
+[![Tests: 8774 PASS](https://img.shields.io/badge/Tests-8774%20PASS-22c55e.svg)](tests/)
+[![Tweaks: 965](https://img.shields.io/badge/Tweaks-965-3b82f6.svg)](data/tweaks.json)
 [![Binary: Clean 1.55 MB](https://img.shields.io/badge/Binary-1.55%20MB-38bdf8.svg)](dist/Axis.exe)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
@@ -52,11 +52,11 @@
 
 ---
 
-## 🧭 Каталог оптимизаций AXIS (969 параметров в 12 категориях)
+## 🧭 Каталог оптимизаций AXIS (965 параметров в 12 категориях)
 
 | Категория | Количество | Что оптимизирует |
 | :--- | :---: | :--- |
-| ⚙️ **Система** | 231 | Планировщик MMCSS, службы/драйверы (`57`), задачи планировщика (`18` через COM), задержки DPC. |
+| ⚙️ **Система** | 227 | Планировщик MMCSS, службы/драйверы (`57`), задачи планировщика (`18` через COM), задержки DPC. |
 | 🔒 **Конфиденциальность** | 211 | Отключение фоновой телеметрии, диагностических отчётов, маяков и скрытого сбора данных. |
 | 🛡️ **Безопасность** | 147 | Изоляция системных процессов, динамическая блокировка, тонкая настройка Защитника Windows. |
 | 📁 **Проводник** | 88 | Компактный вид папок, удаление ненужных пунктов контекстного меню, быстрый поиск. |
@@ -88,12 +88,12 @@
   ```
   *Компилирует флагманский бинарник `dist\Axis.exe` и консольный тест-раннер `dist\Tests.exe`.*
 
-- **Автоматизированное тестирование (8852 тестов, все сьюиты)**:
+- **Автоматизированное тестирование (8774 тестов, все сьюиты)**:
   ```cmd
   dist\Tests.exe
   ```
 
-- **Комплексная верификация (AST, база 969 твиков, SHA-256 embed parity)**:
+- **Комплексная верификация (AST, база 965 твиков, SHA-256 embed parity)**:
   ```powershell
   powershell -ExecutionPolicy Bypass -File .\verify-all.ps1
   ```

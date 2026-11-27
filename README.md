@@ -3,8 +3,8 @@
 [English](README.md) | [Русский](README.ru.md)
 
 [![Release: v3.4.0](https://img.shields.io/badge/Release-v3.4.0-2563eb.svg)](https://github.com/Vektor010/axis/releases)
-[![Tests: 8852 PASS](https://img.shields.io/badge/Tests-8852%20PASS-22c55e.svg)](tests/)
-[![Tweaks: 969](https://img.shields.io/badge/Tweaks-969-3b82f6.svg)](data/tweaks.json)
+[![Tests: 8774 PASS](https://img.shields.io/badge/Tests-8774%20PASS-22c55e.svg)](tests/)
+[![Tweaks: 965](https://img.shields.io/badge/Tweaks-965-3b82f6.svg)](data/tweaks.json)
 [![Binary: Clean 1.55 MB](https://img.shields.io/badge/Binary-1.55%20MB-38bdf8.svg)](dist/Axis.exe)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
@@ -51,11 +51,11 @@
 
 ---
 
-## 🧭 Tweak Catalog (969 Parameters Across 12 Categories)
+## 🧭 Tweak Catalog (965 Parameters Across 12 Categories)
 
 | Category | Count | Focus Area |
 | :--- | :---: | :--- |
-| ⚙️ **System** | 231 | MMCSS scheduler tuning, services/drivers (`57`), scheduled tasks (`18` via COM), DPC latency. |
+| ⚙️ **System** | 227 | MMCSS scheduler tuning, services/drivers (`57`), scheduled tasks (`18` via COM), DPC latency. |
 | 🔒 **Privacy** | 211 | Diagnostic telemetry, feedback hub, activity history, and background beacons. |
 | 🛡️ **Security** | 147 | Process isolation, UAC/SmartScreen, and Windows Defender tuning. |
 | 📁 **File Explorer** | 88 | Responsive shell layout, context menu simplification, folder view optimizations. |
@@ -110,7 +110,7 @@ The build pipeline performs:
 1. Native compilation of `dist/Axis.exe` and test runner `dist/Tests.exe`.
 2. AST syntax check across all 52 production scripts (`verify-all.ps1`).
 3. SHA-256 byte-for-byte verification of embedded `tweaks.json`.
-4. Execution of all **8,852 unit and integration tests** (`Tests.exe`) + deep `969`-tweak Noverse audit.
+4. Execution of all **8,774 unit and integration tests** (`Tests.exe`) + deep `965`-tweak Noverse audit.
 
 ---
 

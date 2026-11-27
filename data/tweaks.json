@@ -900,36 +900,6 @@
     ]
   },
   {
-    "id": "system-invert-colors",
-    "name_ru": "Инвертировать цвета экранной лупы",
-    "description_ru": "Инвертирование цветовой гаммы изображения при использовании инструмента «Экранная лупа».",
-    "group": "Специальные возможности",
-    "category": "system",
-    "type": "toggle",
-    "risk": "low",
-    "presets": [],
-    "min_build": null,
-    "needs_review": false,
-    "source": {
-      "file": "system/desc.md",
-      "line_from": 8834,
-      "line_to": 8838
-    },
-    "registry": [
-      {
-        "hive": "HKCU",
-        "path": "Software\\Microsoft\\ScreenMagnifier",
-        "name": "Invert",
-        "type": "REG_DWORD",
-        "apply": 1,
-        "revert": {
-          "mode": "snapshot",
-          "value": null
-        }
-      }
-    ]
-  },
-  {
     "id": "system-smooth-edges-of-images-and-text",
     "name_ru": "Сглаживание краев в экранной лупе",
     "description_ru": "Сглаживание шрифтов и растровых изображений при масштабировании экранной лупой.",
@@ -952,96 +922,6 @@
         "name": "UseBitmapSmoothing",
         "type": "REG_DWORD",
         "apply": 1,
-        "revert": {
-          "mode": "snapshot",
-          "value": null
-        }
-      }
-    ]
-  },
-  {
-    "id": "system-keyboard-shortcut-for-color-filters",
-    "name_ru": "Сочетание клавиш для цветных фильтров",
-    "description_ru": "Включение горячих клавиш Windows + Ctrl + C для быстрого включения и выключения цветных фильтров.",
-    "group": "Специальные возможности",
-    "category": "system",
-    "type": "toggle",
-    "risk": "low",
-    "presets": [],
-    "min_build": null,
-    "needs_review": false,
-    "source": {
-      "file": "system/desc.md",
-      "line_from": 8908,
-      "line_to": 8912
-    },
-    "registry": [
-      {
-        "hive": "HKCU",
-        "path": "Software\\Microsoft\\ColorFiltering",
-        "name": "HotkeyEnabled",
-        "type": "REG_DWORD",
-        "apply": 1,
-        "revert": {
-          "mode": "snapshot",
-          "value": null
-        }
-      }
-    ]
-  },
-  {
-    "id": "system-mono-audio",
-    "name_ru": "Монофонический звук",
-    "description_ru": "Объединение левого и правого аудиоканалов в единый монопоток для улучшения слышимости.",
-    "group": "Специальные возможности",
-    "category": "system",
-    "type": "toggle",
-    "risk": "low",
-    "presets": [],
-    "min_build": null,
-    "needs_review": false,
-    "source": {
-      "file": "system/desc.md",
-      "line_from": 8916,
-      "line_to": 8920
-    },
-    "registry": [
-      {
-        "hive": "HKCU",
-        "path": "Software\\Microsoft\\Multimedia\\Audio",
-        "name": "AccessibilityMonoMixState",
-        "type": "REG_DWORD",
-        "apply": 1,
-        "revert": {
-          "mode": "snapshot",
-          "value": null
-        }
-      }
-    ]
-  },
-  {
-    "id": "system-toggle-keys",
-    "name_ru": "Озвучивание переключения клавиш (Toggle Keys)",
-    "description_ru": "Воспроизведение звукового сигнала при нажатии клавиш Caps Lock, Num Lock или Scroll Lock.",
-    "group": "Специальные возможности",
-    "category": "system",
-    "type": "toggle",
-    "risk": "low",
-    "presets": [],
-    "min_build": null,
-    "needs_review": false,
-    "source": {
-      "file": "system/desc.md",
-      "line_from": 9001,
-      "line_to": 9005
-    },
-    "registry": [
-      {
-        "hive": "HKCU",
-        "path": "Control Panel\\Accessibility\\ToggleKeys",
-        "name": "Flags",
-        "type": "REG_SZ",
-        "apply": "1",
         "revert": {
           "mode": "snapshot",
           "value": null
@@ -1899,7 +1779,9 @@
     "category": "nvidia",
     "type": "toggle",
     "risk": "low",
-    "presets": [],
+    "presets": [
+      "recommended"
+    ],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -1961,7 +1843,9 @@
     "category": "nvidia",
     "type": "toggle",
     "risk": "low",
-    "presets": [],
+    "presets": [
+      "recommended"
+    ],
     "min_build": null,
     "needs_review": false,
     "source": {
@@ -5037,7 +4921,9 @@
     "category": "network",
     "type": "toggle",
     "risk": "low",
-    "presets": [],
+    "presets": [
+      "recommended"
+    ],
     "min_build": null,
     "needs_review": true,
     "source": {
@@ -14916,7 +14802,8 @@
     "risk": "low",
     "presets": [
       "gaming",
-      "maximum"
+      "maximum",
+      "recommended"
     ],
     "min_build": 19041,
     "needs_review": false,
@@ -22252,7 +22139,8 @@
     "risk": "low",
     "presets": [
       "safe",
-      "maximum"
+      "maximum",
+      "recommended"
     ],
     "min_build": 19041,
     "needs_review": false,
@@ -22285,7 +22173,8 @@
     "risk": "low",
     "presets": [
       "safe",
-      "maximum"
+      "maximum",
+      "recommended"
     ],
     "min_build": 19041,
     "needs_review": false,
@@ -22351,7 +22240,8 @@
     "risk": "low",
     "presets": [
       "safe",
-      "maximum"
+      "maximum",
+      "recommended"
     ],
     "min_build": 19041,
     "needs_review": false,
@@ -22417,7 +22307,8 @@
     "risk": "low",
     "presets": [
       "safe",
-      "maximum"
+      "maximum",
+      "recommended"
     ],
     "min_build": 19041,
     "needs_review": false,
@@ -22450,7 +22341,8 @@
     "risk": "low",
     "presets": [
       "safe",
-      "maximum"
+      "maximum",
+      "recommended"
     ],
     "min_build": 19041,
     "needs_review": false,
@@ -23440,7 +23332,8 @@
     "risk": "low",
     "presets": [
       "safe",
-      "maximum"
+      "maximum",
+      "recommended"
     ],
     "min_build": 19041,
     "needs_review": false,
@@ -23539,7 +23432,8 @@
     "risk": "low",
     "presets": [
       "safe",
-      "maximum"
+      "maximum",
+      "recommended"
     ],
     "min_build": 19041,
     "needs_review": false,
@@ -28233,7 +28127,8 @@
     "type": "toggle",
     "risk": "low",
     "presets": [
-      "gaming"
+      "gaming",
+      "recommended"
     ],
     "min_build": null,
     "needs_review": false,

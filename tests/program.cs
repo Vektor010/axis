@@ -2240,6 +2240,20 @@ namespace WinTweaker.Tests
                        !TweakEngine.IsEligibleForBatchApply(defragTaskTweak, 26300, TweakStatus.Disabled),
                     "ScheduledTasks_Noverse: Задачи планировщика Noverse распознаются движком, а опасные подгруппы (ScheduledDefrag/WU) защищены apply_block");
 
+                // Проверка удаления вредных твиков доступности/звука и включения CS2 LAN/USB/GPU пакета в recommended
+                bool hasRemovedBad = list.Exists(delegate(TweakItem x) {
+                    return x.id == "system-mono-audio" || x.id == "system-invert-colors" ||
+                           x.id == "system-toggle-keys" || x.id == "system-keyboard-shortcut-for-color-filters";
+                });
+                TweakItem udpRsc = list.Find(delegate(TweakItem x) { return x.id == "network-nic-udp-rsc"; });
+                TweakItem nvLowLat = list.Find(delegate(TweakItem x) { return x.id == "nvidia-low-latency-prerender-limit"; });
+                TweakItem usbDca = list.Find(delegate(TweakItem x) { return x.id == "peripheral-usb-enable-dca"; });
+                Assert(!hasRemovedBad &&
+                       udpRsc != null && udpRsc.presets != null && udpRsc.presets.Contains("recommended") &&
+                       nvLowLat != null && nvLowLat.presets != null && nvLowLat.presets.Contains("recommended") &&
+                       usbDca != null && usbDca.presets != null && usbDca.presets.Contains("recommended"),
+                    "Catalog_CS2_Recommended_Safety: Моно-звук и вредные спецвозможности удалены, а ключевые CS2 LAN/USB/GPU твики входят в recommended");
+
                 // Проверка адаптивного инженерного масштаба графика 2026 и crosshair-инспектора через собранный Axis.exe
                 string axisExePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Axis.exe");
                 if (File.Exists(axisExePath))
