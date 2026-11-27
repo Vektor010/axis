@@ -2249,7 +2249,8 @@ namespace WinTweaker.Tests
                            x.id == "visibility-hidden-icon-menu" || x.id == "visibility-icons-only" ||
                            x.id == "visibility-taskbar-never-combine" || x.id == "visibility-prevent-changing-desktop-icons" ||
                            x.id == "system-dwm-overlay-test-mode" || x.id == "system-dxg-disable-overlays-mpo" ||
-                           x.id == "system-game-mode-gpu-yield" || x.id == "system-dwm-enable-mega-rects";
+                           x.id == "system-game-mode-gpu-yield" || x.id == "system-dwm-enable-mega-rects" ||
+                           x.id == "system-dwm-disable-independent-flip" || x.id == "system-dwm-disable-advanced-direct-flip";
                 });
                 TweakItem udpRsc = list.Find(delegate(TweakItem x) { return x.id == "network-nic-udp-rsc"; });
                 TweakItem nvLowLat = list.Find(delegate(TweakItem x) { return x.id == "nvidia-low-latency-prerender-limit"; });
