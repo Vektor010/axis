@@ -2867,7 +2867,6 @@ namespace WinTweaker.ViewModels
 
         private static readonly HashSet<string> ManualOnlyPreferenceIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
-            "visibility-taskbar-never-combine",
             "visibility-taskbar-align-left",
             "visibility-widgets",
             "visibility-task-view",
@@ -2880,7 +2879,6 @@ namespace WinTweaker.ViewModels
             "visibility-show-frequently-used-folders",
             "visibility-show-recently-used-files",
             "visibility-show-libraries",
-            "visibility-show-type-overlay",
             "visibility-folder-contents-info-tip",
             "visibility-show-encrypt-compressed-color",
             "visibility-show-info-tip",
@@ -2889,7 +2887,6 @@ namespace WinTweaker.ViewModels
             "visibility-persist-browsers",
             "visibility-show-badges-on-taskbar-apps",
             "visibility-showsecondsinsystemclock",
-            "visibility-use-default-tile",
             "system-enabletaskgroups",
             "system-notifications-enable-legacy-balloons",
             "security-wu-allow-servicing-enterprise-features",

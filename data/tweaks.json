@@ -1,35 +1,5 @@
 [
   {
-    "id": "visibility-icons-only",
-    "name_ru": "Всегда отображать значки, а не эскизы",
-    "description_ru": "Всегда отображать значки, а не эскизы. Управляет параметром IconsOnly. Значение сохраняется в снимок для безопасного отката.",
-    "group": "Основное",
-    "category": "visibility",
-    "type": "toggle",
-    "risk": "low",
-    "presets": [],
-    "min_build": null,
-    "needs_review": true,
-    "source": {
-      "file": "visibility/desc.md",
-      "line_from": 153,
-      "line_to": 158
-    },
-    "registry": [
-      {
-        "hive": "HKCU",
-        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "name": "IconsOnly",
-        "type": "REG_DWORD",
-        "apply": 1,
-        "revert": {
-          "mode": "snapshot",
-          "value": null
-        }
-      }
-    ]
-  },
-  {
     "id": "visibility-use-compact-mode",
     "name_ru": "Уменьшить расстояние между элементами (компактный вид)",
     "description_ru": "Уменьшить расстояние между элементами (компактный вид). Управляет параметром UseCompactMode. Значение сохраняется в снимок для безопасного отката.",
@@ -50,36 +20,6 @@
         "hive": "HKCU",
         "path": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
         "name": "UseCompactMode",
-        "type": "REG_DWORD",
-        "apply": 1,
-        "revert": {
-          "mode": "snapshot",
-          "value": null
-        }
-      }
-    ]
-  },
-  {
-    "id": "visibility-show-type-overlay",
-    "name_ru": "Отображать значок файла на эскизах",
-    "description_ru": "Отображать значок файла на эскизах. Управляет параметром ShowTypeOverlay. Значение сохраняется в снимок для безопасного отката.",
-    "group": "Основное",
-    "category": "visibility",
-    "type": "toggle",
-    "risk": "low",
-    "presets": [],
-    "min_build": null,
-    "needs_review": true,
-    "source": {
-      "file": "visibility/desc.md",
-      "line_from": 165,
-      "line_to": 170
-    },
-    "registry": [
-      {
-        "hive": "HKCU",
-        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "name": "ShowTypeOverlay",
         "type": "REG_DWORD",
         "apply": 1,
         "revert": {
@@ -1220,36 +1160,6 @@
         "hive": "HKCU",
         "path": "Software\\Microsoft\\Windows\\CurrentVersion\\PenWorkspace",
         "name": "PenWorkspaceButtonDesiredVisibility",
-        "type": "REG_DWORD",
-        "apply": 1,
-        "revert": {
-          "mode": "snapshot",
-          "value": null
-        }
-      }
-    ]
-  },
-  {
-    "id": "visibility-hidden-icon-menu",
-    "name_ru": "Стрелка скрытых значков системного трея",
-    "description_ru": "Отображение значка шеврона для скрытых значков в области уведомлений панели задач.",
-    "group": "Панель задач",
-    "category": "visibility",
-    "type": "toggle",
-    "risk": "low",
-    "presets": [],
-    "min_build": null,
-    "needs_review": false,
-    "source": {
-      "file": "visibility/desc.md",
-      "line_from": 1145,
-      "line_to": 1149
-    },
-    "registry": [
-      {
-        "hive": "HKCU",
-        "path": "Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\CurrentVersion\\TrayNotify",
-        "name": "SystemTrayChevronVisibility",
         "type": "REG_DWORD",
         "apply": 1,
         "revert": {
@@ -4117,36 +4027,6 @@
         "revert": {
           "mode": "set",
           "value": 1
-        }
-      }
-    ]
-  },
-  {
-    "id": "security-uac-admin-approval",
-    "name_ru": "Режим подтверждения встроенного администратора (FilterAdministratorToken)",
-    "description_ru": "Запускает приложения под встроенной учетной записью администратора с полными правами без блокирующих запросов.",
-    "group": "Контроль учетных записей (UAC)",
-    "category": "security",
-    "type": "toggle",
-    "risk": "medium",
-    "presets": [],
-    "min_build": null,
-    "needs_review": true,
-    "source": {
-      "file": "security/desc.md",
-      "line_from": 518,
-      "line_to": 530
-    },
-    "registry": [
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
-        "name": "FilterAdministratorToken",
-        "type": "REG_DWORD",
-        "apply": 1,
-        "revert": {
-          "mode": "set",
-          "value": 0
         }
       }
     ]
@@ -12588,38 +12468,6 @@
     ]
   },
   {
-    "id": "power-hide-lock-option",
-    "name_ru": "Скрыть пункт блокировки в меню пользователя",
-    "description_ru": "Убирает пункт «Заблокировать» из всплывающего меню аватара текущего пользователя.",
-    "group": "Меню питания",
-    "category": "power",
-    "type": "toggle",
-    "risk": "low",
-    "presets": [
-      "maximum"
-    ],
-    "min_build": 19041,
-    "needs_review": false,
-    "source": {
-      "file": "power/desc.md",
-      "line_from": 2396,
-      "line_to": 2401
-    },
-    "registry": [
-      {
-        "hive": "HKLM",
-        "path": "Software\\Policies\\Microsoft\\Windows\\Explorer",
-        "name": "ShowLockOption",
-        "type": "REG_DWORD",
-        "apply": 0,
-        "revert": {
-          "mode": "delete",
-          "value": null
-        }
-      }
-    ]
-  },
-  {
     "id": "power-user-battery-discharge-estimator",
     "name_ru": "Отключить оценку скорости разряда аккумулятора",
     "description_ru": "Отключает фоновую телеметрию расхода батареи PopBatteryWorker в ядре операционной системы.",
@@ -12645,138 +12493,6 @@
         "name": "UserBatteryDischargeEstimator",
         "type": "REG_DWORD",
         "apply": 0,
-        "revert": {
-          "mode": "delete",
-          "value": null
-        }
-      }
-    ]
-  },
-  {
-    "id": "visibility-prevent-color-appearance-change",
-    "name_ru": "Запретить изменение цвета и оформления",
-    "description_ru": "Блокирует случайную смену цветов оформления и контрастных тем в параметрах Windows.",
-    "group": "Интерфейс",
-    "category": "visibility",
-    "type": "toggle",
-    "risk": "low",
-    "presets": [
-      "safe",
-      "maximum"
-    ],
-    "min_build": 19041,
-    "needs_review": false,
-    "source": {
-      "file": "visibility/desc.md",
-      "line_from": 1363,
-      "line_to": 1372
-    },
-    "registry": [
-      {
-        "hive": "HKCU",
-        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
-        "name": "NoDispAppearancePage",
-        "type": "REG_DWORD",
-        "apply": 1,
-        "revert": {
-          "mode": "delete",
-          "value": null
-        }
-      }
-    ]
-  },
-  {
-    "id": "visibility-prevent-changing-wallpaper",
-    "name_ru": "Запретить изменение фона рабочего стола",
-    "description_ru": "Запрещает изменение пользователями или сторонними программами обоев рабочего стола.",
-    "group": "Рабочий стол",
-    "category": "visibility",
-    "type": "toggle",
-    "risk": "low",
-    "presets": [
-      "safe",
-      "maximum"
-    ],
-    "min_build": 19041,
-    "needs_review": false,
-    "source": {
-      "file": "visibility/desc.md",
-      "line_from": 1363,
-      "line_to": 1372
-    },
-    "registry": [
-      {
-        "hive": "HKCU",
-        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\ActiveDesktop",
-        "name": "NoChangingWallPaper",
-        "type": "REG_DWORD",
-        "apply": 1,
-        "revert": {
-          "mode": "delete",
-          "value": null
-        }
-      }
-    ]
-  },
-  {
-    "id": "visibility-prevent-changing-theme",
-    "name_ru": "Запретить смену темы оформления",
-    "description_ru": "Отключает смену сохраненных тем персонализации Windows для сохранения стабильного вида.",
-    "group": "Интерфейс",
-    "category": "visibility",
-    "type": "toggle",
-    "risk": "low",
-    "presets": [
-      "safe",
-      "maximum"
-    ],
-    "min_build": 19041,
-    "needs_review": false,
-    "source": {
-      "file": "visibility/desc.md",
-      "line_from": 1363,
-      "line_to": 1372
-    },
-    "registry": [
-      {
-        "hive": "HKCU",
-        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
-        "name": "NoThemesTab",
-        "type": "REG_DWORD",
-        "apply": 1,
-        "revert": {
-          "mode": "delete",
-          "value": null
-        }
-      }
-    ]
-  },
-  {
-    "id": "visibility-use-default-tile",
-    "name_ru": "Использовать стандартный аватар для всех пользователей",
-    "description_ru": "Устанавливает единый стандартный значок учетной записи для экрана входа и меню «Пуск».",
-    "group": "Учетные записи",
-    "category": "visibility",
-    "type": "toggle",
-    "risk": "low",
-    "presets": [
-      "safe",
-      "maximum"
-    ],
-    "min_build": 19041,
-    "needs_review": false,
-    "source": {
-      "file": "visibility/desc.md",
-      "line_from": 1389,
-      "line_to": 1392
-    },
-    "registry": [
-      {
-        "hive": "HKLM",
-        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
-        "name": "UseDefaultTile",
-        "type": "REG_DWORD",
-        "apply": 1,
         "revert": {
           "mode": "delete",
           "value": null
@@ -13205,138 +12921,6 @@
         "name": "Downlevel Browse",
         "type": "REG_DWORD",
         "apply": 0,
-        "revert": {
-          "mode": "delete",
-          "value": null
-        }
-      }
-    ]
-  },
-  {
-    "id": "visibility-prevent-changing-desktop-icons",
-    "name_ru": "Запретить изменение значков рабочего стола",
-    "description_ru": "Блокирует случайное скрытие или изменение системных значков «Этот компьютер», «Корзина» и др.",
-    "group": "Рабочий стол",
-    "category": "visibility",
-    "type": "toggle",
-    "risk": "low",
-    "presets": [
-      "safe",
-      "maximum"
-    ],
-    "min_build": 19041,
-    "needs_review": false,
-    "source": {
-      "file": "visibility/desc.md",
-      "line_from": 1366,
-      "line_to": 1368
-    },
-    "registry": [
-      {
-        "hive": "HKCU",
-        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
-        "name": "NoDispBackgroundPage",
-        "type": "REG_DWORD",
-        "apply": 1,
-        "revert": {
-          "mode": "delete",
-          "value": null
-        }
-      }
-    ]
-  },
-  {
-    "id": "visibility-prevent-changing-lock-screen",
-    "name_ru": "Запретить изменение изображения экрана блокировки",
-    "description_ru": "Фиксирует изображение экрана блокировки и экрана входа в систему от случайных изменений.",
-    "group": "Экран блокировки",
-    "category": "visibility",
-    "type": "toggle",
-    "risk": "low",
-    "presets": [
-      "safe",
-      "maximum"
-    ],
-    "min_build": 19041,
-    "needs_review": false,
-    "source": {
-      "file": "visibility/desc.md",
-      "line_from": 1367,
-      "line_to": 1369
-    },
-    "registry": [
-      {
-        "hive": "HKLM",
-        "path": "Software\\Policies\\Microsoft\\Windows\\Personalization",
-        "name": "NoChangingLockScreen",
-        "type": "REG_DWORD",
-        "apply": 1,
-        "revert": {
-          "mode": "delete",
-          "value": null
-        }
-      }
-    ]
-  },
-  {
-    "id": "visibility-prevent-changing-mouse-pointers",
-    "name_ru": "Запретить темам менять указатели мыши",
-    "description_ru": "Предотвращает автоматическую замену схемы курсоров мыши при применении тем Windows.",
-    "group": "Курсор мыши",
-    "category": "visibility",
-    "type": "toggle",
-    "risk": "low",
-    "presets": [
-      "safe",
-      "maximum"
-    ],
-    "min_build": 19041,
-    "needs_review": false,
-    "source": {
-      "file": "visibility/desc.md",
-      "line_from": 1368,
-      "line_to": 1370
-    },
-    "registry": [
-      {
-        "hive": "HKCU",
-        "path": "Software\\Policies\\Microsoft\\Windows\\Personalization",
-        "name": "NoChangingMousePointers",
-        "type": "REG_DWORD",
-        "apply": 1,
-        "revert": {
-          "mode": "delete",
-          "value": null
-        }
-      }
-    ]
-  },
-  {
-    "id": "visibility-prevent-changing-start-background",
-    "name_ru": "Запретить изменение фона меню «Пуск»",
-    "description_ru": "Блокирует переопределение цвета фона и акцентов меню «Пуск» сторонними программами.",
-    "group": "Меню «Пуск»",
-    "category": "visibility",
-    "type": "toggle",
-    "risk": "low",
-    "presets": [
-      "safe",
-      "maximum"
-    ],
-    "min_build": 19041,
-    "needs_review": false,
-    "source": {
-      "file": "visibility/desc.md",
-      "line_from": 1369,
-      "line_to": 1371
-    },
-    "registry": [
-      {
-        "hive": "HKLM",
-        "path": "Software\\Policies\\Microsoft\\Windows\\Personalization",
-        "name": "NoChangingStartMenuBackground",
-        "type": "REG_DWORD",
-        "apply": 1,
         "revert": {
           "mode": "delete",
           "value": null
@@ -16207,39 +15791,6 @@
     ]
   },
   {
-    "id": "privacy-biometrics-domain-accounts",
-    "name_ru": "Запретить доменным пользователям вход в систему по биометрическим данным",
-    "description_ru": "Блокирует аутентификацию доменных учетных записей по отпечатку пальца или распознаванию лица через групповую политику.",
-    "group": "Биометрия и безопасность",
-    "category": "privacy",
-    "type": "toggle",
-    "risk": "low",
-    "presets": [
-      "safe",
-      "maximum"
-    ],
-    "min_build": 19041,
-    "needs_review": false,
-    "source": {
-      "file": "privacy/desc.md",
-      "line_from": 1005,
-      "line_to": 1007
-    },
-    "registry": [
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Policies\\Microsoft\\Biometrics\\Credential Provider",
-        "name": "Domain Accounts",
-        "type": "REG_DWORD",
-        "apply": 0,
-        "revert": {
-          "mode": "delete",
-          "value": null
-        }
-      }
-    ]
-  },
-  {
     "id": "privacy-terminal-allow-unsolicited",
     "name_ru": "Запретить несанкционированные предложения удаленной помощи (Remote Assistance)",
     "description_ru": "Запрещает удаленным хостам отправлять незапрошенные сеансы подключения через службу удаленного помощника Windows.",
@@ -17645,38 +17196,6 @@
       {
         "hive": "HKLM",
         "path": "SOFTWARE\\Policies\\Microsoft\\Biometrics",
-        "name": "Enabled",
-        "type": "REG_DWORD",
-        "apply": 0,
-        "revert": {
-          "mode": "delete",
-          "value": null
-        }
-      }
-    ]
-  },
-  {
-    "id": "privacy-biometrics-credential-provider-enabled",
-    "name_ru": "Запретить вход в Windows по биометрии (Windows Hello)",
-    "description_ru": "Блокирует использование биометрических данных при авторизации на экране входа Windows.",
-    "group": "Биометрия и Windows Hello",
-    "category": "privacy",
-    "type": "toggle",
-    "risk": "low",
-    "presets": [
-      "maximum"
-    ],
-    "min_build": 19041,
-    "needs_review": false,
-    "source": {
-      "file": "privacy/desc.md",
-      "line_from": 1004,
-      "line_to": 1006
-    },
-    "registry": [
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Policies\\Microsoft\\Biometrics\\Credential Provider",
         "name": "Enabled",
         "type": "REG_DWORD",
         "apply": 0,
@@ -28295,36 +27814,6 @@
         "revert": {
           "mode": "set",
           "value": 1
-        }
-      }
-    ]
-  },
-  {
-    "id": "visibility-taskbar-never-combine",
-    "name_ru": "Никогда не группировать кнопки панели задач (TaskbarGlomLevel)",
-    "description_ru": "Отображает каждое открытое окно отдельной кнопкой с заголовком на панели задач (TaskbarGlomLevel = 2).",
-    "group": "Панель задач Windows 11",
-    "category": "visibility",
-    "type": "toggle",
-    "risk": "low",
-    "presets": [],
-    "min_build": null,
-    "needs_review": true,
-    "source": {
-      "file": "visibility/docs/taskbar-settings.md",
-      "line_from": 107,
-      "line_to": 113
-    },
-    "registry": [
-      {
-        "hive": "HKCU",
-        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "name": "TaskbarGlomLevel",
-        "type": "REG_DWORD",
-        "apply": 2,
-        "revert": {
-          "mode": "set",
-          "value": 0
         }
       }
     ]

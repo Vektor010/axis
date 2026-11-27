@@ -3,9 +3,9 @@
 [English](README.md) | [Русский](README.ru.md)
 
 [![Release: v3.4.0](https://img.shields.io/badge/Release-v3.4.0-2563eb.svg)](https://github.com/Vektor010/axis/releases)
-[![Tests: 8774 PASS](https://img.shields.io/badge/Tests-8774%20PASS-22c55e.svg)](tests/)
-[![Tweaks: 965](https://img.shields.io/badge/Tweaks-965-3b82f6.svg)](data/tweaks.json)
-[![Binary: Clean 1.55 MB](https://img.shields.io/badge/Binary-1.55%20MB-38bdf8.svg)](dist/Axis.exe)
+[![Tests: 8634 PASS](https://img.shields.io/badge/Tests-8634%20PASS-22c55e.svg)](tests/)
+[![Tweaks: 949](https://img.shields.io/badge/Tweaks-949-3b82f6.svg)](data/tweaks.json)
+[![Binary: Clean 1.54 MB](https://img.shields.io/badge/Binary-1.54%20MB-38bdf8.svg)](dist/Axis.exe)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 > **AXIS** is a high-performance, standalone Windows 10/11 optimization suite designed for competitive esports players, system engineers, and enthusiasts.
@@ -51,17 +51,17 @@
 
 ---
 
-## 🧭 Tweak Catalog (965 Parameters Across 12 Categories)
+## 🧭 Tweak Catalog (949 Parameters Across 12 Categories)
 
 | Category | Count | Focus Area |
 | :--- | :---: | :--- |
 | ⚙️ **System** | 227 | MMCSS scheduler tuning, services/drivers (`57`), scheduled tasks (`18` via COM), DPC latency. |
-| 🔒 **Privacy** | 211 | Diagnostic telemetry, feedback hub, activity history, and background beacons. |
-| 🛡️ **Security** | 147 | Process isolation, UAC/SmartScreen, and Windows Defender tuning. |
-| 📁 **File Explorer** | 88 | Responsive shell layout, context menu simplification, folder view optimizations. |
+| 🔒 **Privacy** | 209 | Diagnostic telemetry, feedback hub, activity history, and background beacons. |
+| 🛡️ **Security** | 146 | Process isolation, UAC/SmartScreen, and Windows Defender tuning. |
+| 📁 **File Explorer** | 76 | Responsive shell layout, context menu simplification, folder view optimizations. |
 | 🌐 **Network & Internet** | 94 | TCP BBR2/CUBIC congestion providers, Nagle disabling, DNS encryption, RSS/RSC. |
 | 🖱️ **Peripherals & Input** | 73 | 1:1 raw mouse input, pointer precision curve normalization, HID input latency. |
-| ⚡ **Power Management** | 51 | Core unparking, High/Ultimate Performance power plans, NIC power saving removal. |
+| ⚡ **Power Management** | 50 | Core unparking, High/Ultimate Performance power plans, NIC power saving removal. |
 | 🗑️ **System Cleanup** | 16 | Temporary caches, DirectX shader cache, crash dump purging. |
 | 🎮 **NVIDIA Graphics** | 16 | Low latency mode, NV-Minimal Base Profile DRS (`nvapi64.dll`), on-demand NVCPL. |
 | 🕹️ **Steam Platform** | 18 | Disabling CEF webhelper bloat, `localconfig.vdf` optimizations, Dual-Registry autostart. |
@@ -110,7 +110,7 @@ The build pipeline performs:
 1. Native compilation of `dist/Axis.exe` and test runner `dist/Tests.exe`.
 2. AST syntax check across all 52 production scripts (`verify-all.ps1`).
 3. SHA-256 byte-for-byte verification of embedded `tweaks.json`.
-4. Execution of all **8,774 unit and integration tests** (`Tests.exe`) + deep `965`-tweak Noverse audit.
+4. Execution of all **8,634 unit and integration tests** (`Tests.exe`) + deep `949`-tweak Noverse audit.
 
 ---
 
