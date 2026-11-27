@@ -2240,14 +2240,16 @@ namespace WinTweaker.Tests
                        !TweakEngine.IsEligibleForBatchApply(defragTaskTweak, 26300, TweakStatus.Disabled),
                     "ScheduledTasks_Noverse: Задачи планировщика Noverse распознаются движком, а опасные подгруппы (ScheduledDefrag/WU) защищены apply_block");
 
-                // Проверка удаления вредных твиков (моно-звук, учётные блокировки, стрелки/оверлеи рабочего стола) и включения CS2 LAN/USB/GPU пакета в recommended
+                // Проверка удаления вредных твиков (моно-звук, учётные блокировки, стрелки/оверлеи рабочего стола, DWM/MPO/GpuYield 10 FPS) и включения CS2 LAN/USB/GPU пакета в recommended
                 bool hasRemovedBad = list.Exists(delegate(TweakItem x) {
                     return x.id == "system-mono-audio" || x.id == "system-invert-colors" ||
                            x.id == "system-toggle-keys" || x.id == "system-keyboard-shortcut-for-color-filters" ||
                            x.id == "privacy-biometrics-credential-provider-enabled" || x.id == "security-uac-admin-approval" ||
                            x.id == "visibility-use-default-tile" || x.id == "visibility-show-type-overlay" ||
                            x.id == "visibility-hidden-icon-menu" || x.id == "visibility-icons-only" ||
-                           x.id == "visibility-taskbar-never-combine" || x.id == "visibility-prevent-changing-desktop-icons";
+                           x.id == "visibility-taskbar-never-combine" || x.id == "visibility-prevent-changing-desktop-icons" ||
+                           x.id == "system-dwm-overlay-test-mode" || x.id == "system-dxg-disable-overlays-mpo" ||
+                           x.id == "system-game-mode-gpu-yield" || x.id == "system-dwm-enable-mega-rects";
                 });
                 TweakItem udpRsc = list.Find(delegate(TweakItem x) { return x.id == "network-nic-udp-rsc"; });
                 TweakItem nvLowLat = list.Find(delegate(TweakItem x) { return x.id == "nvidia-low-latency-prerender-limit"; });

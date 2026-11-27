@@ -3,9 +3,9 @@
 [English](README.md) | [Русский](README.ru.md)
 
 [![Release: v3.4.0](https://img.shields.io/badge/Release-v3.4.0-2563eb.svg)](https://github.com/Vektor010/axis/releases)
-[![Tests: 8634 PASS](https://img.shields.io/badge/Tests-8634%20PASS-22c55e.svg)](tests/)
-[![Tweaks: 949](https://img.shields.io/badge/Tweaks-949-3b82f6.svg)](data/tweaks.json)
-[![Binary: Clean 1.54 MB](https://img.shields.io/badge/Binary-1.54%20MB-38bdf8.svg)](dist/Axis.exe)
+[![Tests: 8,426 PASS](https://img.shields.io/badge/Tests-8426%20PASS-22c55e.svg)](tests/)
+[![Tweaks: 923](https://img.shields.io/badge/Tweaks-923-3b82f6.svg)](data/tweaks.json)
+[![Binary: Clean 1.51 MB](https://img.shields.io/badge/Binary-1.51%20MB-38bdf8.svg)](dist/Axis.exe)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 > **AXIS** is a high-performance, standalone Windows 10/11 optimization suite designed for competitive esports players, system engineers, and enthusiasts.
@@ -51,11 +51,11 @@
 
 ---
 
-## 🧭 Tweak Catalog (949 Parameters Across 12 Categories)
+## 🧭 Tweak Catalog (923 Parameters Across 12 Categories)
 
 | Category | Count | Focus Area |
 | :--- | :---: | :--- |
-| ⚙️ **System** | 227 | MMCSS scheduler tuning, services/drivers (`57`), scheduled tasks (`18` via COM), DPC latency. |
+| ⚙️ **System** | 201 | MMCSS scheduler tuning, services/drivers (`57`), scheduled tasks (`18` via COM), DPC latency. |
 | 🔒 **Privacy** | 209 | Diagnostic telemetry, feedback hub, activity history, and background beacons. |
 | 🛡️ **Security** | 146 | Process isolation, UAC/SmartScreen, and Windows Defender tuning. |
 | 📁 **File Explorer** | 76 | Responsive shell layout, context menu simplification, folder view optimizations. |
@@ -110,7 +110,7 @@ The build pipeline performs:
 1. Native compilation of `dist/Axis.exe` and test runner `dist/Tests.exe`.
 2. AST syntax check across all 52 production scripts (`verify-all.ps1`).
 3. SHA-256 byte-for-byte verification of embedded `tweaks.json`.
-4. Execution of all **8,634 unit and integration tests** (`Tests.exe`) + deep `949`-tweak Noverse audit.
+4. Execution of all **8,426 unit and integration tests** (`Tests.exe`) + deep `923`-tweak Noverse audit.
 
 ---
 
